@@ -228,17 +228,27 @@ export class InfiniteGridMenu {
     canvas.width = this.atlasSize * cellSize;
     canvas.height = this.atlasSize * cellSize;
 
+    console.log("🖼️ Loading images for projects:", this.items.map(item => item.title));
+    
     Promise.all(
       this.items.map(
         (item) =>
-          new Promise<HTMLImageElement>((resolve) => {
+          new Promise<HTMLImageElement>((resolve, reject) => {
             const img = new Image();
             img.crossOrigin = "anonymous";
-            img.onload = () => resolve(img);
+            img.onload = () => {
+              console.log("✅ Loaded image:", item.title, item.image);
+              resolve(img);
+            };
+            img.onerror = () => {
+              console.error("❌ Failed to load image:", item.title, item.image);
+              reject(new Error(`Failed to load image: ${item.image}`));
+            };
             img.src = item.image;
           })
       )
     ).then((images) => {
+      console.log("🎉 All images loaded successfully:", images.length);
       images.forEach((img, i) => {
         const x = (i % this.atlasSize) * cellSize;
         const y = Math.floor(i / this.atlasSize) * cellSize;

@@ -13,17 +13,17 @@ export type InitCallback = (instance: InfiniteGridMenuInterface) => void;
 export type UpdateCallback = (deltaTime: number) => void;
 
 export interface Camera {
-  matrix: Float32Array;
+  matrix: any; // mat4 type
   near: number;
   far: number;
   fov: number;
   aspect: number;
-  position: Float32Array;
-  up: Float32Array;
+  position: any; // vec3 type
+  up: any; // vec3 type
   matrices: {
-    view: Float32Array;
-    projection: Float32Array;
-    inversProjection: Float32Array;
+    view: any; // mat4 type
+    projection: any; // mat4 type
+    inversProjection: any; // mat4 type
   };
 }
 
