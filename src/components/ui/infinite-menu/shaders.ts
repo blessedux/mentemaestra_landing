@@ -82,18 +82,22 @@ void main() {
     float imageAspect = float(texSize.x) / float(texSize.y);
     float containerAspect = 1.0; // Square container (circular disc)
     
-    // Calculate scale to fill the entire circular container
+    // Calculate separate scaling factors for X and Y to maintain aspect ratio
     // Use "cover" scaling - scale up to fill the container completely
-    // Add extra scaling factor to ensure no empty corners
-    float baseScale = max(imageAspect / containerAspect, 
-                         containerAspect / imageAspect);
-    float scale = baseScale * 1.2; // 20% extra scaling to eliminate empty corners
+    float scaleX = max(imageAspect / containerAspect, 1.0);
+    float scaleY = max(containerAspect / imageAspect, 1.0);
     
-    // Apply scaling to fill the container and fix orientation
-    // Scale UVs down to make the image appear larger (cover effect)
+    // Add extra scaling factor to ensure no empty corners
+    scaleX *= 1.2;
+    scaleY *= 1.2;
+    
+    // Apply scaling to fill the container while maintaining aspect ratio
     vec2 st = vUvs;
     st.y = 1.0 - st.y; // Flip Y coordinate to fix backwards issue
-    st = (st - 0.5) / scale + 0.5;
+    
+    // Apply different scaling factors for X and Y
+    st.x = (st.x - 0.5) / scaleX + 0.5;
+    st.y = (st.y - 0.5) / scaleY + 0.5;
     
     // Map to the correct cell in the atlas
     st = st * cellSize + cellOffset;
