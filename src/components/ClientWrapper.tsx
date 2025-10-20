@@ -13,11 +13,11 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
   useEffect(() => {
     console.log("ClientWrapper mounted, isLoading:", isLoading);
     
-    // Extended time to allow Spline iframe to load during preloader
+    // Shorter duration to minimize gap between preloader and home screen
     const timer = setTimeout(() => {
       console.log("Preloader complete - showing Spline scene");
       setIsLoading(false);
-    }, 8000); // Extended to 8 seconds to allow Spline to load during preloader
+    }, 2500); // Reduced to 2.5 seconds for faster transition
 
     return () => clearTimeout(timer);
   }, []);
@@ -25,7 +25,7 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
   return (
     <>
       {isLoading && <Preloader />}
-      <div className={isLoading ? "opacity-0" : "opacity-100 transition-opacity duration-1000"}>
+      <div className={isLoading ? "opacity-0" : "opacity-100 transition-opacity duration-500"}>
         {children}
       </div>
     </>

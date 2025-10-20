@@ -11,7 +11,7 @@ export default function Preloader() {
     
     const timer = setInterval(() => {
       setProgress((prev) => {
-        const increment = Math.random() * 8 + 3; // 3-11% increment (slower progression)
+        const increment = Math.random() * 12 + 5; // 5-17% increment (faster progression)
         const newProgress = Math.min(prev + increment, 100);
         
         if (newProgress >= 100) {
@@ -20,12 +20,12 @@ export default function Preloader() {
           setTimeout(() => {
             setIsVisible(false);
             console.log("Preloader fade out complete");
-          }, 300);
+          }, 200); // Faster fade out
           return 100;
         }
         return newProgress;
       });
-    }, 200); // Slower interval for smoother 4-second duration
+    }, 150); // Faster interval for 2.5-second duration
 
     return () => {
       console.log("Preloader cleanup");
