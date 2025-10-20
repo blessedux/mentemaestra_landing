@@ -77,23 +77,9 @@ void main() {
     vec2 cellSize = vec2(1.0) / vec2(float(cellsPerRow));
     vec2 cellOffset = vec2(float(cellX), float(cellY)) * cellSize;
 
-    // Get texture dimensions and calculate aspect ratio
-    ivec2 texSize = textureSize(uTex, 0);
-    float imageAspect = float(texSize.x) / float(texSize.y);
-    float containerAspect = 1.0; // Square container (circular disc)
-    
-    // Calculate scale to fill the entire circular container
-    // Use "cover" scaling - scale up to fill the container completely
-    // This ensures rectangular images fill the circular space entirely
-    // For wide images (landscape): scale = imageAspect (scale horizontally)
-    // For tall images (portrait): scale = 1.0/imageAspect (scale vertically)
-    float scale = max(imageAspect / containerAspect, 
-                     containerAspect / imageAspect);
-    
-    // Center the UVs and apply scaling
-    vec2 st = vUvs - 0.5; // Center around origin
-    st = st * scale; // Scale up to fill container
-    st = st + 0.5; // Move back to center
+    // Simple approach: just use the UVs as-is to avoid flipping
+    // The circular mask will handle the shape, we just need the image to fill
+    vec2 st = vUvs;
     
     // Clamp coordinates to prevent repeating
     st = clamp(st, 0.0, 1.0);
