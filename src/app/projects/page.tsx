@@ -47,29 +47,20 @@ export default function Projects() {
         </Link>
       </header>
 
-      {/* Main content */}
-      <main 
-        className="flex-1 px-8 transition-opacity duration-1000"
-        style={{ opacity: isVisible ? 1 : 0 }}
-      >
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-4xl md:text-6xl font-light mb-4">
-              Proyectos
-            </h1>
-            <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              Una selección de nuestros proyectos más destacados. Cada uno representa nuestro compromiso con la innovación y la excelencia.
-            </p>
-          </div>
-          
-          {/* Infinite Menu Component */}
-          <div className="flex w-full justify-center items-center">
-            <div style={{ height: "600px", width: "100%", maxWidth: "800px", position: "relative" }}>
-              <Component items={items} />
+          {/* Main content */}
+          <main 
+            className="flex-1 px-8 transition-opacity duration-1000"
+            style={{ opacity: isVisible ? 1 : 0 }}
+          >
+            <div className="max-w-4xl mx-auto">
+              {/* Infinite Menu Component */}
+              <div className="flex w-full justify-center items-center">
+                <div style={{ height: "600px", width: "100%", maxWidth: "800px", position: "relative" }}>
+                  <Component items={items} />
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      </main>
+          </main>
 
       {/* Footer */}
       <footer 
