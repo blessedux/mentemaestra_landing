@@ -77,9 +77,21 @@ void main() {
     vec2 cellSize = vec2(1.0) / vec2(float(cellsPerRow));
     vec2 cellOffset = vec2(float(cellX), float(cellY)) * cellSize;
 
-    // Simple approach: use UVs as-is to avoid any flipping issues
-    // The circular geometry will handle the shape
+    // Get texture dimensions and calculate aspect ratio
+    ivec2 texSize = textureSize(uTex, 0);
+    float imageAspect = float(texSize.x) / float(texSize.y);
+    float containerAspect = 1.0; // Square container (circular disc)
+    
+    // Calculate scale to fill the entire circular container
+    // Use "cover" scaling - scale up to fill the container completely
+    float scale = max(imageAspect / containerAspect, 
+                     containerAspect / imageAspect);
+    
+    // Apply scaling to fill the container and fix orientation
+    // Scale UVs down to make the image appear larger (cover effect)
     vec2 st = vUvs;
+    st.y = 1.0 - st.y; // Flip Y coordinate to fix backwards issue
+    st = (st - 0.5) / scale + 0.5;
     
     // Map to the correct cell in the atlas
     st = st * cellSize + cellOffset;
