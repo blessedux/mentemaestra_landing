@@ -84,8 +84,10 @@ void main() {
     
     // Calculate scale to fill the entire circular container
     // Use "cover" scaling - scale up to fill the container completely
-    float scale = max(imageAspect / containerAspect, 
-                     containerAspect / imageAspect);
+    // Add extra scaling factor to ensure no empty corners
+    float baseScale = max(imageAspect / containerAspect, 
+                         containerAspect / imageAspect);
+    float scale = baseScale * 1.2; // 20% extra scaling to eliminate empty corners
     
     // Apply scaling to fill the container and fix orientation
     // Scale UVs down to make the image appear larger (cover effect)
