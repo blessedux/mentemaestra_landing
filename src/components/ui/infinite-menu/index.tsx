@@ -77,13 +77,10 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
 
       {activeItem && (
         <>
-          {/* Title - Centered above the blue arrow */}
-          <h2
+          {/* Title with Glassmorphism Background - Centered above the blue arrow */}
+          <div
             className={`
-          select-none
           absolute
-          font-black
-          text-[1.2rem]
           left-1/2
           transform
           -translate-x-1/2
@@ -96,8 +93,27 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
           }
         `}
           >
-            {activeItem.title}
-          </h2>
+            {/* Glassmorphism Background */}
+            <div className="
+              bg-white/10 
+              backdrop-blur-md 
+              border border-white/20 
+              rounded-full 
+              px-6 py-3 
+              shadow-lg
+            ">
+              <h2 className="
+                select-none
+                font-black
+                text-[1.2rem]
+                text-white
+                text-center
+                whitespace-nowrap
+              ">
+                {activeItem.title}
+              </h2>
+            </div>
+          </div>
 
           {/* Action Button */}
           <div
