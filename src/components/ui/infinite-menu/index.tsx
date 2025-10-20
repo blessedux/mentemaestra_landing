@@ -21,15 +21,6 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
     
     // Use provided items, or always use our 27 projects data
     const currentItems = items.length ? items : projectsData;
-    
-    // Debug logging
-    console.log("🔍 InfiniteMenu Debug:", {
-      itemsLength: items.length,
-      projectsDataLength: projectsData.length,
-      currentItemsLength: currentItems.length,
-      firstProject: currentItems[0]?.title,
-      firstImage: currentItems[0]?.image
-    });
 
     const handleActiveItem = (index: number) => {
       if (!currentItems.length) return;

@@ -80,15 +80,20 @@ void main() {
     // Get texture dimensions and calculate aspect ratio
     ivec2 texSize = textureSize(uTex, 0);
     float imageAspect = float(texSize.x) / float(texSize.y);
-    float containerAspect = 1.0; // Assuming square container
+    float containerAspect = 1.0; // Square container (circular disc)
     
-    // Calculate cover scale factor
+    // Calculate scale to fill the entire circular container
+    // Use "cover" scaling - scale up to fill the container completely
+    // This ensures rectangular images fill the circular space entirely
+    // For wide images (landscape): scale = imageAspect (scale horizontally)
+    // For tall images (portrait): scale = 1.0/imageAspect (scale vertically)
     float scale = max(imageAspect / containerAspect, 
                      containerAspect / imageAspect);
     
-    // Rotate 180 degrees and adjust UVs for cover
-    vec2 st = vec2(vUvs.x, 1.0 - vUvs.y);
-    st = (st - 0.5) * scale + 0.5;
+    // Center the UVs and apply scaling
+    vec2 st = vUvs - 0.5; // Center around origin
+    st = st * scale; // Scale up to fill container
+    st = st + 0.5; // Move back to center
     
     // Clamp coordinates to prevent repeating
     st = clamp(st, 0.0, 1.0);
