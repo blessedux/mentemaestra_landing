@@ -1,4 +1,5 @@
 // TypeScript interfaces and types for Infinite Menu
+import { mat4, vec3 } from "gl-matrix";
 
 export interface MenuItem {
   image: string;
@@ -13,17 +14,17 @@ export type InitCallback = (instance: InfiniteGridMenuInterface) => void;
 export type UpdateCallback = (deltaTime: number) => void;
 
 export interface Camera {
-  matrix: any; // mat4 type
+  matrix: mat4;
   near: number;
   far: number;
   fov: number;
   aspect: number;
-  position: any; // vec3 type
-  up: any; // vec3 type
+  position: vec3;
+  up: vec3;
   matrices: {
-    view: any; // mat4 type
-    projection: any; // mat4 type
-    inversProjection: any; // mat4 type
+    view: mat4;
+    projection: mat4;
+    inversProjection: mat4;
   };
 }
 

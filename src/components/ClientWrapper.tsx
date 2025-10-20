@@ -20,7 +20,7 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
     }, 2500); // Reduced to 2.5 seconds for faster transition
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [isLoading]);
 
   return (
     <>

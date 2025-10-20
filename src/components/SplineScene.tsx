@@ -8,7 +8,6 @@ interface SplineSceneProps {
 }
 
 export default function SplineScene({ onLoaded, onError }: SplineSceneProps) {
-  const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -16,13 +15,11 @@ export default function SplineScene({ onLoaded, onError }: SplineSceneProps) {
     console.log("🚀 SplineScene component mounted");
     
     // No loading overlay needed - iframe loads during preloader
-    setIsLoaded(true);
     onLoaded?.();
   }, [onLoaded]);
 
   const handleLoad = () => {
     console.log("🎉 Iframe load event fired");
-    setIsLoaded(true);
     onLoaded?.();
   };
 

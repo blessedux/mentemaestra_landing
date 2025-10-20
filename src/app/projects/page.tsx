@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Component } from "@/components/ui/infinite-menu";
+import { MenuItem } from "@/components/ui/infinite-menu/types";
 import { useState, useEffect } from "react";
 
 export default function Projects() {
@@ -18,7 +19,7 @@ export default function Projects() {
 
   // Projects are now automatically loaded from the infinite-menu module
   // The Component will use the 27 projects defined in projects-data.ts
-  const items: any[] = []; // Empty array - Component will use default projects data
+  const items: MenuItem[] = []; // Empty array - Component will use default projects data
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
@@ -29,7 +30,7 @@ export default function Projects() {
       >
         <Link
           href="/"
-          className="inline-flex items-center text-white/70 hover:text-white transition-colors duration-300"
+          className="inline-flex items-center text-white/70 hover:text-white transition-colors duration-300 mt-4 ml-4 md:mt-6 md:ml-6"
         >
           <svg
             className="w-6 h-6"

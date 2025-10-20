@@ -19,7 +19,7 @@ export const projectsData: MenuItem[] = [
   {
     image: "/imgs/project_images/archetypes_thumbnail.webp",
     link: "https://archetypes-kappa.vercel.app/",
-    title: "Archetypes",
+    title: "Archetypes MVP",
     description: "AI-powered personality analysis and behavioral insights platform",
   },
   {
