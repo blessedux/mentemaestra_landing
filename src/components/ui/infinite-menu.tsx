@@ -1286,7 +1286,6 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
   ) as MutableRefObject<HTMLCanvasElement | null>;
   const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
   const [isMoving, setIsMoving] = useState<boolean>(false);
-  const [isLoaded, setIsLoaded] = useState<boolean>(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -1305,32 +1304,26 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
         sketch.resize();
       }
     };
-    
-    // Add a small delay to ensure canvas is ready
-    const initTimer = setTimeout(() => {
-      if (canvas) {
-        sketch = new InfiniteGridMenu(
-          canvas,
-          currentItems,
-          handleActiveItem,
-          setIsMoving,
-          (sk) => sk.run()
-        );
-      }
 
-      window.addEventListener("resize", handleResize);
-      handleResize();
+    if (canvas) {
+      sketch = new InfiniteGridMenu(
+        canvas,
+        currentItems,
+        handleActiveItem,
+        setIsMoving,
+        (sk) => sk.run()
+      );
+    }
 
-      // Initial active item set when component mounts
-      if (currentItems.length > 0) {
-        setActiveItem(currentItems[0]);
-      }
-      
-      setIsLoaded(true);
-    }, 100); // Small delay for initialization
+    window.addEventListener("resize", handleResize);
+    handleResize();
+
+    // Initial active item set when component mounts
+    if (currentItems.length > 0) {
+      setActiveItem(currentItems[0]);
+    }
 
     return () => {
-      clearTimeout(initTimer);
       window.removeEventListener("resize", handleResize);
     };
   }, [items]); // Depend on `items` prop
@@ -1344,17 +1337,6 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
       console.log("Internal route:", activeItem.link);
     }
   };
-
-  if (!isLoaded) {
-    return (
-      <div className="relative w-full h-full flex items-center justify-center bg-gray-900/50">
-        <div className="text-center">
-          <div className="w-8 h-8 border-2 border-gray-600 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-white/60 text-sm">Cargando proyectos...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="relative w-full h-full">

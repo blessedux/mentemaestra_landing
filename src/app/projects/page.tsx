@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Component } from "@/components/ui/infinite-menu";
 import { useState, useEffect } from "react";
+import { projects } from "@/config/projects";
 
 export default function Projects() {
   const [isVisible, setIsVisible] = useState(false);
@@ -16,32 +17,8 @@ export default function Projects() {
     return () => clearTimeout(timer);
   }, []);
 
-  const items = [
-    {
-      image: "https://picsum.photos/300/300?grayscale",
-      link: "https://21st.dev/",
-      title: "Proyecto 1",
-      description: "Descripción del primer proyecto destacado",
-    },
-    {
-      image: "https://picsum.photos/400/400?grayscale",
-      link: "https://21st.dev/",
-      title: "Proyecto 2",
-      description: "Descripción del segundo proyecto innovador",
-    },
-    {
-      image: "https://picsum.photos/500/500?grayscale",
-      link: "https://21st.dev/",
-      title: "Proyecto 3",
-      description: "Descripción del tercer proyecto revolucionario",
-    },
-    {
-      image: "https://picsum.photos/600/600?grayscale",
-      link: "https://21st.dev/",
-      title: "Proyecto 4",
-      description: "Descripción del cuarto proyecto de excelencia",
-    },
-  ];
+  // Projects are now configured in src/config/projects.ts for easy customization
+  const items = projects;
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
