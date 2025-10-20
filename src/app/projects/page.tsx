@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Component } from "@/components/ui/infinite-menu";
 import { useState, useEffect } from "react";
-import { projects } from "@/config/projects";
 
 export default function Projects() {
   const [isVisible, setIsVisible] = useState(false);
@@ -17,8 +16,9 @@ export default function Projects() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Projects are now configured in src/config/projects.ts for easy customization
-  const items = projects;
+  // Projects are now automatically loaded from the infinite-menu module
+  // The Component will use the 27 projects defined in projects-data.ts
+  const items: any[] = []; // Empty array - Component will use default projects data
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
