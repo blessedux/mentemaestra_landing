@@ -6,7 +6,7 @@
 import { FC, useRef, useState, useEffect, MutableRefObject } from "react";
 import { InfiniteMenuProps, MenuItem } from "./types";
 import { InfiniteGridMenu } from "./infinite-grid-menu";
-import { projectsData, defaultItems } from "./projects-data";
+import { projectsData } from "./projects-data";
 
 const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(
@@ -19,8 +19,8 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
     const canvas = canvasRef.current;
     let sketch: InfiniteGridMenu | null = null;
     
-    // Use provided items, fallback to projects data, then default items
-    const currentItems = items.length ? items : (projectsData.length ? projectsData : defaultItems);
+    // Use provided items, or always use our 27 projects data
+    const currentItems = items.length ? items : projectsData;
 
     const handleActiveItem = (index: number) => {
       if (!currentItems.length) return;
