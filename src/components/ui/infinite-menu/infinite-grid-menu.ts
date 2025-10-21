@@ -235,9 +235,32 @@ export class InfiniteGridMenu {
         (item) =>
           new Promise<HTMLImageElement>((resolve, reject) => {
             const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.onload = () => resolve(img);
-            img.onerror = () => reject(new Error(`Failed to load image: ${item.image}`));
+            // Only set crossOrigin for external URLs, not local images
+            if (item.image.startsWith('http')) {
+              img.crossOrigin = "anonymous";
+            }
+            
+            // Mobile-specific optimizations
+            img.loading = "eager";
+            img.decoding = "async";
+            
+            // Add timeout for mobile devices
+            const timeout = setTimeout(() => {
+              console.error(`Image load timeout: ${item.image}`);
+              reject(new Error(`Image load timeout: ${item.image}`));
+            }, 10000); // 10 second timeout
+            
+            img.onload = () => {
+              clearTimeout(timeout);
+              console.log(`Successfully loaded image: ${item.image}`);
+              resolve(img);
+            };
+            img.onerror = (error) => {
+              clearTimeout(timeout);
+              console.error(`Failed to load image: ${item.image}`, error);
+              reject(new Error(`Failed to load image: ${item.image}`));
+            };
+            
             img.src = item.image;
           })
       )
@@ -260,6 +283,10 @@ export class InfiniteGridMenu {
       gl.generateMipmap(gl.TEXTURE_2D);
       
       // Call the images loaded callback
+      this.onImagesLoaded?.();
+    }).catch((error) => {
+      console.error('Failed to load images:', error);
+      // Still call the callback to hide the loading spinner even if images fail
       this.onImagesLoaded?.();
     });
   }

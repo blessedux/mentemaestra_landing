@@ -102,7 +102,7 @@ export default function Home() {
         <div className="flex items-center justify-center space-x-8">
           {/* WhatsApp */}
           <a
-            href="https://wa.me/your-whatsapp-number"
+            href="https://wa.me/+56994621925"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"
@@ -120,7 +120,7 @@ export default function Home() {
 
           {/* Instagram */}
           <a
-            href="https://instagram.com/your-instagram"
+            href="https://www.instagram.com/mentemaestra.space/"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"
@@ -138,7 +138,7 @@ export default function Home() {
 
           {/* Telegram */}
           <a
-            href="https://t.me/your-telegram"
+            href="https://t.me/blessedux"
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"

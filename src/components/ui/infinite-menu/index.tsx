@@ -22,6 +22,10 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
     
     // Use provided items, or always use our 27 projects data
     const currentItems = items.length ? items : projectsData;
+    
+    // Debug: Log items and user agent for mobile debugging
+    console.log('InfiniteMenu: Loading with', currentItems.length, 'items');
+    console.log('User Agent:', navigator.userAgent);
 
     const handleActiveItem = (index: number) => {
       if (!currentItems.length) return;
@@ -42,7 +46,10 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
         handleActiveItem,
         setIsMoving,
         (sk) => sk.run(),
-        () => setIsLoading(false)
+        () => {
+          console.log('Images loaded successfully');
+          setIsLoading(false);
+        }
       );
     }
 
@@ -149,9 +156,19 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
           }
         `}
           >
-            <p className="select-none relative text-[#060606] top-[2px] text-[26px]">
-              ↗
-            </p>
+            <svg 
+              className="select-none relative text-[#060606] w-6 h-6" 
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={3} 
+                d="M7 17L17 7M17 7H7M17 7V17" 
+              />
+            </svg>
           </div>
         </>
       )}

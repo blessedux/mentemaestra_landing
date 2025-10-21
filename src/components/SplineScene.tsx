@@ -43,7 +43,13 @@ export default function SplineScene({ onLoaded, onError }: SplineSceneProps) {
   }
 
   return (
-    <div className="relative w-full h-full overflow-hidden">
+    <div 
+      className="relative w-full h-full overflow-hidden border-2 border-red-500"
+      style={{ touchAction: 'none' }}
+      onTouchStart={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.stopPropagation()}
+      onTouchEnd={(e) => e.stopPropagation()}
+    >
       {/* Spline iframe - Different scaling for mobile and desktop */}
       <iframe
         ref={iframeRef}
@@ -76,9 +82,16 @@ export default function SplineScene({ onLoaded, onError }: SplineSceneProps) {
       <style jsx>{`
         @media (max-width: 768px) {
           iframe {
+            transform: translate(-50%, -50%) scale(1.2) !important;
+            width: 120% !important;
+            height: 120% !important;
+          }
+        }
+        @media (max-width: 480px) {
+          iframe {
             transform: translate(-50%, -50%) scale(1.1) !important;
-            width: 110% !important;
-            height: 110% !important;
+            width: 115% !important;
+            height: 115% !important;
           }
         }
       `}</style>
