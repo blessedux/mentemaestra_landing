@@ -5,6 +5,7 @@ import {
   ActiveItemCallback, 
   MovementChangeCallback, 
   InitCallback,
+  ImagesLoadedCallback,
   Camera,
   DiscLocations,
   DiscBuffers,
@@ -76,7 +77,8 @@ export class InfiniteGridMenu {
     private items: MenuItem[],
     private onActiveItemChange: ActiveItemCallback,
     private onMovementChange: MovementChangeCallback,
-    onInit?: InitCallback
+    onInit?: InitCallback,
+    private onImagesLoaded?: ImagesLoadedCallback
   ) {
     this.init(onInit);
   }
@@ -256,6 +258,9 @@ export class InfiniteGridMenu {
         canvas
       );
       gl.generateMipmap(gl.TEXTURE_2D);
+      
+      // Call the images loaded callback
+      this.onImagesLoaded?.();
     });
   }
 

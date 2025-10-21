@@ -1,61 +1,47 @@
-# Mente Maestra Landing
+# Mente Maestra
 
-A minimalist Next.js landing page featuring a full-screen Spline 3D scene and projects showcase.
+**Innovación y excelencia en cada proyecto**
 
-## Features
+Mente Maestra es una agencia de diseño web que combina la creatividad cinematográfica con la innovación tecnológica para crear experiencias digitales únicas y memorables.
 
-- **Full-screen Spline Integration**: Immersive 3D experience using Spline design
-- **Minimalist Design**: Clean, modern interface with no top navigation
-- **Preloader**: Elegant loading screen with progress indicator
-- **Projects Page**: Dedicated page for showcasing projects
-- **Responsive Design**: Optimized for all screen sizes
-- **TypeScript**: Full type safety throughout the application
+## Nuestra Propuesta de Valor
+
+### 🎬 Enfoque Cinematográfico
+
+Cada proyecto es tratado como una obra de arte visual, donde la narrativa y la estética se fusionan para crear experiencias inmersivas que conectan emocionalmente con el usuario.
+
+### ⚡ Innovación Tecnológica
+
+Utilizamos las últimas tecnologías web para crear sitios rápidos, responsivos y optimizados, garantizando una experiencia fluida en todos los dispositivos.
+
+### 🎯 Diseño Centrado en el Usuario
+
+Cada elemento está cuidadosamente diseñado para guiar al usuario a través de una experiencia intuitiva y memorable, maximizando la conversión y el engagement.
+
+### 🚀 Experiencias Inmersivas
+
+Integramos elementos 3D interactivos y animaciones fluidas para crear experiencias web que van más allá de lo convencional.
 
 ## Tech Stack
 
-- Next.js 15 with App Router
-- TypeScript
-- Tailwind CSS
-- Spline 3D integration
+- **Next.js 15** con App Router para rendimiento óptimo
+- **TypeScript** para código robusto y mantenible
+- **Tailwind CSS** para diseño consistente y responsivo
+- **Spline 3D** para experiencias inmersivas
+- **WebGL** para gráficos de alto rendimiento
 
-## Getting Started
+## Nuestro Proceso
 
-1. Install dependencies:
+1. **Descubrimiento**: Entendemos tu visión y objetivos
+2. **Conceptualización**: Desarrollamos una narrativa visual única
+3. **Prototipado**: Creamos experiencias interactivas
+4. **Desarrollo**: Implementamos con las mejores prácticas
+5. **Optimización**: Perfeccionamos cada detalle
 
-```bash
-npm install
-```
+## Proyectos Destacados
 
-2. Run the development server:
+Nuestro portafolio incluye proyectos para startups innovadoras, empresas establecidas y marcas que buscan diferenciarse en el mercado digital. Cada proyecto refleja nuestro compromiso con la excelencia y la innovación.
 
-```bash
-npm run dev
-```
+---
 
-3. Open [http://localhost:3000](http://localhost:3000) in your browser
-
-## Project Structure
-
-```
-src/
-├── app/
-│   ├── page.tsx          # Landing page with Spline scene
-│   ├── projects/
-│   │   └── page.tsx      # Projects showcase page
-│   ├── layout.tsx        # Root layout with preloader
-│   └── globals.css       # Global styles
-└── components/
-    ├── Preloader.tsx     # Loading screen component
-    └── ClientWrapper.tsx # Client-side wrapper for preloader
-```
-
-## Customization
-
-- **Spline Scene**: Update the iframe src in `src/app/page.tsx`
-- **Preloader**: Modify `src/components/Preloader.tsx` for different loading styles
-- **Projects**: Add your projects in `src/app/projects/page.tsx`
-- **Styling**: Update `src/app/globals.css` for global style changes
-
-## Deployment
-
-The project is ready for deployment on Vercel, Netlify, or any other Next.js-compatible platform.
+_Construido con ❤️ por [blessedux](https://blessedux.com)_

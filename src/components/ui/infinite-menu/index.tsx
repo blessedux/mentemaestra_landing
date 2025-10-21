@@ -14,6 +14,7 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
   ) as MutableRefObject<HTMLCanvasElement | null>;
   const [activeItem, setActiveItem] = useState<MenuItem | null>(null);
   const [isMoving, setIsMoving] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -40,7 +41,8 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
         currentItems,
         handleActiveItem,
         setIsMoving,
-        (sk) => sk.run()
+        (sk) => sk.run(),
+        () => setIsLoading(false)
       );
     }
 
@@ -74,6 +76,13 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
         ref={canvasRef}
         className="cursor-grab w-full h-full overflow-hidden relative outline-none active:cursor-grabbing"
       />
+
+      {/* Loading Spinner */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+        </div>
+      )}
 
       {activeItem && (
         <>

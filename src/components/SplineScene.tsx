@@ -12,19 +12,15 @@ export default function SplineScene({ onLoaded, onError }: SplineSceneProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
-    console.log("🚀 SplineScene component mounted");
-    
     // No loading overlay needed - iframe loads during preloader
     onLoaded?.();
   }, [onLoaded]);
 
   const handleLoad = () => {
-    console.log("🎉 Iframe load event fired");
     onLoaded?.();
   };
 
   const handleError = () => {
-    console.error("❌ Iframe error event fired");
     setHasError(true);
     onError?.();
   };

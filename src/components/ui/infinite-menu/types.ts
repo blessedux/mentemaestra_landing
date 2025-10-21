@@ -12,6 +12,7 @@ export type ActiveItemCallback = (index: number) => void;
 export type MovementChangeCallback = (isMoving: boolean) => void;
 export type InitCallback = (instance: InfiniteGridMenuInterface) => void;
 export type UpdateCallback = (deltaTime: number) => void;
+export type ImagesLoadedCallback = () => void;
 
 export interface Camera {
   matrix: mat4;
