@@ -78,7 +78,7 @@ export const projectsData: MenuItem[] = [
   },
   {
     image: "/imgs/project_images/domi_thumbnail.webp",
-    link: "domi-frontend.vercel.app/",
+    link: "https://domi-frontend.vercel.app/",
     title: "Domi Smart Architecture",
     description: "Home automation and smart living platform with IoT device integration",
   },
@@ -138,7 +138,7 @@ export const projectsData: MenuItem[] = [
   },
   {
     image: "/imgs/project_images/sozucapital_thumbnail.webp",
-    link: "https://sozucapital.com",
+    link: "https://sozu.capital",
     title: "Sozu Capital",
     description: "Investment management platform with portfolio optimization and risk analysis",
   },
