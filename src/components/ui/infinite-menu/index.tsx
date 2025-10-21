@@ -26,6 +26,8 @@ const InfiniteMenuComponent: FC<InfiniteMenuProps> = ({ items = [] }) => {
     // Debug: Log items and user agent for mobile debugging
     console.log('InfiniteMenu: Loading with', currentItems.length, 'items');
     console.log('User Agent:', navigator.userAgent);
+    console.log('Canvas element:', canvas);
+    console.log('Canvas dimensions:', canvas ? `${canvas.width}x${canvas.height}` : 'No canvas');
 
     const handleActiveItem = (index: number) => {
       if (!currentItems.length) return;

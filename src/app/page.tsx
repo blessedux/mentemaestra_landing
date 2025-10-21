@@ -93,7 +93,7 @@ export default function Home() {
 
       {/* Social icons - Mobile only */}
       <div 
-        className="absolute bottom-[8%] left-1/2 transform -translate-x-1/2 z-10 md:hidden"
+        className="absolute bottom-[8%] left-1/2 transform -translate-x-1/2 z-10 md:hidden mb-4"
         style={{
           opacity: 1 - overlayOpacity,
           transition: 'opacity 0.1s ease-out'

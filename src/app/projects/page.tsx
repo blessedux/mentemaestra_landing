@@ -56,7 +56,7 @@ export default function Projects() {
             <div className="max-w-4xl mx-auto">
               {/* Infinite Menu Component */}
               <div className="flex w-full justify-center items-center">
-                <div className="w-full max-w-4xl relative" style={{ height: "600px" }}>
+                <div className="w-full max-w-4xl relative" style={{ height: "600px", minHeight: "600px" }}>
                   <Component items={items} />
                 </div>
               </div>

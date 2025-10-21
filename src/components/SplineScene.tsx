@@ -44,7 +44,7 @@ export default function SplineScene({ onLoaded, onError }: SplineSceneProps) {
 
   return (
     <div 
-      className="relative w-full h-full overflow-hidden border-2 border-red-500"
+      className="relative w-full h-full overflow-hidden"
       style={{ touchAction: 'none' }}
       onTouchStart={(e) => e.stopPropagation()}
       onTouchMove={(e) => e.stopPropagation()}

@@ -230,6 +230,9 @@ export class InfiniteGridMenu {
     canvas.width = this.atlasSize * cellSize;
     canvas.height = this.atlasSize * cellSize;
 
+    console.log(`Initializing texture with ${itemCount} items, atlas size: ${this.atlasSize}x${this.atlasSize}, canvas: ${canvas.width}x${canvas.height}`);
+    console.log('Items to load:', this.items.map(item => item.image));
+
     Promise.all(
       this.items.map(
         (item) =>
@@ -265,12 +268,15 @@ export class InfiniteGridMenu {
           })
       )
     ).then((images) => {
+      console.log(`Successfully loaded ${images.length} images`);
       images.forEach((img, i) => {
         const x = (i % this.atlasSize) * cellSize;
         const y = Math.floor(i / this.atlasSize) * cellSize;
+        console.log(`Drawing image ${i} at position (${x}, ${y}) with size ${cellSize}x${cellSize}`);
         ctx.drawImage(img, x, y, cellSize, cellSize);
       });
 
+      console.log('Uploading texture to GPU...');
       gl.bindTexture(gl.TEXTURE_2D, this.tex);
       gl.texImage2D(
         gl.TEXTURE_2D,
@@ -281,6 +287,7 @@ export class InfiniteGridMenu {
         canvas
       );
       gl.generateMipmap(gl.TEXTURE_2D);
+      console.log('Texture uploaded successfully');
       
       // Call the images loaded callback
       this.onImagesLoaded?.();
@@ -404,6 +411,11 @@ export class InfiniteGridMenu {
 
     gl.clearColor(0, 0, 0, 0);
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // Debug: Log render calls occasionally
+    if (this._frames % 60 === 0) {
+      console.log(`Render frame ${this._frames}, texture bound: ${!!this.tex}`);
+    }
 
     gl.uniformMatrix4fv(
       this.discLocations.uWorldMatrix,
