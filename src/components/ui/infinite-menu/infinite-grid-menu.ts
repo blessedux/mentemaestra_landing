@@ -370,8 +370,8 @@ export class InfiniteGridMenu {
     const itemCount = Math.max(1, this.items.length);
     this.atlasSize = Math.ceil(Math.sqrt(itemCount));
     
-    // Use very small cell size for iOS to avoid memory issues
-    const cellSize = 128;
+    // Use optimized cell size for iOS - 256px for better quality
+    const cellSize = 256;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d")!;
     canvas.width = this.atlasSize * cellSize;
