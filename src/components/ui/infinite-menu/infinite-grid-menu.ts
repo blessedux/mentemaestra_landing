@@ -31,6 +31,7 @@ export class InfiniteGridMenu {
   private discGeo!: DiscGeometry;
   private worldMatrix = mat4.create();
   private tex: WebGLTexture | null = null;
+  private individualTextures: WebGLTexture[] = [];
   private control!: ArcballControl;
 
   private discLocations!: DiscLocations;
@@ -221,11 +222,18 @@ export class InfiniteGridMenu {
     
     console.log('Device info:', { isMobile, isIOS, userAgent: navigator.userAgent });
     
-    // Use different texture filtering for mobile devices
-    const minFilter = isIOS ? gl.NEAREST : gl.LINEAR;
-    const magFilter = isIOS ? gl.NEAREST : gl.LINEAR;
+    // For iOS, try a different texture loading approach
+    if (isIOS) {
+      console.log('iOS detected - using iOS-specific texture loading');
+      this.initIOSTexture();
+      return;
+    }
     
-    console.log('Using texture filters:', { minFilter, magFilter, isIOS });
+    // Use different texture filtering for mobile devices
+    const minFilter = isMobile ? gl.NEAREST : gl.LINEAR;
+    const magFilter = isMobile ? gl.NEAREST : gl.LINEAR;
+    
+    console.log('Using texture filters:', { minFilter, magFilter, isMobile });
     
     this.tex = createAndSetupTexture(
       gl,
@@ -342,6 +350,104 @@ export class InfiniteGridMenu {
       // Still call the callback to hide the loading spinner even if images fail
       this.onImagesLoaded?.();
     });
+  }
+
+  private initIOSTexture(): void {
+    if (!this.gl) return;
+    const gl = this.gl;
+    
+    console.log('Initializing iOS-specific texture...');
+    
+    // Create texture with iOS-optimized settings
+    this.tex = createAndSetupTexture(
+      gl,
+      gl.NEAREST,
+      gl.NEAREST,
+      gl.CLAMP_TO_EDGE,
+      gl.CLAMP_TO_EDGE
+    );
+
+    const itemCount = Math.max(1, this.items.length);
+    this.atlasSize = Math.ceil(Math.sqrt(itemCount));
+    
+    // Use very small cell size for iOS to avoid memory issues
+    const cellSize = 128;
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d")!;
+    canvas.width = this.atlasSize * cellSize;
+    canvas.height = this.atlasSize * cellSize;
+    
+    console.log(`iOS Canvas size: ${canvas.width}x${canvas.height}, cell size: ${cellSize}`);
+
+    // Load images one by one for iOS to avoid overwhelming the GPU
+    let loadedCount = 0;
+    const totalImages = this.items.length;
+    
+    const loadNextImage = (index: number) => {
+      if (index >= totalImages) {
+        console.log('All images loaded for iOS, uploading texture...');
+        this.uploadIOSTexture(canvas);
+        return;
+      }
+      
+      const item = this.items[index];
+      const img = new Image();
+      
+      img.onload = () => {
+        const x = (index % this.atlasSize) * cellSize;
+        const y = Math.floor(index / this.atlasSize) * cellSize;
+        ctx.drawImage(img, x, y, cellSize, cellSize);
+        loadedCount++;
+        
+        console.log(`iOS: Loaded image ${index + 1}/${totalImages}: ${item.image}`);
+        
+        // Load next image after a small delay to avoid overwhelming iOS
+        setTimeout(() => loadNextImage(index + 1), 50);
+      };
+      
+      img.onerror = (error) => {
+        console.error(`iOS: Failed to load image ${item.image}:`, error);
+        loadedCount++;
+        setTimeout(() => loadNextImage(index + 1), 50);
+      };
+      
+      img.src = item.image;
+    };
+    
+    loadNextImage(0);
+  }
+  
+  private uploadIOSTexture(canvas: HTMLCanvasElement): void {
+    if (!this.gl || !this.tex) return;
+    const gl = this.gl;
+    
+    console.log('Uploading texture to iOS GPU...');
+    gl.bindTexture(gl.TEXTURE_2D, this.tex);
+    
+    try {
+      gl.texImage2D(
+        gl.TEXTURE_2D,
+        0,
+        gl.RGBA,
+        gl.RGBA,
+        gl.UNSIGNED_BYTE,
+        canvas
+      );
+      
+      // Don't generate mipmaps on iOS
+      console.log('iOS texture uploaded successfully (no mipmaps)');
+      
+      // Check for errors
+      const error = gl.getError();
+      if (error !== gl.NO_ERROR) {
+        console.error('iOS WebGL error after texture upload:', error);
+      }
+      
+      this.onImagesLoaded?.();
+    } catch (error) {
+      console.error('iOS texture upload failed:', error);
+      this.onImagesLoaded?.();
+    }
   }
 
   private initDiscInstances(count: number): void {

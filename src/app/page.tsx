@@ -70,7 +70,7 @@ export default function Home() {
       
        {/* Bottom centered CTA button with margin and proper interaction */}
        <div 
-         className="absolute bottom-[20%] left-1/2 transform -translate-x-1/2 z-10"
+         className="absolute bottom-[30%] left-1/2 transform -translate-x-1/2 z-10"
          style={{
            opacity: 1 - overlayOpacity,
            transition: 'opacity 0.1s ease-out'
@@ -93,7 +93,7 @@ export default function Home() {
 
       {/* Social icons - Mobile only */}
       <div 
-        className="absolute bottom-[8%] left-1/2 transform -translate-x-1/2 z-10 md:hidden mb-4"
+        className="absolute bottom-[18%] left-1/2 transform -translate-x-1/2 z-10 md:hidden mb-4"
         style={{
           opacity: 1 - overlayOpacity,
           transition: 'opacity 0.1s ease-out'
