@@ -214,21 +214,38 @@ export class InfiniteGridMenu {
   private initTexture(): void {
     if (!this.gl) return;
     const gl = this.gl;
+    
+    // Check if we're on mobile/iOS
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    console.log('Device info:', { isMobile, isIOS, userAgent: navigator.userAgent });
+    
+    // Use different texture filtering for mobile devices
+    const minFilter = isIOS ? gl.NEAREST : gl.LINEAR;
+    const magFilter = isIOS ? gl.NEAREST : gl.LINEAR;
+    
+    console.log('Using texture filters:', { minFilter, magFilter, isIOS });
+    
     this.tex = createAndSetupTexture(
       gl,
-      gl.LINEAR,
-      gl.LINEAR,
+      minFilter,
+      magFilter,
       gl.CLAMP_TO_EDGE,
       gl.CLAMP_TO_EDGE
     );
 
     const itemCount = Math.max(1, this.items.length);
     this.atlasSize = Math.ceil(Math.sqrt(itemCount));
-    const cellSize = 512;
+    
+    // Use smaller cell size on mobile to reduce memory usage
+    const cellSize = isMobile ? 256 : 512;
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d")!;
     canvas.width = this.atlasSize * cellSize;
     canvas.height = this.atlasSize * cellSize;
+    
+    console.log(`Canvas size: ${canvas.width}x${canvas.height}, cell size: ${cellSize}, mobile: ${isMobile}`);
 
     console.log(`Initializing texture with ${itemCount} items, atlas size: ${this.atlasSize}x${this.atlasSize}, canvas: ${canvas.width}x${canvas.height}`);
     console.log('Items to load:', this.items.map(item => item.image));
@@ -278,16 +295,45 @@ export class InfiniteGridMenu {
 
       console.log('Uploading texture to GPU...');
       gl.bindTexture(gl.TEXTURE_2D, this.tex);
-      gl.texImage2D(
-        gl.TEXTURE_2D,
-        0,
-        gl.RGBA,
-        gl.RGBA,
-        gl.UNSIGNED_BYTE,
-        canvas
-      );
-      gl.generateMipmap(gl.TEXTURE_2D);
-      console.log('Texture uploaded successfully');
+      
+      // Mobile/iOS specific texture handling
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+      
+      if (isIOS) {
+        // iOS WebGL texture format compatibility
+        console.log('Using iOS-compatible texture format');
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          canvas
+        );
+        // Don't generate mipmaps on iOS as it can cause issues
+        console.log('Skipping mipmap generation on iOS');
+      } else {
+        // Standard texture upload
+        gl.texImage2D(
+          gl.TEXTURE_2D,
+          0,
+          gl.RGBA,
+          gl.RGBA,
+          gl.UNSIGNED_BYTE,
+          canvas
+        );
+        gl.generateMipmap(gl.TEXTURE_2D);
+        console.log('Mipmaps generated');
+      }
+      
+      // Check for WebGL errors
+      const error = gl.getError();
+      if (error !== gl.NO_ERROR) {
+        console.error('WebGL error after texture upload:', error);
+      } else {
+        console.log('Texture uploaded successfully');
+      }
       
       // Call the images loaded callback
       this.onImagesLoaded?.();
@@ -415,6 +461,12 @@ export class InfiniteGridMenu {
     // Debug: Log render calls occasionally
     if (this._frames % 60 === 0) {
       console.log(`Render frame ${this._frames}, texture bound: ${!!this.tex}`);
+      
+      // Check for WebGL errors during render
+      const error = gl.getError();
+      if (error !== gl.NO_ERROR) {
+        console.error('WebGL error during render:', error);
+      }
     }
 
     gl.uniformMatrix4fv(
