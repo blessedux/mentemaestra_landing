@@ -101,11 +101,22 @@ export default function Projects() {
                   
                   {/* Swipe Up Video - Center Right on Desktop, Top Third on Mobile */}
                   <div 
-                    className="absolute right-4 top-1/3 md:top-1/2 transform -translate-y-1/2 z-20 pointer-events-none"
+                    className="absolute right-4 top-1/3 md:top-1/2 transform -translate-y-1/2 z-20 pointer-events-none video-container"
+                    style={{
+                      background: 'transparent',
+                      borderRadius: '8px',
+                      overflow: 'hidden'
+                    }}
                   >
                     <video
                       ref={videoRef}
-                      className="w-32 h-40 md:w-40 md:h-48 filter invert"
+                      className="w-32 h-40 md:w-40 md:h-48"
+                      style={{
+                        filter: 'invert(1)',
+                        mixBlendMode: 'difference',
+                        background: 'transparent',
+                        borderRadius: '8px'
+                      }}
                       muted
                       playsInline
                       preload="auto"

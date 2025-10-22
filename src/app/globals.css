@@ -86,3 +86,27 @@ html {
     opacity: 0;
   }
 }
+
+/* iOS Safari video transparency fixes */
+video {
+  background: transparent !important;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+/* Ensure video container has proper transparency on iOS */
+.video-container {
+  background: transparent !important;
+  -webkit-background-clip: padding-box;
+  background-clip: padding-box;
+}
+
+/* iOS-specific video styling */
+@supports (-webkit-touch-callout: none) {
+  video {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
