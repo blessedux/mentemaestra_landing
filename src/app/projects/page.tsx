@@ -101,7 +101,7 @@ export default function Projects() {
                   
                   {/* Swipe Up Video - Center Right on Desktop, Top Third on Mobile */}
                   <div 
-                    className="absolute right-4 top-1/3 md:top-1/2 transform -translate-y-1/2 z-20 pointer-events-none video-container"
+                    className="absolute right-4 top-1/3 md:top-1/2 transform -translate-y-1/2 z-5 pointer-events-none video-container"
                     style={{
                       background: 'transparent',
                       borderRadius: '8px',

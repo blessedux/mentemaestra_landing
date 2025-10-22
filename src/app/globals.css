@@ -115,6 +115,8 @@ video {
 .swipe-video {
   background: transparent !important;
   border-radius: 8px;
+  position: relative;
+  z-index: 5;
 }
 
 /* Apply invert filter only on desktop (md and up) */
