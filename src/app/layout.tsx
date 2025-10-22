@@ -20,8 +20,8 @@ const merigo = Merriweather({
 });
 
 export const metadata: Metadata = {
-  title: "Mente Maestra | Estudio de Diseño Web3 de Élite",
-  description: "El estudio de diseño web más avanzado y exclusivo de Latinoamérica. Especialistas en Web3, blockchain y experiencias digitales de vanguardia. Transformamos ideas revolucionarias en realidades digitales extraordinarias.",
+  title: "Mente Maestra | Estudio de Diseño Web inmersivo",
+  description: "Estudio de diseño especializado en Web3 y blockchain. Creamos experiencias digitales innovadoras que conectan con tu audiencia y potencian tu proyecto. Soluciones personalizadas para el futuro del diseño web.",
   keywords: [
     "diseño web3",
     "estudio de diseño premium",
@@ -49,16 +49,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_ES",
-    url: "https://mentemaestra.com",
+    url: "https://mentemaestra.space",
     siteName: "Mente Maestra",
-    title: "Mente Maestra | El Estudio de Diseño Web3 Más Avanzado de Latinoamérica",
-    description: "Especialistas en Web3, blockchain y experiencias digitales de vanguardia. Transformamos ideas revolucionarias en realidades digitales extraordinarias. El futuro del diseño web está aquí.",
+    title: "Mente Maestra | Estudio de Diseño Web inmersivo",
+    description: "Especialistas en Web3 y blockchain. Creamos experiencias digitales que conectan con tu audiencia y potencian tu proyecto. Soluciones personalizadas para el futuro del diseño web.",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Mente Maestra - Estudio de Diseño Web3 de Élite",
+        alt: "Mente Maestra - Estudio de Diseño Web inmersivo",
         type: "image/jpeg",
       },
     ],
@@ -67,12 +67,12 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     site: "@mentemaestra",
     creator: "@mentemaestra",
-    title: "Mente Maestra | El Estudio de Diseño Web3 Más Avanzado de Latinoamérica",
-    description: "Especialistas en Web3, blockchain y experiencias digitales de vanguardia. Transformamos ideas revolucionarias en realidades digitales extraordinarias.",
+    title: "Mente Maestra | Estudio de Diseño Web inmersivo",
+    description: "Especialistas en Web3 y blockchain. Creamos experiencias digitales que conectan con tu audiencia y potencian tu proyecto.",
     images: ["/og-image.jpg"],
   },
   alternates: {
-    canonical: "https://mentemaestra.com",
+    canonical: "https://mentemaestra.space",
   },
   category: "technology",
   classification: "Web3 Design Studio",

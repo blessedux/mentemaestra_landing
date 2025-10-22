@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Proyectos Web3 | Mente Maestra - Portfolio de Diseño de Élite",
-  description: "Descubre nuestro portfolio exclusivo de proyectos Web3 y blockchain. Experiencias digitales revolucionarias que redefinen el futuro del diseño web. Cada proyecto es una obra maestra de innovación tecnológica.",
+  title: "Proyectos Web3 | Mente Maestra - Portfolio de Diseño",
+  description: "Explora nuestro portfolio de experiencias digitales que conectan con usuarios y potencian marcas. Descubre cómo podemos ayudarte con tu próximo proyecto.",
   keywords: [
     "portfolio web3",
     "proyectos blockchain",
@@ -14,8 +14,8 @@ export const metadata: Metadata = {
     "diseño web3 latinoamérica"
   ],
   openGraph: {
-    title: "Proyectos Web3 | Mente Maestra - Portfolio de Diseño de Élite",
-    description: "Descubre nuestro portfolio exclusivo de proyectos Web3 y blockchain. Experiencias digitales revolucionarias que redefinen el futuro del diseño web. Cada proyecto es una obra maestra de innovación tecnológica.",
+    title: "Proyectos Web3 | Mente Maestra - Portfolio de Diseño",
+    description: "Explora nuestro portfolio de experiencias digitales que conectan con usuarios y potencian marcas. Descubre cómo podemos ayudarte con tu próximo proyecto.",
     images: [
       {
         url: "/og-projects.jpg",
@@ -27,12 +27,12 @@ export const metadata: Metadata = {
     ],
   },
   twitter: {
-    title: "Proyectos Web3 | Mente Maestra - Portfolio de Diseño de Élite",
-    description: "Descubre nuestro portfolio exclusivo de proyectos Web3 y blockchain. Experiencias digitales revolucionarias que redefinen el futuro del diseño web.",
+    title: "Proyectos Web3 | Mente Maestra - Portfolio de Diseño",
+    description: "Explora nuestro portfolio de experiencias digitales que conectan con usuarios y potencian marcas.",
     images: ["/og-projects.jpg"],
   },
   alternates: {
-    canonical: "https://mentemaestra.com/projects",
+    canonical: "https://mentemaestra.space/projects",
   },
 };
 
