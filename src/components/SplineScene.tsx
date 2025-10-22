@@ -67,9 +67,9 @@ export default function SplineScene({ onLoaded, onError }: SplineSceneProps) {
           position: 'absolute',
           top: '50%',
           left: '50%',
-          width: '130%',
-          height: '130%',
-          transform: 'translate(-50%, -50%) scale(1.3)',
+          width: '156%',
+          height: '156%',
+          transform: 'translate(-50%, -50%) scale(1.56)',
           transformOrigin: 'center center'
         }}
         loading="eager"
