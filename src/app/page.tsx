@@ -59,6 +59,21 @@ export default function Home() {
         onError={handleSplineError}
       />
 
+      {/* Mente Maestra Logo - Center Top on Mobile, Top Left on Desktop */}
+      <div 
+        className="absolute top-[10%] md:top-8 left-1/2 md:left-8 transform -translate-x-1/2 md:translate-x-0 z-20"
+        style={{
+          opacity: 1 - overlayOpacity,
+          transition: 'opacity 0.1s ease-out'
+        }}
+      >
+        <img
+          src="/MM_logo_NB-01.svg"
+          alt="Mente Maestra"
+          className="h-12 md:h-16 w-auto"
+        />
+      </div>
+
       {/* Black overlay */}
       <div 
         className="absolute inset-0 bg-black pointer-events-none"
@@ -70,7 +85,7 @@ export default function Home() {
       
        {/* Bottom centered CTA button with margin and proper interaction */}
        <div 
-         className="absolute bottom-[30%] left-1/2 transform -translate-x-1/2 z-10"
+         className="absolute bottom-[20%] md:bottom-[15%] left-1/2 transform -translate-x-1/2 z-10"
          style={{
            opacity: 1 - overlayOpacity,
            transition: 'opacity 0.1s ease-out'
@@ -93,7 +108,7 @@ export default function Home() {
 
       {/* Social icons - Mobile only */}
       <div 
-        className="absolute bottom-[18%] left-1/2 transform -translate-x-1/2 z-10 md:hidden mb-4"
+        className="absolute bottom-[8%] left-1/2 transform -translate-x-1/2 z-10 md:hidden mb-8"
         style={{
           opacity: 1 - overlayOpacity,
           transition: 'opacity 0.1s ease-out'

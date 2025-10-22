@@ -280,7 +280,7 @@ export class InfiniteGridMenu {
             
             img.onload = () => {
               clearTimeout(timeout);
-              console.log(`Successfully loaded image: ${item.image}`);
+              console.log(`Successfully loaded image: ${item.image} (${img.width}x${img.height})`);
               resolve(img);
             };
             img.onerror = (error) => {
@@ -399,7 +399,7 @@ export class InfiniteGridMenu {
         ctx.drawImage(img, x, y, cellSize, cellSize);
         loadedCount++;
         
-        console.log(`iOS: Loaded image ${index + 1}/${totalImages}: ${item.image}`);
+        console.log(`iOS: Loaded image ${index + 1}/${totalImages}: ${item.image} (${img.width}x${img.height})`);
         
         // Load next image after a small delay to avoid overwhelming iOS
         setTimeout(() => loadNextImage(index + 1), 50);

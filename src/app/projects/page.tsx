@@ -3,10 +3,12 @@
 import Link from "next/link";
 import { Component } from "@/components/ui/infinite-menu";
 import { MenuItem } from "@/components/ui/infinite-menu/types";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function Projects() {
   const [isVisible, setIsVisible] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const loopCountRef = useRef(0);
 
   useEffect(() => {
     // Start with content hidden, then fade in after a short delay
@@ -15,6 +17,44 @@ export default function Projects() {
     }, 50); // Reduced delay for faster loading
 
     return () => clearTimeout(timer);
+  }, []);
+
+  // Handle video playback with 3 loops then fade out
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const handleVideoEnd = () => {
+      loopCountRef.current++;
+      if (loopCountRef.current < 3) {
+        // Play again for the next loop
+        video.currentTime = 0;
+        video.play();
+      } else {
+        // After 3 loops, fade out using CSS animation (no React state updates)
+        const videoContainer = video.parentElement;
+        if (videoContainer) {
+          // Use CSS animation for fade out - no React re-renders
+          videoContainer.style.animation = 'fadeOut 1s ease-out forwards';
+          
+          // Remove element after animation completes
+          setTimeout(() => {
+            if (videoContainer.parentElement) {
+              videoContainer.remove();
+            }
+          }, 1000);
+        }
+      }
+    };
+
+    video.addEventListener('ended', handleVideoEnd);
+    
+    // Start playing the video
+    video.play().catch(console.error);
+
+    return () => {
+      video.removeEventListener('ended', handleVideoEnd);
+    };
   }, []);
 
   // Projects are now automatically loaded from the infinite-menu module
@@ -58,6 +98,21 @@ export default function Projects() {
               <div className="flex w-full justify-center items-center">
                 <div className="w-full max-w-4xl relative" style={{ height: "600px", minHeight: "600px" }}>
                   <Component items={items} />
+                  
+                  {/* Swipe Up Video - Center Right on Desktop, Top Third on Mobile */}
+                  <div 
+                    className="absolute right-4 top-1/3 md:top-1/2 transform -translate-y-1/2 z-20 pointer-events-none"
+                  >
+                    <video
+                      ref={videoRef}
+                      className="w-32 h-40 md:w-40 md:h-48 filter invert"
+                      muted
+                      playsInline
+                      preload="auto"
+                    >
+                      <source src="/swipe_up.webm" type="video/webm" />
+                    </video>
+                  </div>
                 </div>
               </div>
             </div>

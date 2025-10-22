@@ -9,8 +9,10 @@ const getImagePath = (baseName: string): string => {
   const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
   
   if (isMobile || isIOS) {
-    // Use mobile-optimized images (256x256px)
-    return `/imgs/project_images/mobile/${baseName}`;
+    // For now, use desktop images until mobile images are created
+    // TODO: Switch to mobile images once they're created
+    console.log(`Mobile device detected, using desktop image: ${baseName}`);
+    return `/imgs/project_images/${baseName}`;
   } else {
     // Use desktop images (512x512px)
     return `/imgs/project_images/${baseName}`;

@@ -40,7 +40,7 @@ export default function Preloader() {
       <div className="text-center">
         {/* Logo or brand name */}
         <div className="mb-8">
-          <h1 className="text-4xl font-light text-white tracking-wider">
+          <h1 className="text-4xl font-light text-white tracking-wider" style={{ fontFamily: 'var(--font-merigo)' }}>
             MENTE MAESTRA
           </h1>
         </div>
