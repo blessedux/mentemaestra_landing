@@ -110,13 +110,7 @@ export default function Projects() {
                   >
                     <video
                       ref={videoRef}
-                      className="w-32 h-40 md:w-40 md:h-48"
-                      style={{
-                        filter: 'invert(1)',
-                        mixBlendMode: 'difference',
-                        background: 'transparent',
-                        borderRadius: '8px'
-                      }}
+                      className="w-32 h-40 md:w-40 md:h-48 swipe-video"
                       muted
                       playsInline
                       preload="auto"

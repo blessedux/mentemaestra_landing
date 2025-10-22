@@ -110,3 +110,17 @@ video {
     backface-visibility: hidden;
   }
 }
+
+/* Swipe video styling - invert only on desktop */
+.swipe-video {
+  background: transparent !important;
+  border-radius: 8px;
+}
+
+/* Apply invert filter only on desktop (md and up) */
+@media (min-width: 768px) {
+  .swipe-video {
+    filter: invert(1);
+    mix-blend-mode: difference;
+  }
+}
