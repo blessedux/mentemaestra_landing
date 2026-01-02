@@ -13,5 +13,8 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // Typography plugin temporarily disabled - using custom CSS instead
+    // require('@tailwindcss/typography'),
+  ],
 }

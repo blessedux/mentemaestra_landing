@@ -126,3 +126,79 @@ video {
     mix-blend-mode: difference;
   }
 }
+
+/* Custom prose styles for blog content (replaces @tailwindcss/typography) */
+.prose {
+  color: inherit;
+  max-width: 65ch;
+}
+
+.prose p {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  margin-top: 2em;
+  margin-bottom: 1em;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.prose h1 {
+  font-size: 2.25em;
+  margin-top: 0;
+}
+
+.prose h2 {
+  font-size: 1.5em;
+}
+
+.prose h3 {
+  font-size: 1.25em;
+}
+
+.prose ul, .prose ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(255, 255, 255, 0.3);
+}
+
+.prose a:hover {
+  text-decoration-color: rgba(255, 255, 255, 0.6);
+}
+
+.prose strong {
+  font-weight: 600;
+}
+
+.prose code {
+  font-size: 0.875em;
+  padding: 0.125em 0.25em;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 0.25rem;
+}
+
+.prose blockquote {
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  padding-left: 1em;
+  border-left: 0.25em solid rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+.prose img {
+  margin-top: 2em;
+  margin-bottom: 2em;
+}
