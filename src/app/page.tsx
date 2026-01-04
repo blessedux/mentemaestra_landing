@@ -52,7 +52,9 @@ export default function Home() {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden bg-black">
+    <div className="w-full bg-black">
+      {/* Hero Section */}
+      <div className="relative w-full h-screen overflow-hidden bg-black">
       {/* Spline Scene */}
       <SplineScene 
         onLoaded={handleSplineLoaded}
@@ -170,6 +172,11 @@ export default function Home() {
           </a>
         </div>
       </div>
+
+      {/* Second Section - Empty for now */}
+      <section className="relative w-full min-h-screen bg-black">
+        {/* This section is empty and ready for content */}
+      </section>
     </div>
   );
 }
