@@ -47,44 +47,75 @@ export default async function BlogPage() {
   );
 
   return (
-    <>
-      {posts && (
-        <Container>
-          {/* Featured Posts */}
-          {featuredPosts.length > 0 && (
-            <div className="grid gap-10 md:grid-cols-2 lg:gap-10 mb-16">
-              {featuredPosts.map(post => (
-                <PostList
-                  key={post._id}
-                  posts={[post]}
-                  aspect="landscape"
-                  preloadImage={true}
-                />
-              ))}
-            </div>
-          )}
+    <main className="min-h-screen bg-black text-white">
+      <Container>
+        {/* Blog Header */}
+        <div className="py-16 md:py-24">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white">
+            Blog
+          </h1>
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl">
+            Explorando el futuro del diseño Web3 y blockchain
+          </p>
+        </div>
 
-          {/* Regular Posts Grid */}
-          <div className="grid gap-10 md:grid-cols-2 lg:gap-10 xl:grid-cols-3 mb-16">
-            {regularPosts.slice(0, 12).map(post => (
-              <PostList key={post._id} posts={[post]} aspect="square" />
-            ))}
+        {posts && posts.length > 0 ? (
+          <>
+            {/* Featured Posts */}
+            {featuredPosts.length > 0 && (
+              <section className="mb-20">
+                <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-white">
+                  Destacados
+                </h2>
+                <div className="grid gap-10 md:grid-cols-2 lg:gap-10">
+                  {featuredPosts.map(post => (
+                    <PostList
+                      key={post._id}
+                      posts={[post]}
+                      aspect="landscape"
+                      preloadImage={true}
+                    />
+                  ))}
+                </div>
+              </section>
+            )}
+
+            {/* Regular Posts Grid */}
+            <section className="mb-20">
+              {featuredPosts.length > 0 && (
+                <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-white">
+                  Todos los Posts
+                </h2>
+              )}
+              <div className="grid gap-10 md:grid-cols-2 lg:gap-10 xl:grid-cols-3">
+                {regularPosts.slice(0, 12).map(post => (
+                  <PostList key={post._id} posts={[post]} aspect="square" />
+                ))}
+              </div>
+            </section>
+
+            {/* View More Link */}
+            {regularPosts.length > 12 && (
+              <div className="flex justify-center pb-20">
+                <a
+                  href="/blog/archive"
+                  className="relative inline-flex items-center gap-1 rounded-md border border-gray-600 bg-transparent px-6 py-3 text-sm font-medium text-white hover:bg-gray-900 hover:border-gray-500 transition-colors"
+                >
+                  <span>Ver todos los Posts</span>
+                </a>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="py-20 text-center">
+            <p className="text-xl text-gray-400 mb-4">No hay posts aún</p>
+            <p className="text-gray-500">
+              Crea tu primer post en Sanity Studio para comenzar
+            </p>
           </div>
-
-          {/* View More Link */}
-          {regularPosts.length > 12 && (
-            <div className="flex justify-center">
-              <a
-                href="/blog/archive"
-                className="relative inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-2 pl-4 text-sm font-medium text-gray-500 hover:bg-gray-50 focus:z-20 disabled:pointer-events-none disabled:opacity-40 dark:border-gray-500 dark:bg-gray-800 dark:text-gray-300"
-              >
-                <span>View all Posts</span>
-              </a>
-            </div>
-          )}
-        </Container>
-      )}
-    </>
+        )}
+      </Container>
+    </main>
   );
 }
 

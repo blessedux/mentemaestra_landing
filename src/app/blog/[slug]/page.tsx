@@ -63,18 +63,18 @@ export default async function PostPage({
     : null;
 
   return (
-    <>
+    <main className="min-h-screen bg-black text-white">
       <Container className="!pt-0">
-        <div className="mx-auto max-w-screen-md ">
-          <div className="flex justify-center">
+        <div className="mx-auto max-w-screen-md py-16">
+          <div className="flex justify-center mb-6">
             <Category categories={post.categories} />
           </div>
 
-          <h1 className="text-brand-primary mb-3 mt-2 text-center text-3xl font-semibold tracking-tight dark:text-white lg:text-4xl lg:leading-snug">
+          <h1 className="mb-6 mt-2 text-center text-3xl font-semibold tracking-tight text-white lg:text-4xl lg:leading-snug">
             {post.title}
           </h1>
 
-          <div className="mt-3 flex justify-center space-x-3 text-gray-500 ">
+          <div className="mt-6 flex justify-center space-x-3 text-gray-400">
             <div className="flex items-center gap-3">
               <div className="relative h-10 w-10 flex-shrink-0">
                 {authorImageUrl && (
@@ -90,14 +90,13 @@ export default async function PostPage({
                 )}
               </div>
               <div>
-                <p className="text-gray-800 dark:text-gray-400">
-                  <Link href={`/author/${post.author.slug.current}`}>
+                <p className="text-gray-300">
+                  <Link href={`/author/${post.author.slug.current}`} className="hover:text-white transition-colors">
                     {post.author.name}
                   </Link>
                 </p>
-                <div className="flex items-center space-x-2 text-sm">
+                <div className="flex items-center space-x-2 text-sm text-gray-500">
                   <time
-                    className="text-gray-500 dark:text-gray-400"
                     dateTime={post?.publishedAt || post._createdAt}>
                     {format(
                       parseISO(post?.publishedAt || post._createdAt),
@@ -112,7 +111,7 @@ export default async function PostPage({
         </div>
       </Container>
 
-      <div className="relative z-0 mx-auto aspect-video max-w-screen-lg overflow-hidden lg:rounded-lg">
+      <div className="relative z-0 mx-auto aspect-video max-w-screen-lg overflow-hidden lg:rounded-lg mb-12">
         {imageUrl && (
           <Image
             src={imageUrl}
@@ -126,21 +125,21 @@ export default async function PostPage({
       </div>
 
       <Container>
-        <article className="mx-auto max-w-screen-md ">
-          <div className="prose mx-auto my-3 dark:prose-invert prose-a:text-blue-600">
+        <article className="mx-auto max-w-screen-md pb-20">
+          <div className="prose prose-invert mx-auto my-8 prose-headings:text-white prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:text-blue-400 prose-pre:bg-gray-900">
             {post.body && <PortableText value={post.body} />}
           </div>
-          <div className="mb-7 mt-7 flex justify-center">
+          <div className="mb-12 mt-12 flex justify-center">
             <Link
               href="/blog"
-              className="bg-brand-secondary/20 rounded-full px-5 py-2 text-sm text-blue-600 dark:text-blue-500 ">
-              ← View all posts
+              className="rounded-full border border-gray-600 bg-transparent px-6 py-3 text-sm text-white hover:bg-gray-900 hover:border-gray-500 transition-colors">
+              ← Ver todos los posts
             </Link>
           </div>
           {post.author && <AuthorCard author={post.author} />}
         </article>
       </Container>
-    </>
+    </main>
   );
 }
 

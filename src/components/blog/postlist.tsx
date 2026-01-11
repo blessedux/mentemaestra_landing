@@ -90,9 +90,9 @@ export default function PostList({
                       ? "text-3xl"
                       : "text-lg",
                     fontWeight === "normal"
-                      ? "line-clamp-2 font-medium  tracking-normal text-black"
-                      : "font-semibold leading-snug tracking-tight",
-                    "mt-2    dark:text-white"
+                      ? "line-clamp-2 font-medium  tracking-normal text-white"
+                      : "font-semibold leading-snug tracking-tight text-white",
+                    "mt-2"
                   )}
                 >
                   <Link
@@ -128,7 +128,7 @@ export default function PostList({
                   )}
                 </div>
 
-                <div className="mt-3 flex items-center space-x-3 text-gray-500 dark:text-gray-400">
+                <div className="mt-3 flex items-center space-x-3 text-gray-400">
                   <Link href={`/author/${post?.author?.slug?.current}`}>
                     <div className="flex items-center gap-3">
                       <div className="relative h-5 w-5 flex-shrink-0">
@@ -147,7 +147,7 @@ export default function PostList({
                       </span>
                     </div>
                   </Link>
-                  <span className="text-xs text-gray-300 dark:text-gray-600">
+                  <span className="text-xs text-gray-600">
                     &bull;
                   </span>
                   <time
