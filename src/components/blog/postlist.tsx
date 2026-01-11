@@ -27,8 +27,8 @@ export default function PostList({
   return (
     <>
       {posts.map((post) => {
-        const imageProps = post?.image ? urlFor(post.image) : null;
-        const AuthorimageProps = post?.author?.image ? urlFor(post.author.image) : null;
+        const imageUrl = post?.image ? urlFor(post.image).url() : null;
+        const authorImageUrl = post?.author?.image ? urlFor(post.author.image).url() : null;
 
         return (
           <div
@@ -56,14 +56,14 @@ export default function PostList({
                   post.slug.current
                 }`}
               >
-                {imageProps ? (
+                {imageUrl ? (
                   <Image
-                    src={(imageProps as any).src}
-                    {...(post.image.blurDataURL && {
+                    src={imageUrl}
+                    {...(post.image?.blurDataURL && {
                       placeholder: "blur",
                       blurDataURL: post.image.blurDataURL
                     })}
-                    alt={post.image.alt || "Thumbnail"}
+                    alt={post.image?.alt || "Thumbnail"}
                     priority={preloadImage ? true : false}
                     className="object-cover transition-all"
                     fill
@@ -132,10 +132,10 @@ export default function PostList({
                   <Link href={`/author/${post?.author?.slug?.current}`}>
                     <div className="flex items-center gap-3">
                       <div className="relative h-5 w-5 flex-shrink-0">
-                        {post?.author?.image && AuthorimageProps && (
+                        {authorImageUrl && (
                           <Image
-                            src={(AuthorimageProps as any).src}
-                            alt={post?.author?.name}
+                            src={authorImageUrl}
+                            alt={post?.author?.name || "Author"}
                             className="rounded-full object-cover"
                             fill
                             sizes="20px"

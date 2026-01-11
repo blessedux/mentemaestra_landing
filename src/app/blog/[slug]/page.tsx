@@ -54,12 +54,12 @@ export default async function PostPage({
     notFound();
   }
 
-  const imageProps = post?.image
-    ? urlFor(post.image)
+  const imageUrl = post?.image
+    ? urlFor(post.image).url()
     : null;
 
-  const AuthorimageProps = post?.author?.image
-    ? urlFor(post.author.image)
+  const authorImageUrl = post?.author?.image
+    ? urlFor(post.author.image).url()
     : null;
 
   return (
@@ -77,11 +77,11 @@ export default async function PostPage({
           <div className="mt-3 flex justify-center space-x-3 text-gray-500 ">
             <div className="flex items-center gap-3">
               <div className="relative h-10 w-10 flex-shrink-0">
-                {AuthorimageProps && (
+                {authorImageUrl && (
                   <Link href={`/author/${post.author.slug.current}`}>
                     <Image
-                      src={(AuthorimageProps as any).src}
-                      alt={post?.author?.name}
+                      src={authorImageUrl}
+                      alt={post?.author?.name || "Author"}
                       className="rounded-full object-cover"
                       fill
                       sizes="40px"
@@ -113,9 +113,9 @@ export default async function PostPage({
       </Container>
 
       <div className="relative z-0 mx-auto aspect-video max-w-screen-lg overflow-hidden lg:rounded-lg">
-        {imageProps && (
+        {imageUrl && (
           <Image
-            src={(imageProps as any).src}
+            src={imageUrl}
             alt={post.image?.alt || "Thumbnail"}
             loading="eager"
             fill
