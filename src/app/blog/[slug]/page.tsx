@@ -5,9 +5,12 @@ import { notFound } from "next/navigation";
 import { PortableText } from "@/lib/sanity/plugins/portabletext";
 import { urlFor } from "@/sanity/lib/image";
 import { parseISO, format } from "date-fns";
-import AuthorCard from "@/components/blog/authorCard";
 import Category from "@/components/blog/category";
+import Newsletter from "@/components/blog/newsletter";
+import RelatedPosts from "@/components/blog/relatedPosts";
+import BlogFooter from "@/components/blog/footer";
 import { client } from "@/sanity/lib/client";
+import { type SanityDocument } from "next-sanity";
 
 const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]{
   _id,
@@ -38,6 +41,20 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]{
   }
 }`;
 
+const ALL_POSTS_QUERY = `*[
+  _type == "post"
+  && defined(slug.current)
+]|order(publishedAt desc)[0...10]{
+  _id,
+  title,
+  slug,
+  publishedAt,
+  excerpt,
+  image,
+  author->{name, slug, image},
+  categories[]->{title, slug, color}
+}`;
+
 const options = { next: { revalidate: 30 } };
 
 export default async function PostPage({
@@ -46,7 +63,10 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const post = await client.fetch(POST_QUERY, { slug }, options);
+  const [post, allPosts] = await Promise.all([
+    client.fetch(POST_QUERY, { slug }, options),
+    client.fetch<SanityDocument[]>(ALL_POSTS_QUERY, {}, options),
+  ]);
 
   const postSlug = post?.slug;
 
@@ -64,18 +84,19 @@ export default async function PostPage({
 
   return (
     <main className="min-h-screen bg-black text-white">
+      {/* Article Header - Above Banner Image */}
       <Container className="!pt-0">
-        <div className="mx-auto max-w-screen-md py-16">
-          <div className="flex justify-center mb-6">
+        <div className="mx-auto max-w-screen-md py-12 md:py-16">
+          <div className="flex justify-center mb-4">
             <Category categories={post.categories} />
           </div>
 
-          <h1 className="mb-6 mt-2 text-center text-3xl font-semibold tracking-tight text-white lg:text-4xl lg:leading-snug">
+          <h1 className="mb-6 text-center text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
             {post.title}
           </h1>
 
           {post.author && (
-            <div className="mt-6 flex justify-center space-x-3 text-gray-400">
+            <div className="mt-6 flex flex-col items-center space-y-2 text-gray-400">
               <div className="flex items-center gap-3">
                 <div className="relative h-10 w-10 flex-shrink-0">
                   {authorImageUrl && (
@@ -100,7 +121,7 @@ export default async function PostPage({
                     )
                   )}
                 </div>
-                <div>
+                <div className="text-center md:text-left">
                   <p className="text-gray-300">
                     {post.author.slug?.current ? (
                       <Link href={`/author/${post.author.slug.current}`} className="hover:text-white transition-colors">
@@ -110,51 +131,54 @@ export default async function PostPage({
                       <span>{post.author.name}</span>
                     )}
                   </p>
-                  <div className="flex items-center space-x-2 text-sm text-gray-500">
-                    <time
-                      dateTime={post?.publishedAt || post._createdAt}>
-                      {format(
-                        parseISO(post?.publishedAt || post._createdAt),
-                        "MMMM dd, yyyy"
-                      )}
-                    </time>
-                    <span>· {post.readingTime || "5"} min read</span>
-                  </div>
                 </div>
+              </div>
+              <div className="flex items-center space-x-2 text-sm text-gray-500">
+                <time
+                  dateTime={post?.publishedAt || post._createdAt}>
+                  {format(
+                    parseISO(post?.publishedAt || post._createdAt),
+                    "dd MMM yyyy"
+                  )}
+                </time>
+                <span>· {post.readingTime || "5"} min read</span>
               </div>
             </div>
           )}
         </div>
       </Container>
 
-      <div className="relative z-0 mx-auto aspect-video max-w-screen-lg overflow-hidden lg:rounded-lg mb-12">
+      {/* Top Banner Image - Full Width */}
+      <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12 md:mb-16">
         {imageUrl && (
           <Image
             src={imageUrl}
-            alt={post.image?.alt || "Thumbnail"}
-            loading="eager"
+            alt={post.image?.alt || post.title}
             fill
+            priority
             sizes="100vw"
             className="object-cover"
           />
         )}
       </div>
 
+      {/* Article Content */}
       <Container>
-        <article className="mx-auto max-w-screen-md pb-20">
-          <div className="prose prose-invert mx-auto my-8 prose-headings:text-white prose-p:text-gray-300 prose-a:text-blue-400 prose-strong:text-white prose-code:text-blue-400 prose-pre:bg-gray-900">
+        <article className="mx-auto max-w-screen-md">
+          <div className="prose prose-invert prose-lg mx-auto prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-strong:text-white prose-code:text-purple-400 prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-blockquote:border-purple-500 prose-blockquote:text-gray-300">
             {post.body && <PortableText value={post.body} />}
           </div>
-          <div className="mb-12 mt-12 flex justify-center">
-            <Link
-              href="/blog"
-              className="rounded-full border border-gray-600 bg-transparent px-6 py-3 text-sm text-white hover:bg-gray-900 hover:border-gray-500 transition-colors">
-              ← Ver todos los posts
-            </Link>
-          </div>
-          {post.author && <AuthorCard author={post.author} />}
         </article>
       </Container>
+
+      {/* Newsletter CTA */}
+      <Newsletter />
+
+      {/* Related Posts */}
+      <RelatedPosts posts={allPosts} currentPostId={post._id} />
+
+      {/* Footer */}
+      <BlogFooter />
     </main>
   );
 }
