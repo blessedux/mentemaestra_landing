@@ -74,40 +74,56 @@ export default async function PostPage({
             {post.title}
           </h1>
 
-          <div className="mt-6 flex justify-center space-x-3 text-gray-400">
-            <div className="flex items-center gap-3">
-              <div className="relative h-10 w-10 flex-shrink-0">
-                {authorImageUrl && (
-                  <Link href={`/author/${post.author.slug.current}`}>
-                    <Image
-                      src={authorImageUrl}
-                      alt={post?.author?.name || "Author"}
-                      className="rounded-full object-cover"
-                      fill
-                      sizes="40px"
-                    />
-                  </Link>
-                )}
-              </div>
-              <div>
-                <p className="text-gray-300">
-                  <Link href={`/author/${post.author.slug.current}`} className="hover:text-white transition-colors">
-                    {post.author.name}
-                  </Link>
-                </p>
-                <div className="flex items-center space-x-2 text-sm text-gray-500">
-                  <time
-                    dateTime={post?.publishedAt || post._createdAt}>
-                    {format(
-                      parseISO(post?.publishedAt || post._createdAt),
-                      "MMMM dd, yyyy"
+          {post.author && (
+            <div className="mt-6 flex justify-center space-x-3 text-gray-400">
+              <div className="flex items-center gap-3">
+                <div className="relative h-10 w-10 flex-shrink-0">
+                  {authorImageUrl && (
+                    post.author.slug?.current ? (
+                      <Link href={`/author/${post.author.slug.current}`}>
+                        <Image
+                          src={authorImageUrl}
+                          alt={post.author.name || "Author"}
+                          className="rounded-full object-cover"
+                          fill
+                          sizes="40px"
+                        />
+                      </Link>
+                    ) : (
+                      <Image
+                        src={authorImageUrl}
+                        alt={post.author.name || "Author"}
+                        className="rounded-full object-cover"
+                        fill
+                        sizes="40px"
+                      />
+                    )
+                  )}
+                </div>
+                <div>
+                  <p className="text-gray-300">
+                    {post.author.slug?.current ? (
+                      <Link href={`/author/${post.author.slug.current}`} className="hover:text-white transition-colors">
+                        {post.author.name}
+                      </Link>
+                    ) : (
+                      <span>{post.author.name}</span>
                     )}
-                  </time>
-                  <span>· {post.readingTime || "5"} min read</span>
+                  </p>
+                  <div className="flex items-center space-x-2 text-sm text-gray-500">
+                    <time
+                      dateTime={post?.publishedAt || post._createdAt}>
+                      {format(
+                        parseISO(post?.publishedAt || post._createdAt),
+                        "MMMM dd, yyyy"
+                      )}
+                    </time>
+                    <span>· {post.readingTime || "5"} min read</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </Container>
 

@@ -127,38 +127,63 @@ export default function PostList({
                   )}
                 </div>
 
-                <div className="mt-3 flex items-center space-x-3 text-gray-400">
-                  <Link href={`/author/${post?.author?.slug?.current}`}>
-                    <div className="flex items-center gap-3">
-                      <div className="relative h-5 w-5 flex-shrink-0">
-                        {authorImageUrl && (
-                          <Image
-                            src={authorImageUrl}
-                            alt={post?.author?.name || "Author"}
-                            className="rounded-full object-cover"
-                            fill
-                            sizes="20px"
-                          />
-                        )}
+                {post?.author && (
+                  <div className="mt-3 flex items-center space-x-3 text-gray-400">
+                    {post.author.slug?.current ? (
+                      <Link href={`/author/${post.author.slug.current}`}>
+                        <div className="flex items-center gap-3">
+                          <div className="relative h-5 w-5 flex-shrink-0">
+                            {authorImageUrl && (
+                              <Image
+                                src={authorImageUrl}
+                                alt={post.author.name || "Author"}
+                                className="rounded-full object-cover"
+                                fill
+                                sizes="20px"
+                              />
+                            )}
+                          </div>
+                          <span className="truncate text-sm">
+                            {post.author.name}
+                          </span>
+                        </div>
+                      </Link>
+                    ) : (
+                      <div className="flex items-center gap-3">
+                        <div className="relative h-5 w-5 flex-shrink-0">
+                          {authorImageUrl && (
+                            <Image
+                              src={authorImageUrl}
+                              alt={post.author.name || "Author"}
+                              className="rounded-full object-cover"
+                              fill
+                              sizes="20px"
+                            />
+                          )}
+                        </div>
+                        <span className="truncate text-sm">
+                          {post.author.name}
+                        </span>
                       </div>
-                      <span className="truncate text-sm">
-                        {post?.author?.name}
-                      </span>
-                    </div>
-                  </Link>
-                  <span className="text-xs text-gray-600">
-                    &bull;
-                  </span>
-                  <time
-                    className="truncate text-sm"
-                    dateTime={post?.publishedAt || post._createdAt}
-                  >
-                    {format(
-                      parseISO(post?.publishedAt || post._createdAt),
-                      "MMMM dd, yyyy"
                     )}
-                  </time>
-                </div>
+                    {post?.publishedAt && (
+                      <>
+                        <span className="text-xs text-gray-600">
+                          &bull;
+                        </span>
+                        <time
+                          className="truncate text-sm"
+                          dateTime={post.publishedAt || post._createdAt}
+                        >
+                          {format(
+                            parseISO(post.publishedAt || post._createdAt),
+                            "MMMM dd, yyyy"
+                          )}
+                        </time>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
