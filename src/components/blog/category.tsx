@@ -41,10 +41,10 @@ export default function Category({
     badge: `rounded-full ${
       category?.color
         ? `hover:opacity-80`
-        : 'bg-blue-100 text-blue-800 hover:bg-blue-200 dark:bg-blue-900 dark:text-blue-200 dark:hover:bg-blue-800'
+        : 'bg-blue-900 text-blue-200 hover:bg-blue-800'
     }`,
-    card: 'bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md p-4 border border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-600',
-    link: 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
+    card: 'bg-gray-800 rounded-lg shadow-sm hover:shadow-md p-4 border border-gray-700 hover:border-blue-600',
+    link: 'text-gray-400 hover:text-blue-400'
   }
 
   // If categories array is provided, render all categories
