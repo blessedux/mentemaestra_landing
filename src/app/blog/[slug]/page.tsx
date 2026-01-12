@@ -64,7 +64,7 @@ export default async function PostPage({
   return (
     <main className="min-h-screen bg-black text-white relative">
       {/* Article Header - Above Banner Image */}
-      <Container className="!pt-0 px-6 sm:px-8 md:px-8">
+      <Container className="!pt-0 px-6 sm:px-8">
         <div className="mx-auto max-w-screen-md py-12 md:py-16">
           <div className="flex justify-center mb-4">
             <Category categories={post.categories} />
@@ -142,7 +142,7 @@ export default async function PostPage({
       </div>
 
       {/* Article Content */}
-      <Container className="px-6 sm:px-8 md:px-8">
+      <Container className="px-6 sm:px-8">
         <article className="mx-auto max-w-screen-md pb-20">
           <div className="prose prose-invert prose-lg mx-auto prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-strong:text-white prose-code:text-purple-400 prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-blockquote:border-purple-500 prose-blockquote:text-gray-300">
             {post.body && <PortableText value={post.body} />}
