@@ -16,7 +16,21 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]{
   excerpt,
   featured,
   image,
-  body,
+  body[]{
+    ...,
+    _type == "image" => {
+      ...,
+      asset->{
+        _id,
+        url,
+        metadata {
+          dimensions
+        }
+      },
+      alt,
+      caption
+    }
+  },
   readingTime,
   author->{
     _id,
