@@ -27,11 +27,11 @@ export default async function BlogPage() {
     <main className="min-h-screen bg-black text-white relative">
       <Container>
         {/* Blog Header */}
-        <div className="py-16 md:py-24">
+        <div className="py-16 md:py-24 text-center">
           <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 text-white">
             Blog
           </h1>
-          <p className="text-lg md:text-xl text-gray-400 max-w-2xl">
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto">
             Explorando el futuro del diseño Web3 y blockchain
           </p>
         </div>
