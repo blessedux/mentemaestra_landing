@@ -1,12 +1,12 @@
 import { type SanityDocument } from "next-sanity";
 import { client } from "@/sanity/lib/client";
-import PostList from "@/components/blog/postlist";
 import Container from "@/components/container";
+import BentoGrid from "@/components/blog/bentoGrid";
 
 const POSTS_QUERY = `*[
   _type == "post"
   && defined(slug.current)
-]|order(publishedAt desc)[0...14]{
+]|order(publishedAt desc)[0...9]{
   _id,
   title,
   slug,
@@ -18,33 +18,10 @@ const POSTS_QUERY = `*[
   categories[]->{title, slug, color}
 }`;
 
-const FEATURED_POSTS_QUERY = `*[
-  _type == "post"
-  && defined(slug.current)
-  && featured == true
-]|order(publishedAt desc)[0...2]{
-  _id,
-  title,
-  slug,
-  publishedAt,
-  excerpt,
-  image,
-  author->{name, slug, image},
-  categories[]->{title, slug, color}
-}`;
-
 const options = { next: { revalidate: 30 } };
 
 export default async function BlogPage() {
-  const [posts, featuredPosts] = await Promise.all([
-    client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options),
-    client.fetch<SanityDocument[]>(FEATURED_POSTS_QUERY, {}, options),
-  ]);
-
-  // Filter out featured posts from regular posts to avoid duplication
-  const regularPosts = posts.filter(post =>
-    !featuredPosts.some(featured => featured._id === post._id)
-  );
+  const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -61,41 +38,13 @@ export default async function BlogPage() {
 
         {posts && posts.length > 0 ? (
           <>
-            {/* Featured Posts */}
-            {featuredPosts.length > 0 && (
-              <section className="mb-20">
-                <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-white">
-                  Destacados
-                </h2>
-                <div className="grid gap-10 md:grid-cols-2 lg:gap-10">
-                  {featuredPosts.map(post => (
-                    <PostList
-                      key={post._id}
-                      posts={[post]}
-                      aspect="landscape"
-                      preloadImage={true}
-                    />
-                  ))}
-                </div>
-              </section>
-            )}
-
-            {/* Regular Posts Grid */}
+            {/* Bento Grid Layout */}
             <section className="mb-20">
-              {featuredPosts.length > 0 && (
-                <h2 className="text-2xl md:text-3xl font-semibold mb-8 text-white">
-                  Todos los Posts
-                </h2>
-              )}
-              <div className="grid gap-10 md:grid-cols-2 lg:gap-10 xl:grid-cols-3">
-                {regularPosts.slice(0, 12).map(post => (
-                  <PostList key={post._id} posts={[post]} aspect="square" />
-                ))}
-              </div>
+              <BentoGrid posts={posts} />
             </section>
 
             {/* View More Link */}
-            {regularPosts.length > 12 && (
+            {posts.length >= 9 && (
               <div className="flex justify-center pb-20">
                 <a
                   href="/blog/archive"
