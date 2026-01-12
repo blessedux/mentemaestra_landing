@@ -6,11 +6,7 @@ import { PortableText } from "@/lib/sanity/plugins/portabletext";
 import { urlFor } from "@/sanity/lib/image";
 import { parseISO, format } from "date-fns";
 import Category from "@/components/blog/category";
-import Newsletter from "@/components/blog/newsletter";
-import RelatedPosts from "@/components/blog/relatedPosts";
-import BlogFooter from "@/components/blog/footer";
 import { client } from "@/sanity/lib/client";
-import { type SanityDocument } from "next-sanity";
 
 const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]{
   _id,
@@ -41,20 +37,6 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]{
   }
 }`;
 
-const ALL_POSTS_QUERY = `*[
-  _type == "post"
-  && defined(slug.current)
-]|order(publishedAt desc)[0...10]{
-  _id,
-  title,
-  slug,
-  publishedAt,
-  excerpt,
-  image,
-  author->{name, slug, image},
-  categories[]->{title, slug, color}
-}`;
-
 const options = { next: { revalidate: 30 } };
 
 export default async function PostPage({
@@ -63,10 +45,7 @@ export default async function PostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const [post, allPosts] = await Promise.all([
-    client.fetch(POST_QUERY, { slug }, options),
-    client.fetch<SanityDocument[]>(ALL_POSTS_QUERY, {}, options),
-  ]);
+  const post = await client.fetch(POST_QUERY, { slug }, options);
 
   const postSlug = post?.slug;
 
@@ -164,21 +143,12 @@ export default async function PostPage({
 
       {/* Article Content */}
       <Container>
-        <article className="mx-auto max-w-screen-md">
+        <article className="mx-auto max-w-screen-md pb-20">
           <div className="prose prose-invert prose-lg mx-auto prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-strong:text-white prose-code:text-purple-400 prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-blockquote:border-purple-500 prose-blockquote:text-gray-300">
             {post.body && <PortableText value={post.body} />}
           </div>
         </article>
       </Container>
-
-      {/* Newsletter CTA */}
-      <Newsletter />
-
-      {/* Related Posts */}
-      <RelatedPosts posts={allPosts} currentPostId={post._id} />
-
-      {/* Footer */}
-      <BlogFooter />
     </main>
   );
 }
