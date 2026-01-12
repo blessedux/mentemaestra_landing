@@ -29,11 +29,11 @@ export default function Home() {
 
   const handleCTAClick = (e: React.MouseEvent) => {
     e.preventDefault();
-
+    
     if (isTransitioning) return;
-
+    
     setIsTransitioning(true);
-
+    
     // Fast fade out everything including the button
     const fadeInterval = setInterval(() => {
       setOverlayOpacity(prev => {
@@ -54,15 +54,15 @@ export default function Home() {
   return (
     <div className="w-full bg-black">
       {/* Hero Section */}
-      <div className="relative w-full h-screen overflow-hidden bg-black">
+    <div className="relative w-full h-screen overflow-hidden bg-black">
       {/* Spline Scene */}
-      <SplineScene
+      <SplineScene 
         onLoaded={handleSplineLoaded}
         onError={handleSplineError}
       />
 
       {/* Mente Maestra Logo - Center Top on Mobile, Top Left on Desktop */}
-      <div
+      <div 
         className="absolute top-[10%] md:top-8 left-1/2 md:left-8 transform -translate-x-1/2 md:translate-x-0 z-20"
         style={{
           opacity: 1 - overlayOpacity,
@@ -77,16 +77,16 @@ export default function Home() {
       </div>
 
       {/* Black overlay */}
-      <div
+      <div 
         className="absolute inset-0 bg-black pointer-events-none"
         style={{
           opacity: overlayOpacity,
           transition: 'opacity 0.1s ease-out'
         }}
       />
-
+      
        {/* Bottom centered CTA button with margin and proper interaction */}
-       <div
+       <div 
          className="absolute bottom-[20%] md:bottom-[15%] left-1/2 transform -translate-x-1/2 z-10"
          style={{
            opacity: 1 - overlayOpacity,
@@ -97,7 +97,7 @@ export default function Home() {
            onClick={handleCTAClick}
            disabled={isTransitioning}
            className="inline-flex items-center justify-center px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white font-medium text-lg hover:bg-white/20 hover:border-white/30 transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
-           style={{
+           style={{ 
              pointerEvents: 'auto',
              zIndex: 1000
            }}
@@ -109,7 +109,7 @@ export default function Home() {
        </div>
 
       {/* Social icons - Mobile only */}
-      <div
+      <div 
         className="absolute bottom-[8%] left-1/2 transform -translate-x-1/2 z-10 md:hidden mb-8"
         style={{
           opacity: 1 - overlayOpacity,
@@ -123,7 +123,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"
-            style={{
+            style={{ 
               pointerEvents: 'auto',
               zIndex: 1000
             }}
@@ -141,7 +141,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"
-            style={{
+            style={{ 
               pointerEvents: 'auto',
               zIndex: 1000
             }}
@@ -159,7 +159,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
             className="text-gray-400 hover:text-white transition-colors duration-300"
-            style={{
+            style={{ 
               pointerEvents: 'auto',
               zIndex: 1000
             }}

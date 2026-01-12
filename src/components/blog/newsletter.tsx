@@ -1,7 +1,17 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Container from "@/components/container";
-import { CtaCard } from "@/components/ui/cta-card";
+
+// Dynamically import CtaCard to avoid SSR issues with framer-motion
+const CtaCard = dynamic(() => import("@/components/ui/cta-card").then(mod => ({ default: mod.CtaCard })), {
+  ssr: false,
+  loading: () => (
+    <div className="relative w-full overflow-hidden rounded-xl border bg-gray-900 h-64 flex items-center justify-center">
+      <div className="text-gray-400">Cargando...</div>
+    </div>
+  ),
+});
 
 export default function Newsletter() {
   const handleSignUp = (email: string) => {

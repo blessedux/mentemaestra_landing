@@ -24,7 +24,7 @@ export default async function BlogPage() {
   const posts = await client.fetch<SanityDocument[]>(POSTS_QUERY, {}, options);
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-black text-white relative">
       <Container>
         {/* Blog Header */}
         <div className="py-16 md:py-24">

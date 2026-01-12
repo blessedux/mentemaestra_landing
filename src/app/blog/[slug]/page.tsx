@@ -83,7 +83,7 @@ export default async function PostPage({
     : null;
 
   return (
-    <main className="min-h-screen bg-black text-white">
+    <main className="min-h-screen bg-black text-white relative">
       {/* Article Header - Above Banner Image */}
       <Container className="!pt-0">
         <div className="mx-auto max-w-screen-md py-12 md:py-16">

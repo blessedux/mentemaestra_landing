@@ -70,16 +70,17 @@ const CtaCard = React.forwardRef<HTMLDivElement, CtaCardProps>(
       <div
         ref={ref}
         className={cn(
-          "relative w-full overflow-hidden rounded-xl border bg-card text-card-foreground shadow",
+          "relative w-full min-h-[300px] md:min-h-[400px] overflow-hidden rounded-xl border border-gray-800 bg-gray-900 text-white shadow-lg",
           className
         )}
         {...props}
       >
         {/* Background Image */}
-        <img
-          src={imageSrc}
-          alt="Background"
-          className="absolute inset-0 h-full w-full object-cover"
+        <div
+          className="absolute inset-0 h-full w-full bg-cover bg-center"
+          style={{
+            backgroundImage: `url(${imageSrc})`,
+          }}
           aria-hidden="true"
         />
         {/* Dark Overlay */}

@@ -131,23 +131,23 @@ export default function PostList({
                   <div className="mt-3 flex items-center space-x-3 text-gray-400">
                     {post.author.slug?.current ? (
                       <Link href={`/author/${post.author.slug.current}`}>
-                        <div className="flex items-center gap-3">
-                          <div className="relative h-5 w-5 flex-shrink-0">
+                    <div className="flex items-center gap-3">
+                      <div className="relative h-5 w-5 flex-shrink-0">
                             {authorImageUrl && (
-                              <Image
+                          <Image
                                 src={authorImageUrl}
                                 alt={post.author.name || "Author"}
-                                className="rounded-full object-cover"
-                                fill
-                                sizes="20px"
-                              />
-                            )}
-                          </div>
-                          <span className="truncate text-sm">
+                            className="rounded-full object-cover"
+                            fill
+                            sizes="20px"
+                          />
+                        )}
+                      </div>
+                      <span className="truncate text-sm">
                             {post.author.name}
-                          </span>
-                        </div>
-                      </Link>
+                      </span>
+                    </div>
+                  </Link>
                     ) : (
                       <div className="flex items-center gap-3">
                         <div className="relative h-5 w-5 flex-shrink-0">
@@ -169,20 +169,20 @@ export default function PostList({
                     {post?.publishedAt && (
                       <>
                         <span className="text-xs text-gray-600">
-                          &bull;
-                        </span>
-                        <time
-                          className="truncate text-sm"
+                    &bull;
+                  </span>
+                  <time
+                    className="truncate text-sm"
                           dateTime={post.publishedAt || post._createdAt}
-                        >
-                          {format(
+                  >
+                    {format(
                             parseISO(post.publishedAt || post._createdAt),
-                            "MMMM dd, yyyy"
-                          )}
-                        </time>
+                      "MMMM dd, yyyy"
+                    )}
+                  </time>
                       </>
                     )}
-                  </div>
+                </div>
                 )}
               </div>
             </div>
