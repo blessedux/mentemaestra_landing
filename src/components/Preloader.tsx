@@ -36,8 +36,26 @@ export default function Preloader() {
   if (!isVisible) return null;
 
   return (
-    <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-      <div className="flex flex-col items-center justify-center w-full h-full">
+    <div 
+      className="fixed bg-black z-[9999]"
+      style={{
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: '100vw',
+        height: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div 
+        className="flex flex-col items-center justify-center"
+        style={{
+          position: 'relative',
+        }}
+      >
         {/* Logo or brand name */}
         <div className="mb-8 w-80">
           <h1 className="text-4xl font-light text-white tracking-wider text-center" style={{ fontFamily: 'var(--font-merigo)' }}>

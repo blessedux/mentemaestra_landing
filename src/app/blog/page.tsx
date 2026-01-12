@@ -6,7 +6,7 @@ import BentoGrid from "@/components/blog/bentoGrid";
 const POSTS_QUERY = `*[
   _type == "post"
   && defined(slug.current)
-]|order(publishedAt desc)[0...9]{
+]|order(publishedAt desc){
   _id,
   title,
   slug,
@@ -38,22 +38,10 @@ export default async function BlogPage() {
 
         {posts && posts.length > 0 ? (
           <>
-            {/* Bento Grid Layout */}
+            {/* Bento Grid Layout - All Posts */}
             <section className="mb-20">
               <BentoGrid posts={posts} />
             </section>
-
-            {/* View More Link */}
-            {posts.length >= 9 && (
-              <div className="flex justify-center pb-20">
-                <a
-                  href="/blog/archive"
-                  className="relative inline-flex items-center gap-1 rounded-md border border-gray-600 bg-transparent px-6 py-3 text-sm font-medium text-white hover:bg-gray-900 hover:border-gray-500 transition-colors"
-                >
-                  <span>Ver todos los Posts</span>
-                </a>
-              </div>
-            )}
           </>
         ) : (
           <div className="py-20 text-center">

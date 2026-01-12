@@ -16,7 +16,7 @@ export default function BentoGrid({ posts }: BentoGridProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
       {posts.map((post) => {
         const imageUrl = post?.image ? urlFor(post.image).url() : null;
         const authorImageUrl = post?.author?.image ? urlFor(post.author.image).url() : null;
@@ -25,17 +25,17 @@ export default function BentoGrid({ posts }: BentoGridProps) {
           <Link
             key={post._id}
             href={`/blog/${post.slug.current}`}
-            className="group relative overflow-hidden rounded-lg bg-gray-900 border border-gray-800 hover:border-gray-700 hover:shadow-xl transition-all duration-300 cursor-pointer"
+            className="group flex flex-col overflow-hidden rounded-xl bg-gray-900 border border-gray-800 hover:border-gray-700 hover:shadow-2xl transition-all duration-300 cursor-pointer"
           >
             {/* Card Image Container */}
-            <div className="relative aspect-[4/3] w-full">
+            <div className="relative aspect-[4/3] w-full overflow-hidden">
               {imageUrl ? (
                 <Image
                   src={imageUrl}
                   alt={post.title}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-300"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  className="object-cover group-hover:scale-110 transition-transform duration-500"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                 />
               ) : (
                 <div className="w-full h-full bg-gray-800 flex items-center justify-center">
@@ -54,34 +54,32 @@ export default function BentoGrid({ posts }: BentoGridProps) {
                   </svg>
                 </div>
               )}
-              {/* Gradient Overlay for Title Readability */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
 
-            {/* Card Content - Positioned at Bottom */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/95 via-black/80 to-transparent">
+            {/* Card Content - Below Image */}
+            <div className="flex flex-col p-5 bg-gray-900">
               {/* Category */}
               {post.categories && post.categories.length > 0 && (
-                <div className="mb-2">
+                <div className="mb-3">
                   <Category categories={post.categories} />
                 </div>
               )}
               
               {/* Title */}
-              <h3 className="text-lg font-semibold text-white mb-2 line-clamp-2 group-hover:text-purple-300 transition-colors">
+              <h3 className="text-xl font-semibold text-white mb-3 line-clamp-2 group-hover:text-purple-300 transition-colors">
                 {post.title}
               </h3>
 
               {/* Author and Date */}
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-2 text-sm text-gray-400 mt-auto">
                 {authorImageUrl && (
-                  <div className="relative h-4 w-4 flex-shrink-0">
+                  <div className="relative h-5 w-5 flex-shrink-0">
                     <Image
                       src={authorImageUrl}
                       alt={post.author?.name || "Author"}
                       className="rounded-full object-cover"
                       fill
-                      sizes="16px"
+                      sizes="20px"
                     />
                   </div>
                 )}
