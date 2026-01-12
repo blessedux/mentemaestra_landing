@@ -37,9 +37,9 @@ export default function Preloader() {
 
   return (
     <div className="fixed inset-0 bg-black z-50 flex items-center justify-center">
-      <div className="text-center">
+      <div className="flex flex-col items-center justify-center w-full h-full">
         {/* Logo or brand name */}
-        <div className="mb-8 w-80 mx-auto">
+        <div className="mb-8 w-80">
           <h1 className="text-4xl font-light text-white tracking-wider text-center" style={{ fontFamily: 'var(--font-merigo)' }}>
             MENTE MAESTRA
           </h1>
@@ -54,7 +54,7 @@ export default function Preloader() {
         </div>
         
         {/* Progress percentage */}
-        <div className="mt-6 text-white/70 text-lg font-light">
+        <div className="mt-6 text-white/70 text-lg font-light text-center">
           {Math.round(progress)}%
         </div>
       </div>
