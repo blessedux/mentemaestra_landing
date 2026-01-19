@@ -11,7 +11,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  /* config options here */
+  // Transpile Sanity packages to fix build issues with Turbopack
+  transpilePackages: [
+    'next-sanity',
+    '@sanity/client',
+    '@sanity/image-url',
+    '@sanity/vision',
+  ],
 };
 
 export default nextConfig;
