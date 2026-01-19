@@ -27,6 +27,34 @@ export const postType = defineType({
       type: 'image',
     }),
     defineField({
+      name: 'excerpt',
+      type: 'text',
+      description: 'Short description or summary of the post',
+    }),
+    defineField({
+      name: 'featured',
+      type: 'boolean',
+      description: 'Mark this post as featured',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'author',
+      type: 'reference',
+      to: [{type: 'author'}],
+      description: 'Author of this post',
+    }),
+    defineField({
+      name: 'categories',
+      type: 'array',
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'category'}],
+        },
+      ],
+      description: 'Categories this post belongs to',
+    }),
+    defineField({
       name: 'body',
       type: 'array',
       of: [

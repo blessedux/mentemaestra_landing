@@ -1,14 +1,15 @@
 import Image from "next/image";
 import Link from "next/link";
-import Container from "@/components/container";
 import { notFound } from "next/navigation";
 import { PortableText } from "@/lib/sanity/plugins/portabletext";
 import { urlFor } from "@/sanity/lib/image";
 import { parseISO, format } from "date-fns";
-import Category from "@/components/blog/category";
+import { defineQuery } from "next-sanity";
 import { client } from "@/sanity/lib/client";
+import { CalendarIcon, ClockIcon, UserIcon } from "lucide-react";
 
-const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]{
+// Individual blog post query - optimized following Sanity best practices
+const POST_QUERY = defineQuery(`*[_type == "post" && slug.current == $slug][0]{
   _id,
   title,
   slug,
@@ -49,7 +50,17 @@ const POST_QUERY = `*[_type == "post" && slug.current == $slug][0]{
     color,
     description
   }
-}`;
+}`);
+
+// Related posts query for future use
+const RELATED_POSTS_QUERY = defineQuery(`*[_type == "post" && slug.current != $currentSlug && count(categories[@._ref in $categoryIds]) > 0][0...3]{
+  _id,
+  title,
+  slug,
+  publishedAt,
+  image,
+  excerpt
+}`);
 
 const options = { next: { revalidate: 30 } };
 
@@ -67,102 +78,104 @@ export default async function PostPage({
     notFound();
   }
 
-  const imageUrl = post?.image
-    ? urlFor(post.image).url()
-    : null;
-
-  const authorImageUrl = post?.author?.image
-    ? urlFor(post.author.image).url()
-    : null;
+  // Format data for display
+  const imageUrl = post?.image ? urlFor(post.image).width(1200).height(600).fit('crop').url() : null;
+  const authorImageUrl = post?.author?.image ? urlFor(post.author.image).width(64).height(64).fit('crop').url() : null;
+  const publishedDate = post?.publishedAt ? parseISO(post.publishedAt) : null;
+  const readingTime = post?.readingTime || Math.max(1, Math.ceil((post?.body?.length || 1000) / 200));
 
   return (
-    <main className="min-h-screen bg-black text-white relative">
-      {/* Article Header - Above Banner Image */}
-      <Container className="!pt-0 px-6 sm:px-8">
-        <div className="mx-auto max-w-screen-md py-12 md:py-16">
-          <div className="flex justify-center mb-4">
-            <Category categories={post.categories} />
-          </div>
-
-          <h1 className="mb-6 text-center text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
-            {post.title}
-          </h1>
-
-          {post.author && (
-            <div className="mt-6 flex flex-col items-center space-y-2 text-gray-400">
-              <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 flex-shrink-0">
-                  {authorImageUrl && (
-                    post.author.slug?.current ? (
-                      <Link href={`/author/${post.author.slug.current}`}>
-                        <Image
-                          src={authorImageUrl}
-                          alt={post.author.name || "Author"}
-                          className="rounded-full object-cover"
-                          fill
-                          sizes="40px"
-                        />
-                      </Link>
-                    ) : (
-                      <Image
-                        src={authorImageUrl}
-                        alt={post.author.name || "Author"}
-                        className="rounded-full object-cover"
-                        fill
-                        sizes="40px"
-                      />
-                    )
-                  )}
-                </div>
-                <div className="text-center md:text-left">
-                  <p className="text-gray-300">
-                    {post.author.slug?.current ? (
-                      <Link href={`/author/${post.author.slug.current}`} className="hover:text-white transition-colors">
-                        {post.author.name}
-                      </Link>
-                    ) : (
-                      <span>{post.author.name}</span>
-                    )}
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-500">
-                <time
-                  dateTime={post?.publishedAt || post._createdAt}>
-                  {format(
-                    parseISO(post?.publishedAt || post._createdAt),
-                    "dd MMM yyyy"
-                  )}
-                </time>
-                <span>· {post.readingTime || "5"} min read</span>
-              </div>
-            </div>
-          )}
-        </div>
-      </Container>
-
-      {/* Top Banner Image - Full Width */}
-      <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] mb-12 md:mb-16">
-        {imageUrl && (
-          <Image
-            src={imageUrl}
-            alt={post.image?.alt || post.title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-        )}
+    <main className="min-h-screen bg-black text-white">
+      {/* Title Only - Top with Proper Margins */}
+      <div className="w-full pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 pt-20 md:pt-32 pb-8">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight max-w-5xl">
+          {post.title}
+        </h1>
       </div>
 
+      {/* Featured Image - Reduced Height with Margin */}
+      {imageUrl && (
+        <div className="w-full max-w-screen-lg pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 mb-12 mt-8">
+          <div className="relative overflow-hidden rounded-xl" style={{ height: '50vh', maxHeight: '600px' }}>
+            <Image
+              src={imageUrl}
+              alt={post.image?.alt || post.title || "Featured image"}
+              fill
+              priority
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 1024px"
+            />
+          </div>
+        </div>
+      )}
+
       {/* Article Content */}
-      <Container className="px-6 sm:px-8">
-        <article className="mx-auto max-w-screen-md pb-20">
-          <div className="prose prose-invert prose-lg mx-auto prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-p:leading-relaxed prose-a:text-purple-400 prose-a:no-underline hover:prose-a:text-purple-300 prose-strong:text-white prose-code:text-purple-400 prose-code:bg-gray-900 prose-code:px-1 prose-code:py-0.5 prose-code:rounded prose-pre:bg-gray-900 prose-blockquote:border-purple-500 prose-blockquote:text-gray-300">
+      <div className="w-full pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 pb-32">
+        <article className="max-w-screen-md">
+          <div className="prose prose-blog prose-lg">
             {post.body && <PortableText value={post.body} />}
           </div>
         </article>
-      </Container>
+      </div>
+
+      {/* Author and Date - Bottom of Page */}
+      <footer className="w-full pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 pt-12 pb-16 mt-auto">
+        <div className="max-w-screen-md">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            {/* Author Information */}
+            <div className="flex items-center gap-4 ml-2 mt-4">
+              {authorImageUrl ? (
+                <Image
+                  src={authorImageUrl}
+                  alt={post.author?.name || "Author"}
+                  width={48}
+                  height={48}
+                  className="rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center">
+                  <UserIcon className="w-6 h-6 text-gray-400" />
+                </div>
+              )}
+              <div>
+                <p className="text-white font-medium">
+                  {post.author?.slug?.current ? (
+                    <Link
+                      href={`/author/${post.author.slug.current}`}
+                      className="hover:text-white transition-colors"
+                    >
+                      {post.author.name}
+                    </Link>
+                  ) : (
+                    <span>{post.author?.name || "Anonymous"}</span>
+                  )}
+                </p>
+                {post.author?.bio && (
+                  <p className="text-gray-400 text-sm mt-1">
+                    {post.author.bio}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Date and Reading Time */}
+            <div className="flex items-center gap-6 text-sm text-gray-400 ml-2 mt-4">
+              {publishedDate && (
+                <div className="flex items-center gap-2">
+                  <CalendarIcon className="w-4 h-4" />
+                  <time dateTime={post.publishedAt}>
+                    {format(publishedDate, "MMMM dd, yyyy")}
+                  </time>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <ClockIcon className="w-4 h-4" />
+                <span>{readingTime} min read</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
     </main>
   );
 }

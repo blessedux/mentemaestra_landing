@@ -33,10 +33,42 @@ const components = {
       );
     },
   },
+  block: {
+    // Headings
+    h1: ({ children }: any) => <h1>{children}</h1>,
+    h2: ({ children }: any) => <h2>{children}</h2>,
+    h3: ({ children }: any) => <h3>{children}</h3>,
+    h4: ({ children }: any) => <h4>{children}</h4>,
+    h5: ({ children }: any) => <h5>{children}</h5>,
+    h6: ({ children }: any) => <h6>{children}</h6>,
+    // Paragraphs (normal blocks)
+    normal: ({ children }: any) => {
+      // Check if children is empty or only contains whitespace
+      if (!children || (typeof children === 'string' && children.trim() === '')) {
+        return <p className="mb-4">&nbsp;</p>;
+      }
+      return <p>{children}</p>;
+    },
+    // Blockquote
+    blockquote: ({ children }: any) => <blockquote>{children}</blockquote>,
+  },
+  list: {
+    // Bullet lists
+    bullet: ({ children }: any) => <ul>{children}</ul>,
+    // Numbered lists
+    number: ({ children }: any) => <ol>{children}</ol>,
+  },
+  listItem: {
+    // List items for bullet lists
+    bullet: ({ children }: any) => <li>{children}</li>,
+    // List items for numbered lists
+    number: ({ children }: any) => <li>{children}</li>,
+  },
   marks: {
+    // Link (already exists, keeping it)
     link: ({ children, value }: any) => {
       const rel = !value.href.startsWith("/")
-        ? "noopener"
+        ? "noopener noreferrer"
         : undefined;
       const target = !value.href.startsWith("/")
         ? "_blank"
@@ -47,6 +79,16 @@ const components = {
         </a>
       );
     },
+    // Bold/Strong
+    strong: ({ children }: any) => <strong>{children}</strong>,
+    // Italic/Emphasis
+    em: ({ children }: any) => <em>{children}</em>,
+    // Code (inline)
+    code: ({ children }: any) => <code>{children}</code>,
+    // Underline
+    underline: ({ children }: any) => <span className="underline">{children}</span>,
+    // Strike-through
+    'strike-through': ({ children }: any) => <span className="line-through">{children}</span>,
   }
 };
 

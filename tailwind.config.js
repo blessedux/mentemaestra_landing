@@ -1,10 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
+  // Content paths - ensure all blog routes and components are included
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/lib/**/*.{js,ts,jsx,tsx,mdx}',
+    // Explicitly include blog routes
+    './src/app/blog/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
@@ -51,11 +55,12 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        '3xl': '1.5rem', // 24px - for rounder blog cards
       },
     },
   },
   plugins: [
-    // Typography plugin temporarily disabled - using custom CSS instead
-    // require('@tailwindcss/typography'),
+    // Typography plugin not compatible with Tailwind v4
+    // Using custom CSS prose styles instead (see globals.css)
   ],
 }
