@@ -48,14 +48,20 @@ export default function FallbackCard({
     const getRandomChar = () => lettersAndSymbols[Math.floor(Math.random() * lettersAndSymbols.length)];
     const getRandomColor = () => glitchColors[Math.floor(Math.random() * glitchColors.length)];
 
-    const hexToRgb = (hex: string) => {
+    interface RGB {
+      r: number;
+      g: number;
+      b: number;
+    }
+
+    const hexToRgb = (hex: string): RGB | null => {
       const shorthand = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
       hex = hex.replace(shorthand, (m, r, g, b) => r + r + g + g + b + b);
       const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
       return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
     };
 
-    const interpolateColor = (s: any, e: any, f: number) =>
+    const interpolateColor = (s: RGB, e: RGB, f: number): string =>
       `rgb(${Math.round(s.r + (e.r - s.r) * f)}, ${Math.round(s.g + (e.g - s.g) * f)}, ${Math.round(
         s.b + (e.b - s.b) * f
       )})`;
@@ -171,6 +177,7 @@ export default function FallbackCard({
         if (animationRef.current) cancelAnimationFrame(animationRef.current);
         window.removeEventListener('resize', handleResize);
       };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [glitchSpeed, smooth]);
 
     return (

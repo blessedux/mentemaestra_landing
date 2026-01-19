@@ -23,7 +23,7 @@ export default async function ArchiveContent({ searchParams }: { searchParams: {
 
   const currentPage = parseInt(searchParams.page || "1");
   const postsPerPage = 12;
-  const totalPosts = posts.length;
+  // const totalPosts = posts.length;
   // const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   const startIndex = (currentPage - 1) * postsPerPage;
