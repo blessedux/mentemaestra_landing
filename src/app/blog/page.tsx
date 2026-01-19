@@ -32,7 +32,7 @@ const POSTS_QUERY = defineQuery(`*[
 }`);
 
 // Count query for pagination (future use)
-const POSTS_COUNT_QUERY = defineQuery(`count(*[_type == "post" && defined(slug.current)])`);
+// const POSTS_COUNT_QUERY = defineQuery(`count(*[_type == "post" && defined(slug.current)])`);
 
 const options = { next: { revalidate: 30 } };
 

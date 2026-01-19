@@ -1,10 +1,24 @@
-import { PortableText as PortableTextComponent } from "@portabletext/react";
+import { PortableText as PortableTextComponent, type PortableTextComponents } from "@portabletext/react";
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
+import type { ReactNode } from "react";
 
-const components = {
+interface PortableTextImageValue {
+  asset?: {
+    _ref?: string;
+    _type?: string;
+  };
+  alt?: string;
+  caption?: string;
+}
+
+interface PortableTextLinkValue {
+  href: string;
+}
+
+const components: PortableTextComponents = {
   types: {
-    image: ({ value }: any) => {
+    image: ({ value }: { value: PortableTextImageValue }) => {
       if (!value?.asset) {
         return null;
       }
@@ -35,14 +49,14 @@ const components = {
   },
   block: {
     // Headings
-    h1: ({ children }: any) => <h1>{children}</h1>,
-    h2: ({ children }: any) => <h2>{children}</h2>,
-    h3: ({ children }: any) => <h3>{children}</h3>,
-    h4: ({ children }: any) => <h4>{children}</h4>,
-    h5: ({ children }: any) => <h5>{children}</h5>,
-    h6: ({ children }: any) => <h6>{children}</h6>,
+    h1: ({ children }: { children?: ReactNode }) => <h1>{children}</h1>,
+    h2: ({ children }: { children?: ReactNode }) => <h2>{children}</h2>,
+    h3: ({ children }: { children?: ReactNode }) => <h3>{children}</h3>,
+    h4: ({ children }: { children?: ReactNode }) => <h4>{children}</h4>,
+    h5: ({ children }: { children?: ReactNode }) => <h5>{children}</h5>,
+    h6: ({ children }: { children?: ReactNode }) => <h6>{children}</h6>,
     // Paragraphs (normal blocks)
-    normal: ({ children }: any) => {
+    normal: ({ children }: { children?: ReactNode }) => {
       // Check if children is empty or only contains whitespace
       if (!children || (typeof children === 'string' && children.trim() === '')) {
         return <p className="mb-4">&nbsp;</p>;
@@ -50,23 +64,23 @@ const components = {
       return <p>{children}</p>;
     },
     // Blockquote
-    blockquote: ({ children }: any) => <blockquote>{children}</blockquote>,
+    blockquote: ({ children }: { children?: ReactNode }) => <blockquote>{children}</blockquote>,
   },
   list: {
     // Bullet lists
-    bullet: ({ children }: any) => <ul>{children}</ul>,
+    bullet: ({ children }: { children?: ReactNode }) => <ul>{children}</ul>,
     // Numbered lists
-    number: ({ children }: any) => <ol>{children}</ol>,
+    number: ({ children }: { children?: ReactNode }) => <ol>{children}</ol>,
   },
   listItem: {
     // List items for bullet lists
-    bullet: ({ children }: any) => <li>{children}</li>,
+    bullet: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
     // List items for numbered lists
-    number: ({ children }: any) => <li>{children}</li>,
+    number: ({ children }: { children?: ReactNode }) => <li>{children}</li>,
   },
   marks: {
     // Link (already exists, keeping it)
-    link: ({ children, value }: any) => {
+    link: ({ children, value }: { children?: ReactNode; value: PortableTextLinkValue }) => {
       const rel = !value.href.startsWith("/")
         ? "noopener noreferrer"
         : undefined;
@@ -80,19 +94,19 @@ const components = {
       );
     },
     // Bold/Strong
-    strong: ({ children }: any) => <strong>{children}</strong>,
+    strong: ({ children }: { children?: ReactNode }) => <strong>{children}</strong>,
     // Italic/Emphasis
-    em: ({ children }: any) => <em>{children}</em>,
+    em: ({ children }: { children?: ReactNode }) => <em>{children}</em>,
     // Code (inline)
-    code: ({ children }: any) => <code>{children}</code>,
+    code: ({ children }: { children?: ReactNode }) => <code>{children}</code>,
     // Underline
-    underline: ({ children }: any) => <span className="underline">{children}</span>,
+    underline: ({ children }: { children?: ReactNode }) => <span className="underline">{children}</span>,
     // Strike-through
-    'strike-through': ({ children }: any) => <span className="line-through">{children}</span>,
+    'strike-through': ({ children }: { children?: ReactNode }) => <span className="line-through">{children}</span>,
   }
 };
 
 // Set up Portable Text serialization
-export const PortableText = (props: any) => (
+export const PortableText = (props: { value: unknown }) => (
   <PortableTextComponent components={components} {...props} />
 );

@@ -4,7 +4,9 @@ import { PortableText } from 'next-sanity'
 import imageUrlBuilder from '@sanity/image-url'
 import { projectId, dataset } from '@/sanity/env'
 
-const urlFor = (source: any) =>
+import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+
+const urlFor = (source: SanityImageSource) =>
   projectId && dataset
     ? imageUrlBuilder({ projectId, dataset }).image(source)
     : null
@@ -14,8 +16,8 @@ interface AuthorCardProps {
     _id: string
     name: string
     slug: { current: string }
-    image?: any
-    bio?: any[]
+    image?: SanityImageSource
+    bio?: unknown[]
     email?: string
     website?: string
     socialLinks?: {

@@ -1,7 +1,6 @@
 import { type SanityDocument } from "next-sanity";
 import { client } from "@/sanity/lib/client";
 import PostList from "@/components/blog/postlist";
-import Container from "@/components/container";
 
 const ALL_POSTS_QUERY = `*[
   _type == "post"
@@ -25,7 +24,7 @@ export default async function ArchiveContent({ searchParams }: { searchParams: {
   const currentPage = parseInt(searchParams.page || "1");
   const postsPerPage = 12;
   const totalPosts = posts.length;
-  const totalPages = Math.ceil(totalPosts / postsPerPage);
+  // const totalPages = Math.ceil(totalPosts / postsPerPage);
 
   const startIndex = (currentPage - 1) * postsPerPage;
   const endIndex = startIndex + postsPerPage;

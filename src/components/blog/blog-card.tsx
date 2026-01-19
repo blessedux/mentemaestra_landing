@@ -5,7 +5,6 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { urlFor } from '@/sanity/lib/image';
 import { type SanityDocument } from 'next-sanity';
-import { UserIcon } from 'lucide-react';
 
 interface BlogCardProps {
   post: SanityDocument;
@@ -21,14 +20,6 @@ export default function BlogCard({ post, className }: BlogCardProps) {
         .fit('crop')
         .auto('format')
         .quality(85)
-        .url() 
-    : null;
-    
-  const authorImageUrl = post?.author?.image 
-    ? urlFor(post.author.image)
-        .width(48)
-        .height(48)
-        .fit('crop')
         .url() 
     : null;
 

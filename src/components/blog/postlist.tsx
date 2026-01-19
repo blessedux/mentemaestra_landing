@@ -5,8 +5,10 @@ import { urlFor } from "@/sanity/lib/image";
 import { parseISO, format } from "date-fns";
 import Category from "@/components/blog/category";
 
+import { type SanityDocument } from "next-sanity";
+
 interface PostListProps {
-  posts: any[];
+  posts: SanityDocument[];
   aspect?: "landscape" | "custom" | "square";
   minimal?: boolean;
   pathPrefix?: string;

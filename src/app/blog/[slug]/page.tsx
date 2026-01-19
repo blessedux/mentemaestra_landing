@@ -53,14 +53,14 @@ const POST_QUERY = defineQuery(`*[_type == "post" && slug.current == $slug][0]{
 }`);
 
 // Related posts query for future use
-const RELATED_POSTS_QUERY = defineQuery(`*[_type == "post" && slug.current != $currentSlug && count(categories[@._ref in $categoryIds]) > 0][0...3]{
-  _id,
-  title,
-  slug,
-  publishedAt,
-  image,
-  excerpt
-}`);
+// const RELATED_POSTS_QUERY = defineQuery(`*[_type == "post" && slug.current != $currentSlug && count(categories[@._ref in $categoryIds]) > 0][0...3]{
+//   _id,
+//   title,
+//   slug,
+//   publishedAt,
+//   image,
+//   excerpt
+// }`);
 
 const options = { next: { revalidate: 30 } };
 
@@ -87,15 +87,15 @@ export default async function PostPage({
   return (
     <main className="min-h-screen bg-black text-white">
       {/* Title Only - Top with Proper Margins */}
-      <div className="w-full pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 pt-20 md:pt-32 pb-8">
-        <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight max-w-5xl">
+      <div className="w-full px-8 sm:px-12 md:px-16 lg:px-20 xl:px-28 pt-20 md:pt-32 pb-8">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white leading-tight max-w-5xl mx-auto">
           {post.title}
         </h1>
       </div>
 
       {/* Featured Image - Reduced Height with Margin */}
       {imageUrl && (
-        <div className="w-full max-w-screen-lg pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 mb-12 mt-8">
+        <div className="w-full max-w-screen-lg px-8 sm:px-12 md:px-16 lg:px-20 xl:px-28 mx-auto mb-12 mt-8">
           <div className="relative overflow-hidden rounded-xl" style={{ height: '50vh', maxHeight: '600px' }}>
             <Image
               src={imageUrl}
@@ -109,9 +109,9 @@ export default async function PostPage({
         </div>
       )}
 
-      {/* Article Content */}
-      <div className="w-full pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 pb-32">
-        <article className="max-w-screen-md">
+      {/* Article Content - centered with equal margin on both sides */}
+      <div className="w-full px-8 sm:px-12 md:px-16 lg:px-20 xl:px-28 pb-32">
+        <article className="max-w-screen-md mx-auto">
           <div className="prose prose-blog prose-lg">
             {post.body && <PortableText value={post.body} />}
           </div>
@@ -119,11 +119,11 @@ export default async function PostPage({
       </div>
 
       {/* Author and Date - Bottom of Page */}
-      <footer className="w-full pl-8 sm:pl-12 md:pl-16 lg:pl-20 xl:pl-24 pt-12 pb-16 mt-auto">
-        <div className="max-w-screen-md">
+      <footer className="w-full px-8 sm:px-12 md:px-16 lg:px-20 xl:px-28 pt-12 pb-16 mt-auto">
+        <div className="max-w-screen-md mx-auto">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
             {/* Author Information */}
-            <div className="flex items-center gap-4 ml-2 mt-4">
+            <div className="flex items-center gap-4 mt-4">
               {authorImageUrl ? (
                 <Image
                   src={authorImageUrl}
@@ -159,7 +159,7 @@ export default async function PostPage({
             </div>
 
             {/* Date and Reading Time */}
-            <div className="flex items-center gap-6 text-sm text-gray-400 ml-2 mt-4">
+            <div className="flex items-center gap-6 text-sm text-gray-400 mt-4">
               {publishedDate && (
                 <div className="flex items-center gap-2">
                   <CalendarIcon className="w-4 h-4" />

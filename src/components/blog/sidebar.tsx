@@ -36,7 +36,7 @@ export default function Sidebar({
             {categories.map((category) => (
               <Category
                 key={category._id}
-                category={category as any}
+                category={category}
                 variant="badge"
                 size="sm"
               />

@@ -305,7 +305,7 @@ export class InfiniteGridMenu {
       gl.bindTexture(gl.TEXTURE_2D, this.tex);
       
       // Mobile/iOS specific texture handling
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
       const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
       
       if (isIOS) {
@@ -380,7 +380,7 @@ export class InfiniteGridMenu {
     console.log(`iOS Canvas size: ${canvas.width}x${canvas.height}, cell size: ${cellSize}`);
 
     // Load images one by one for iOS to avoid overwhelming the GPU
-    let loadedCount = 0;
+    // let loadedCount = 0;
     const totalImages = this.items.length;
     
     const loadNextImage = (index: number) => {
