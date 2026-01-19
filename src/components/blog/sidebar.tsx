@@ -3,8 +3,16 @@ import Link from 'next/link'
 import Category from './category'
 import Search from '../ui/search'
 
+interface CategoryType {
+  _id: string
+  title: string
+  slug: { current: string }
+  description?: string
+  color?: string
+}
+
 interface SidebarProps {
-  categories?: SanityDocument[]
+  categories?: CategoryType[]
   recentPosts?: SanityDocument[]
   featuredPosts?: SanityDocument[]
   className?: string

@@ -5,6 +5,7 @@ import imageUrlBuilder from '@sanity/image-url'
 import { projectId, dataset } from '@/sanity/env'
 
 import { SanityImageSource } from "@sanity/image-url/lib/types/types";
+import { TypedObject } from '@portabletext/types';
 
 const urlFor = (source: SanityImageSource) =>
   projectId && dataset
@@ -17,7 +18,7 @@ interface AuthorCardProps {
     name: string
     slug: { current: string }
     image?: SanityImageSource
-    bio?: unknown[]
+    bio?: TypedObject[]
     email?: string
     website?: string
     socialLinks?: {
@@ -158,7 +159,7 @@ export default function AuthorCard({
 
           {showBio && author.bio && (
             <div className="mt-4 text-gray-600 dark:text-gray-300 prose prose-sm max-w-none">
-              <PortableText value={author.bio} />
+              <PortableText value={author.bio as TypedObject[]} />
             </div>
           )}
         </div>

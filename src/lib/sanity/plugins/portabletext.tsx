@@ -2,6 +2,7 @@ import { PortableText as PortableTextComponent, type PortableTextComponents } fr
 import Image from "next/image";
 import { urlFor } from "@/sanity/lib/image";
 import type { ReactNode } from "react";
+import type { TypedObject } from "@portabletext/types";
 
 interface PortableTextImageValue {
   asset?: {
@@ -80,7 +81,9 @@ const components: PortableTextComponents = {
   },
   marks: {
     // Link (already exists, keeping it)
-    link: ({ children, value }: { children?: ReactNode; value: PortableTextLinkValue }) => {
+    link: ({ children, value }: { children?: ReactNode; value?: PortableTextLinkValue }) => {
+      if (!value?.href) return <>{children}</>;
+
       const rel = !value.href.startsWith("/")
         ? "noopener noreferrer"
         : undefined;
@@ -107,6 +110,6 @@ const components: PortableTextComponents = {
 };
 
 // Set up Portable Text serialization
-export const PortableText = (props: { value: unknown }) => (
+export const PortableText = (props: { value: TypedObject | TypedObject[] }) => (
   <PortableTextComponent components={components} {...props} />
 );

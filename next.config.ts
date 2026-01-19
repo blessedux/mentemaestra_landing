@@ -19,6 +19,8 @@ const nextConfig: NextConfig = {
     '@sanity/vision',
     'sanity',
   ],
+  // Fix workspace root directory warning
+  outputFileTracingRoot: __dirname,
 };
 
 export default nextConfig;

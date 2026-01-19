@@ -380,7 +380,7 @@ export class InfiniteGridMenu {
     console.log(`iOS Canvas size: ${canvas.width}x${canvas.height}, cell size: ${cellSize}`);
 
     // Load images one by one for iOS to avoid overwhelming the GPU
-    // let loadedCount = 0;
+    let loadedCount = 0;
     const totalImages = this.items.length;
     
     const loadNextImage = (index: number) => {
