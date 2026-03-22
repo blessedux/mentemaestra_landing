@@ -4,8 +4,8 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 
 const STYLE_ID = "hero3-animations"
 
-/** Set false when layout debugging is done — outlines every node inside ProcessBento */
-const DEBUG_PROCESS_BENTO_BORDERS = true
+/** Set true to outline every node inside ProcessBento (layout debugging). */
+const DEBUG_PROCESS_BENTO_BORDERS = false
 
 const getRootTheme = (): "dark" | "light" => {
   if (typeof document === "undefined") {
@@ -318,17 +318,17 @@ export function ProcessBento({ insetPadding = false }: ProcessBentoProps = {}) {
 
       <section
         ref={sectionRef}
-        className={`relative flex w-full flex-col gap-16 py-24 transition-opacity duration-700 md:gap-20 ${
+        className={`relative flex w-full flex-col gap-16 py-20 transition-opacity duration-700 md:gap-20 md:py-24 ${
           insetPadding
             ? "px-6 md:px-10 lg:px-16 xl:px-24"
-            : "px-0"
+            : "px-4 sm:px-5 md:px-6 lg:px-8 xl:px-10"
         } ${
           visible
             ? "motion-safe:animate-[hero3-intro_1s_cubic-bezier(.22,.68,0,1)_forwards]"
             : "opacity-0"
         }`}
       >
-        <header className="grid gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)] lg:items-end">
+        <header className="grid gap-8 md:gap-10 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.9fr)] lg:items-end lg:gap-12">
           <div className="space-y-8">
             <div className="flex flex-wrap items-center gap-4">
               <span
@@ -361,7 +361,7 @@ export function ProcessBento({ insetPadding = false }: ProcessBentoProps = {}) {
           </div>
 
           <div
-            className={`relative flex flex-col gap-6 rounded-3xl border p-8 transition ${palette.border} ${palette.card}`}
+            className={`relative flex flex-col gap-6 rounded-3xl border p-6 transition sm:gap-7 sm:p-7 md:p-8 ${palette.border} ${palette.card}`}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="space-y-3">
@@ -390,9 +390,9 @@ export function ProcessBento({ insetPadding = false }: ProcessBentoProps = {}) {
           </div>
         </header>
 
-        <div className="grid gap-10 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.2fr)_minmax(0,0.9fr)] xl:items-stretch">
+        <div className="grid gap-8 md:gap-10 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.2fr)_minmax(0,0.9fr)] xl:items-stretch xl:gap-12">
           <div
-            className={`order-2 flex flex-col gap-6 rounded-3xl border p-8 transition ${palette.border} ${palette.card} xl:order-1`}
+            className={`order-2 flex flex-col gap-6 rounded-3xl border p-6 transition sm:gap-7 sm:p-7 md:p-8 ${palette.border} ${palette.card} xl:order-1`}
           >
             <div className="flex items-center justify-between">
               <h3 className="text-xs uppercase tracking-[0.35em]">Control stack</h3>
@@ -402,7 +402,7 @@ export function ProcessBento({ insetPadding = false }: ProcessBentoProps = {}) {
               Prototype for testing and demos, then development — a responsive,
               custom-coded site optimized for performance. We maintain it live.
             </p>
-            <div className="grid gap-3">
+            <div className="grid gap-4">
               {[
                 "Interactive prototypes for user testing",
                 "Custom-coded, performance-optimized",
@@ -410,7 +410,7 @@ export function ProcessBento({ insetPadding = false }: ProcessBentoProps = {}) {
               ].map((item) => (
                 <div
                   key={item}
-                  className={`relative overflow-hidden rounded-2xl border px-4 py-3 text-xs uppercase tracking-[0.3em] transition duration-500 hover:-translate-y-0.5 hover:shadow-[0_14px_40px_rgba(0,0,0,0.18)] dark:hover:shadow-[0_14px_40px_rgba(0,0,0,0.45)] ${palette.border}`}
+                  className={`relative overflow-hidden rounded-2xl border px-5 py-4 text-xs uppercase tracking-[0.3em] transition duration-500 hover:-translate-y-0.5 hover:shadow-[0_14px_40px_rgba(0,0,0,0.18)] dark:hover:shadow-[0_14px_40px_rgba(0,0,0,0.45)] ${palette.border}`}
                 >
                   <span>{item}</span>
                   <span
@@ -449,7 +449,7 @@ export function ProcessBento({ insetPadding = false }: ProcessBentoProps = {}) {
           </figure>
 
           <aside
-            className={`order-3 flex flex-col gap-6 rounded-3xl border p-8 transition ${palette.border} ${palette.card} xl:order-3`}
+            className={`order-3 flex flex-col gap-6 rounded-3xl border p-6 transition sm:gap-7 sm:p-7 md:p-8 ${palette.border} ${palette.card} xl:order-3`}
           >
             <div className="flex items-center justify-between">
               <h3 className="text-xs uppercase tracking-[0.35em]">Process steps</h3>
@@ -457,13 +457,13 @@ export function ProcessBento({ insetPadding = false }: ProcessBentoProps = {}) {
                 Indexed
               </span>
             </div>
-            <ul className="space-y-4">
+            <ul className="space-y-5">
               {PROCESS_STEPS.map((protocol, index) => (
                 <li
                   key={protocol.name}
                   onMouseMove={setSpotlight}
                   onMouseLeave={clearSpotlight}
-                  className={`group relative overflow-hidden rounded-2xl border px-5 py-4 transition duration-500 hover:-translate-y-0.5 ${palette.border}`}
+                  className={`group relative overflow-hidden rounded-2xl border px-6 py-5 transition duration-500 hover:-translate-y-0.5 ${palette.border}`}
                   style={{ animationDelay: `${index * 0.1}s` }}
                 >
                   <div
