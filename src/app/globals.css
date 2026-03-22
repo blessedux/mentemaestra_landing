@@ -1,14 +1,47 @@
+/* Tailwind CSS v4 - single @import replaces @tailwind base/components/utilities */
+@import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
-/* Tailwind CSS v4 - @tailwind directives work with @tailwindcss/postcss */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
-/* Match mentemaestra_dashboard theme: dark default, oklch variables */
+/* Match mentemaestra_dashboard styles/global.css — :root = light, .dark = dark */
 @custom-variant dark (&:is(.dark *));
 
-:root,
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
 .dark {
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
@@ -29,7 +62,11 @@
   --border: oklch(0.269 0 0);
   --input: oklch(0.269 0 0);
   --ring: oklch(0.439 0 0);
-  --radius: 0.625rem;
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
@@ -40,40 +77,201 @@
   --sidebar-ring: oklch(0.439 0 0);
 }
 
-.light {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+@theme inline {
+  --font-sans: var(--font-geist-sans), "Geist", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "Geist Mono", ui-monospace, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
+/**
+ * Horizontal inset shared by hero copy (h1 block) and logo carousel content.
+ * Below lg matches hero `max-lg:px-6` (1.5rem); lg+ matches hero `padding-left` (9vw).
+ */
+:root {
+  --home-hero-copy-inset-x: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --home-hero-copy-inset-x: 9vw;
+  }
+}
+
+/**
+ * Hero copy block: viewport-based top inset + lg horizontal inset.
+ * Defined in CSS (not only Tailwind arbitrary classes) so it always applies:
+ * the global `* { padding: 0 }` reset wins if a utility like `pt-[50vh]` is never emitted.
+ */
+.hero-copy-offset {
+  box-sizing: border-box;
+  padding-top: calc(50vh - 20px);
+  padding-top: calc(50dvh - 20px);
+}
+
+@media (min-width: 1024px) {
+  .hero-copy-offset {
+    padding-left: var(--home-hero-copy-inset-x);
+    padding-right: 3rem;
+  }
+}
+
+/* Logo carousel inner row — same horizontal inset as h1 on both sides */
+.logo-carousel-content {
+  box-sizing: border-box;
+  padding-left: max(var(--home-hero-copy-inset-x), env(safe-area-inset-left, 0px));
+  padding-right: max(var(--home-hero-copy-inset-x), env(safe-area-inset-right, 0px));
+}
+
+/* Hero CTAs: exact 40px below subtitle (plain CSS so it always applies) */
+.hero-cta-offset {
+  margin-top: 40px;
+}
+
+/* Logos marquee: 20px below hero — margin (not padding) so flex layout can’t swallow it; avoids missing Tailwind arbitrary */
+.logo-carousel-section {
+  margin-top: 20px;
+}
+
+/* Spacing between label column and marquee uses flex `gap` on the row (avoid margin-left here — it overflowed past 100% width and clipped on the right). */
+.logo-marquee-container {
+  /* Horizontal inset comes from `.logo-carousel-content`; keep clip edge flush for blur masks */
+  padding-left: 0;
+}
+
+/* Soft blur vignette at marquee edges (logos dissolve instead of hard-clipping) */
+.logo-marquee-container::before,
+.logo-marquee-container::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 2;
+  width: min(4.5rem, 14vw);
+  pointer-events: none;
+}
+
+.logo-marquee-container::before {
+  left: 0;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(to right, black 0%, transparent 100%);
+  mask-image: linear-gradient(to right, black 0%, transparent 100%);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.2), transparent);
+}
+
+.logo-marquee-container::after {
+  right: 0;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  -webkit-mask-image: linear-gradient(to left, black 0%, transparent 100%);
+  mask-image: linear-gradient(to left, black 0%, transparent 100%);
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.2), transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee-container::before,
+  .logo-marquee-container::after {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  .logo-marquee-container::before {
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.65) 0%,
+      transparent 100%
+    );
+  }
+
+  .logo-marquee-container::after {
+    background: linear-gradient(
+      to left,
+      rgba(0, 0, 0, 0.65) 0%,
+      transparent 100%
+    );
+  }
+}
+
+/* Temporary: outline every box in the process section subtree (page.tsx DEBUG_PROCESS_SUBTREE) */
+.home-process-debug * {
+  outline: 1px dashed rgba(250, 204, 21, 0.85);
+  outline-offset: -1px;
+}
+
+/* Hero CTAs — solid / outline (no glass / backdrop-blur) */
+.hero-ctas a[data-cta="primary"] {
+  border: 1px solid transparent;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    color 0.25s ease,
+    transform 0.2s ease;
+}
+
+.hero-ctas a[data-cta="demo"] {
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  background-color: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.2s ease;
+}
+
+.hero-ctas a[data-cta="demo"]:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.65);
+  color: rgb(255, 255, 255);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
+}
+
+.hero-ctas a[data-cta="demo"]:focus-visible {
+  border-color: rgba(255, 255, 255, 0.8);
 }
 
 html, body {
@@ -86,17 +284,10 @@ html, body {
 
 @layer base {
   * {
-    border-color: var(--border);
     @apply border-border outline-ring/50;
   }
   body {
-    background: var(--background);
-    color: var(--foreground);
-    font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
-    @apply bg-background text-foreground;
-  }
-  html {
-    @apply font-sans;
+    @apply bg-background text-foreground font-sans antialiased;
   }
 }
 
@@ -131,6 +322,19 @@ html {
   to {
     opacity: 0;
   }
+}
+
+/* Logo marquee (hero logos section) */
+@keyframes logo-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-logo-marquee {
+  animation: logo-marquee 40s linear infinite;
 }
 
 /* iOS Safari video transparency fixes */

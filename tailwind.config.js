@@ -1,7 +1,10 @@
-/** @type {import('tailwindcss').Config} */
+/**
+ * Tailwind config. With v4 + @tailwindcss/postcss, design tokens live in CSS via @theme in globals.css.
+ * This file is kept for shadcn/components.json; v4 auto-detects content for Next.js.
+ * @type {import('tailwindcss').Config}
+ */
 module.exports = {
   darkMode: ["class"],
-  // Content paths - ensure all blog routes and components are included
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',

@@ -92,7 +92,7 @@ export default function RootLayout({
   return (
     <html lang="es" className="dark">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${merigo.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${merigo.variable} font-sans antialiased`}
       >
         <ClientWrapper>
           {children}

@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { GrainGradient } from "@paper-design/shaders-react";
 
-export function GradientBackground() {
+type GradientBackgroundProps = {
+  /** Gaussian blur in px (e.g. scroll-driven 0–100) */
+  blurPx?: number
+}
+
+export function GradientBackground({ blurPx = 0 }: GradientBackgroundProps) {
   const [mounted, setMounted] = useState(false);
   const [size, setSize] = useState({ width: 1920, height: 1080 });
 
@@ -34,10 +39,19 @@ export function GradientBackground() {
     );
   }
 
+  const b = Math.min(100, Math.max(0, blurPx))
+
   return (
     <div
       className="fixed inset-0 -z-10 w-screen h-screen min-h-screen"
-      style={{ width: "100vw", height: "100vh", minHeight: "100vh" }}
+      style={{
+        width: "100vw",
+        height: "100vh",
+        minHeight: "100vh",
+        // No CSS transition — blur is scrubbed from scroll; transition fights updates and reads as “broken”.
+        filter: b > 0.01 ? `blur(${b}px)` : "none",
+        willChange: "filter",
+      }}
     >
       <GrainGradient
         width={size.width}
@@ -49,7 +63,7 @@ export function GradientBackground() {
         shape="corners"
         offsetX={0}
         offsetY={0}
-        scale={0.48}
+        scale={1}
         rotation={0}
         speed={1}
         colors={[
