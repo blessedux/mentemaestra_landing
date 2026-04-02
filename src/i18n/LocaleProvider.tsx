@@ -13,12 +13,12 @@ import { messages, type Locale } from "./messages";
 
 const STORAGE_KEY = "mente-maestra-locale";
 
-type MessagesEs = (typeof messages)["es"];
+type Messages = (typeof messages)[Locale];
 
 const LocaleContext = createContext<{
   locale: Locale;
   setLocale: (l: Locale) => void;
-  t: MessagesEs;
+  t: Messages;
 } | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {

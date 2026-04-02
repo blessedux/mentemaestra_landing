@@ -213,12 +213,12 @@ export const messages = {
           ],
         },
         {
-          id: "limited",
+          id: "unlimited",
           tierKind: "subscription",
           categoryLabel: "Suscripción",
-          name: "Limited",
+          name: "Ilimitado",
           blurb:
-            "Cupo limitado: cobertura integral para marcas que necesitan todos los frentes creativos a la vez.",
+            "Sin tope de peticiones: cobertura integral para marcas que necesitan todos los frentes creativos a la vez.",
           popular: false,
           priceOneTime: "",
           priceOneTimeLabel: "",
@@ -591,12 +591,12 @@ export const messages = {
           ],
         },
         {
-          id: "limited",
+          id: "unlimited",
           tierKind: "subscription",
           categoryLabel: "Subscription",
-          name: "Limited",
+          name: "Unlimited",
           blurb:
-            "Limited seats: full-stack creative partnership for brands running every lane at once.",
+            "Unlimited requests: full-stack creative partnership for brands running every lane at once.",
           popular: false,
           priceOneTime: "",
           priceOneTimeLabel: "",
