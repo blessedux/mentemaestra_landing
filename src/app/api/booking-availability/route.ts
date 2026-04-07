@@ -48,18 +48,25 @@ export async function GET(req: Request) {
   let combinedBusy = { ...envBusy };
 
   const sql = getDb();
-  let databaseConnected = hasDatabase();
-  if (!databaseConnected) {
+  const databaseConfigured = hasDatabase();
+  let databaseConnected = false;
+  if (!databaseConfigured) {
     console.warn(
       "[booking-availability] DATABASE_URL is not set (or empty). Add it in Vercel → Environment Variables for Production, then redeploy.",
     );
-  }
-  if (sql) {
+  } else if (sql) {
     try {
       const dbBusy = await listBusySlotsInRange(sql, from, to);
       combinedBusy = mergeBusyMaps(combinedBusy, dbBusy);
+      databaseConnected = true;
     } catch (e) {
-      console.error("[booking-availability] DB", e);
+      const msg = e instanceof Error ? e.message : String(e);
+      console.error("[booking-availability] DB query failed:", msg);
+      if (/relation ["']bookings["'] does not exist/i.test(msg)) {
+        console.error(
+          "[booking-availability] Apply backend/migrations/001_bookings.sql to this database (Supabase SQL editor or psql).",
+        );
+      }
       databaseConnected = false;
     }
   }
@@ -80,6 +87,7 @@ export async function GET(req: Request) {
     timezone: tz,
     availableSlotsByDate,
     blockedDates: blockedDatesArr,
+    databaseConfigured,
     databaseConnected,
     caldavOk: caldav.ok,
     caldavError: caldav.ok ? undefined : caldav.error,

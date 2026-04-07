@@ -50,6 +50,9 @@ type AvailabilityResponse = {
   timezone: string;
   availableSlotsByDate: Record<string, string[]>;
   blockedDates: string[];
+  /** True when DATABASE_URL is set (server has config). */
+  databaseConfigured?: boolean;
+  /** True when we successfully merged busy slots from Postgres. */
   databaseConnected?: boolean;
   caldavOk?: boolean;
   caldavError?: string;
@@ -223,10 +226,13 @@ export default function BookMeetingCard({
       year: "numeric",
     });
 
+  const dbWarn =
+    availability?.source === "native" &&
+    availability.databaseConnected === false;
+  const configured = availability?.databaseConfigured !== false;
   const nativeWarn =
     availability?.source === "native" &&
-    (availability.databaseConnected === false ||
-      Boolean(availability.caldavError));
+    (dbWarn || Boolean(availability.caldavError));
 
   return (
     <Card className="gap-0 overflow-hidden border-zinc-800 bg-zinc-950/60 p-0 text-zinc-100 shadow-none">
@@ -238,8 +244,10 @@ export default function BookMeetingCard({
         <CardContent className="relative p-0 md:pr-48">
           {nativeWarn ? (
             <p className="border-b border-amber-900/40 bg-amber-950/30 px-6 py-3 text-xs text-amber-100/85">
-              {availability.databaseConnected === false
-                ? copy.availabilityDbWarning
+              {dbWarn
+                ? configured
+                  ? copy.availabilityDbQueryFailed
+                  : copy.availabilityDbWarning
                 : copy.availabilityCaldavWarning}
             </p>
           ) : null}

@@ -2,11 +2,43 @@ import postgres from "postgres";
 
 let sql: ReturnType<typeof postgres> | null = null;
 
+/**
+ * Normalize hosted Postgres URLs for serverless (Supabase pooler, etc.).
+ * Transaction pooler on Supabase expects `pgbouncer=true`; SSL is required.
+ */
+export function resolveDatabaseUrl(raw: string): string {
+  const trimmed = raw.trim();
+  if (!trimmed) return trimmed;
+  try {
+    const u = new URL(trimmed);
+    const host = u.hostname.toLowerCase();
+    if (host.includes("pooler.supabase.com")) {
+      if (!u.searchParams.has("pgbouncer")) {
+        u.searchParams.set("pgbouncer", "true");
+      }
+    }
+    if (
+      (host.includes("supabase.com") || host.endsWith("supabase.co")) &&
+      !u.searchParams.has("sslmode")
+    ) {
+      u.searchParams.set("sslmode", "require");
+    }
+    return u.toString();
+  } catch {
+    return trimmed;
+  }
+}
+
 export function getDb(): ReturnType<typeof postgres> | null {
-  const url = process.env.DATABASE_URL?.trim();
-  if (!url) return null;
+  const raw = process.env.DATABASE_URL?.trim();
+  if (!raw) return null;
   if (!sql) {
-    sql = postgres(url, { max: 1, prepare: false });
+    const url = resolveDatabaseUrl(raw);
+    sql = postgres(url, {
+      max: 1,
+      prepare: false,
+      connect_timeout: 15,
+    });
   }
   return sql;
 }

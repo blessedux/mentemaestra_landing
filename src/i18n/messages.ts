@@ -373,6 +373,8 @@ export const messages = {
           "No hay horarios disponibles este día. Prueba otra fecha.",
         availabilityDbWarning:
           "No hay base de datos conectada: los huecos pueden no reflejar reservas reales. Configura DATABASE_URL en el servidor.",
+        availabilityDbQueryFailed:
+          "DATABASE_URL está definido pero no pudimos leer reservas. En Supabase añade ?pgbouncer=true al pooler (puerto 6543), asegura sslmode=require, codifica la contraseña en la URL y ejecuta la migración 001_bookings.sql en este proyecto.",
         availabilityCaldavWarning:
           "No pudimos leer tu calendario iCloud (CalDAV). Los huecos siguen la cuadrícula del sitio; revisa ICLOUD_* y los logs.",
       },
@@ -814,6 +816,8 @@ export const messages = {
           "No open times on this day. Try another date.",
         availabilityDbWarning:
           "Database not connected—open times may not reflect real bookings. Set DATABASE_URL on the server.",
+        availabilityDbQueryFailed:
+          "DATABASE_URL is set but we could not load bookings from the database. On Supabase use the transaction pooler with pgbouncer=true (port 6543), ensure sslmode=require, URL-encode the password, and run migration 001_bookings.sql on this project.",
         availabilityCaldavWarning:
           "Could not read your iCloud calendar (CalDAV). Slots follow the site grid; check ICLOUD_* env and server logs.",
       },
