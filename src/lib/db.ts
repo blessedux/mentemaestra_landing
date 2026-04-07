@@ -29,15 +29,22 @@ export function resolveDatabaseUrl(raw: string): string {
   }
 }
 
+function isSupabaseHost(url: string): boolean {
+  return /supabase\.(com|co)/i.test(url);
+}
+
 export function getDb(): ReturnType<typeof postgres> | null {
   const raw = process.env.DATABASE_URL?.trim();
   if (!raw) return null;
   if (!sql) {
     const url = resolveDatabaseUrl(raw);
+    // Transaction poolers (Supabase included) break startup type introspection; keep it off.
     sql = postgres(url, {
       max: 1,
       prepare: false,
-      connect_timeout: 15,
+      fetch_types: false,
+      connect_timeout: 20,
+      ...(isSupabaseHost(url) ? { ssl: "require" as const } : {}),
     });
   }
   return sql;
