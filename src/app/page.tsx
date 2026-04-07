@@ -1,6 +1,5 @@
 import Header from "@/components/Header";
 import HomeScrollToSection from "@/components/HomeScrollToSection";
-import Hero from "@/components/Hero";
 import { HeroDitheringCard } from "@/components/ui/hero-dithering-card";
 import Welcome from "@/components/Welcome";
 import Services from "@/components/Services";
@@ -13,17 +12,12 @@ import PricingFaq from "@/components/PricingFaq";
 import Experience from "@/components/Experience";
 import Footer from "@/components/Footer";
 
-const heroVariant =
-  process.env.NEXT_PUBLIC_HERO_VARIANT === "dithering"
-    ? "dithering"
-    : "default";
-
 export default function Home() {
   return (
     <main className="min-h-screen overflow-x-hidden bg-[#0a0a0a] text-white">
       <HomeScrollToSection />
       <Header />
-      {heroVariant === "dithering" ? <HeroDitheringCard /> : <Hero />}
+      <HeroDitheringCard />
       <Welcome />
       <Services />
       <Marquee />
