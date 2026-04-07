@@ -206,7 +206,7 @@ function applyMeetingConfirmationPlaceholders(
 export function renderMeetingConfirmationEmailEs(
   vars: MeetingConfirmationEmailVars,
 ): string {
-  let html = loadMeetingConfirmationTemplateEs();
+  const html = loadMeetingConfirmationTemplateEs();
   const v = buildResendMeetingConfirmationVariables(vars);
   const map: Record<string, string> = {
     PREHEADER: v.PREHEADER,
