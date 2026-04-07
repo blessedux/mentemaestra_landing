@@ -23,7 +23,7 @@ export default function Services() {
         <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <h2 className="text-4xl font-bold md:text-5xl">{t.services.title}</h2>
           <Link
-            href="#"
+            href="/#book-meeting"
             className="flex w-fit items-center gap-2 rounded-full border border-zinc-700 px-6 py-3 text-sm text-white transition-colors hover:border-accent hover:text-accent"
           >
             {t.services.cta}

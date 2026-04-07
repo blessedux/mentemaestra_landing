@@ -30,7 +30,7 @@ export default function Articles() {
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
           <h2 className="text-4xl md:text-5xl font-bold">Our Articles</h2>
           <Link
-            href="#"
+            href="/"
             className="flex items-center gap-2 px-6 py-3 border border-zinc-700 rounded-full text-sm hover:bg-zinc-800 transition-colors w-fit"
           >
             See All Articles

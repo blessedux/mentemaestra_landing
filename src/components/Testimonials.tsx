@@ -7,10 +7,18 @@ const AVATARS = [
   "https://media.licdn.com/dms/image/v2/D4E03AQEvUADyXWcsWg/profile-displayphoto-scale_400_400/B4EZkXNtfOHEAg-/0/1757031095862?e=1776902400&v=beta&t=qHo7FXhT0HfmWeeboyMSDZAOkrjgJmoF89IiuZFFY2w",
 ];
 
+/** Circle r=75 → circumference used to stretch text along path evenly. */
+const BADGE_PATH_LENGTH = 2 * Math.PI * 75;
+
 export default function Testimonials() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const items = t.testimonials.items;
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  const ringTextClass =
+    locale === "es"
+      ? "fill-white text-[10.5px] uppercase leading-none tracking-[0.125em] [text-rendering:geometricPrecision]"
+      : "fill-white text-[14px] uppercase leading-none tracking-[0.125em] [text-rendering:geometricPrecision]";
 
   return (
     <section className="px-6 py-24">
@@ -26,8 +34,14 @@ export default function Testimonials() {
                     fill="none"
                   />
                 </defs>
-                <text className="fill-white text-[13px] uppercase tracking-[0.25em]">
-                  <textPath href="#testimonialCircle">{t.testimonials.badge}</textPath>
+                <text xmlSpace="preserve" className={ringTextClass}>
+                  <textPath
+                    href="#testimonialCircle"
+                    textLength={BADGE_PATH_LENGTH}
+                    lengthAdjust="spacing"
+                  >
+                    {t.testimonials.badge}
+                  </textPath>
                 </text>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">

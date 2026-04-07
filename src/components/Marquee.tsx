@@ -8,7 +8,7 @@ export default function Marquee() {
 
   return (
     <section className="overflow-hidden py-8">
-      <div className="-rotate-1 scale-105 bg-purple-400 py-4">
+      <div className="-rotate-1 scale-105 bg-accent py-4">
         <div className="flex animate-marquee whitespace-nowrap">
           {[...marqueeItems, ...marqueeItems, ...marqueeItems, ...marqueeItems].map(
             (item, index) => (

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
-import { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
 
 const BADGE_PATH_RADIUS = 75;
@@ -19,10 +19,13 @@ function splitBadgeYear(badge: string): { phrase: string; year: string } | null 
 }
 
 const SCROLL_SECTION_VH = 165;
+const HERO_TEXT_SCROLL_DOWN_PX = 50;
+const DESKTOP_MEDIA = "(min-width: 1024px)";
 
 export default function Hero() {
   const { t, locale } = useLocale();
   const reduceMotion = useReducedMotion();
+  const [isDesktopViewport, setIsDesktopViewport] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
   const yearMeasureRef = useRef<SVGTextElement>(null);
   const [phraseArcLength, setPhraseArcLength] = useState(
@@ -46,6 +49,20 @@ export default function Hero() {
     return -eased * max;
   });
 
+  useEffect(() => {
+    const mq = window.matchMedia(DESKTOP_MEDIA);
+    const sync = () => setIsDesktopViewport(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
+  const heroTextY = useTransform(scrollYProgress, (p) => {
+    if (reduceMotion || !isDesktopViewport) return 0;
+    const eased = 1 - (1 - p) ** 1.35;
+    return eased * HERO_TEXT_SCROLL_DOWN_PX;
+  });
+
   useLayoutEffect(() => {
     if (!phraseYear) {
       setPhraseArcLength(BADGE_PATH_LENGTH);
@@ -60,11 +77,14 @@ export default function Hero() {
   return (
     <section
       ref={sectionRef}
-      className="relative px-6"
+      className="relative px-6 ring-2 ring-accent/70 ring-inset"
       style={{ height: `${SCROLL_SECTION_VH}vh` }}
     >
-      <div className="sticky top-0 flex min-h-screen flex-col pb-3 pt-24">
-        <div className="relative z-20 flex w-full flex-1 flex-col gap-8 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
+      <div className="sticky top-0 flex min-h-screen flex-col pb-3 pt-24 ring-2 ring-accent/50 ring-inset">
+        <motion.div
+          className="relative z-20 flex w-full flex-1 flex-col gap-8 will-change-transform lg:flex-row lg:items-start lg:justify-between lg:gap-10"
+          style={{ y: heroTextY }}
+        >
           <div className="relative min-w-0 max-w-2xl">
             <h1 className="relative z-10 w-max max-w-full text-6xl font-bold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
               Mente
@@ -143,7 +163,7 @@ export default function Hero() {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
 
         <motion.div
           className="relative z-10 mx-auto mt-8 w-full max-w-7xl will-change-transform md:mt-auto md:pt-6"

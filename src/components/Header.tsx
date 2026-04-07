@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
+import { TextScramble } from "@/components/ui/text-scramble";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { Locale } from "@/i18n/messages";
 
@@ -16,7 +15,7 @@ function LangToggle({
 }) {
   return (
     <div
-      className="hidden items-center gap-1 md:flex"
+      className="flex shrink-0 items-center gap-1"
       role="group"
       aria-label="Idioma / Language"
     >
@@ -42,137 +41,60 @@ function LangToggle({
   );
 }
 
+const navItemClass =
+  "block w-fit rounded-sm py-0.5 text-left text-sm font-medium text-zinc-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent";
+
 export default function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { locale, setLocale, t } = useLocale();
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 px-6 py-4">
-      <div className="relative mx-auto flex max-w-7xl items-center justify-between gap-1 md:gap-2">
-        <Link
-          href="/"
-          aria-label="MenteMaestra home"
-          className="group flex h-14 w-14 shrink-0 items-center overflow-hidden rounded-full border border-zinc-800 bg-zinc-900/80 px-[11px] backdrop-blur-sm transition-all duration-300 ease-out hover:w-[176px] hover:border-zinc-700"
+    <header className="fixed top-0 left-0 right-0 z-50 px-4 py-4 sm:px-6">
+      <div className="mx-auto flex max-w-7xl items-start justify-between gap-6 sm:gap-10">
+        <nav
+          className="ml-[3%] mt-[3%] flex min-w-0 flex-col items-start gap-0.5"
+          aria-label="Main"
         >
-          <Image
-            src="/MM_logo_NB-01.svg"
-            alt="MenteMaestra logo"
-            width={28}
-            height={27}
-            className="h-7 w-auto shrink-0"
-            priority
-          />
-          <span className="ml-0 max-w-0 overflow-hidden whitespace-nowrap font-semibold tracking-tight text-white opacity-0 transition-all duration-300 ease-out group-hover:ml-2.5 group-hover:max-w-[118px] group-hover:opacity-100">
-            MenteMaestra
-          </span>
-        </Link>
-
-        <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center justify-center gap-2 rounded-full border border-zinc-800 bg-zinc-900/80 px-4 py-2 backdrop-blur-sm md:flex">
-          <Link
-            href="#"
-            className="rounded-full px-8 py-2 text-sm text-white transition-colors hover:bg-zinc-800"
-          >
-            {t.nav.home}
+          <Link href="/" className={navItemClass}>
+            <TextScramble
+              text={t.nav.home}
+              className="w-fit"
+              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
+            />
           </Link>
-          <Link
-            href="#services"
-            className="rounded-full px-8 py-2 text-sm text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
-          >
-            {t.nav.studio}
+          <Link href="/#services" className={navItemClass}>
+            <TextScramble
+              text={t.nav.studio}
+              className="w-fit"
+              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
+            />
           </Link>
-          <Link
-            href="#works"
-            className="rounded-full px-8 py-2 text-sm text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
-          >
-            {t.nav.works}
+          <Link href="/#works" className={navItemClass}>
+            <TextScramble
+              text={t.nav.works}
+              className="w-fit"
+              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
+            />
           </Link>
-          <Link
-            href="#pricing"
-            className="rounded-full px-8 py-2 text-sm text-zinc-400 transition-colors hover:bg-zinc-800 hover:text-white"
-          >
-            {t.nav.pricing}
+          <Link href="/#pricing" className={navItemClass}>
+            <TextScramble
+              text={t.nav.pricing}
+              className="w-fit"
+              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
+            />
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex shrink-0 flex-col items-end gap-3 sm:flex-row sm:items-center sm:gap-4">
           <LangToggle locale={locale} setLocale={setLocale} />
           <Link
-            href="#contact"
-            className="hidden h-14 shrink-0 items-center gap-2 rounded-full bg-white px-5 text-sm font-medium text-black transition-colors hover:bg-zinc-200 md:flex"
+            href="/#book-meeting"
+            className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200 sm:px-5 sm:py-2.5"
           >
             {t.nav.cta}
-            <ArrowUpRight className="w-4 h-4" />
+            <ArrowUpRight className="h-4 w-4" aria-hidden />
           </Link>
-
-          <button
-            type="button"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="rounded-full p-2 text-white transition-colors hover:bg-zinc-800"
-          >
-            {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
         </div>
       </div>
-
-      {isMenuOpen && (
-        <div className="fixed inset-0 top-16 z-40 bg-zinc-950/95 backdrop-blur-lg md:hidden">
-          <nav className="flex h-full flex-col items-center justify-center gap-8">
-            <Link
-              href="#"
-              className="text-3xl font-semibold text-white"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.home}
-            </Link>
-            <Link
-              href="#services"
-              className="text-3xl font-semibold text-zinc-400 hover:text-white"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.studio}
-            </Link>
-            <Link
-              href="#works"
-              className="text-3xl font-semibold text-zinc-400 hover:text-white"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.works}
-            </Link>
-            <Link
-              href="#pricing"
-              className="text-3xl font-semibold text-zinc-400 hover:text-white"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.pricing}
-            </Link>
-            <div className="flex items-center gap-2">
-              {(["es", "en"] as const).map((code) => {
-                const on = locale === code;
-                return (
-                  <button
-                    key={code}
-                    type="button"
-                    onClick={() => setLocale(code)}
-                    className={`rounded px-2 py-1 text-lg font-medium ${
-                      on ? "text-white" : "text-zinc-500"
-                    }`}
-                  >
-                    {code}
-                  </button>
-                );
-              })}
-            </div>
-            <Link
-              href="#contact"
-              className="mt-4 flex items-center gap-2 rounded-full bg-white px-8 py-3 text-lg font-medium text-black"
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {t.nav.cta}
-              <ArrowUpRight className="w-5 h-5" />
-            </Link>
-          </nav>
-        </div>
-      )}
     </header>
   );
 }

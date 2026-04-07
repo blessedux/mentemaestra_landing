@@ -8,11 +8,15 @@ import { useLocale } from "@/i18n/LocaleProvider";
 export default function PricingFaq() {
   const { t, locale } = useLocale();
   const p = t.pricing;
-  const faqFirstId = p.faq[0]?.id ?? null;
+  const faqMain = p.faq.filter((item) => item.id !== "hosting");
+  const hostingFaq = p.faq.find((item) => item.id === "hosting");
+  const faqFirstId = faqMain[0]?.id ?? null;
   const [openFaq, setOpenFaq] = useState<string | null>(faqFirstId);
+  const [hostingOpen, setHostingOpen] = useState(true);
 
   useEffect(() => {
-    setOpenFaq(p.faq[0]?.id ?? null);
+    const first = p.faq.find((item) => item.id !== "hosting") ?? p.faq[0];
+    setOpenFaq(first?.id ?? null);
   }, [p.faq]);
 
   const toggleFaq = useCallback((id: string, wasOpen: boolean) => {
@@ -117,7 +121,7 @@ export default function PricingFaq() {
                 )}
 
                 <Link
-                  href="#contact"
+                  href="/#book-meeting"
                   className={`mt-8 flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-sm font-semibold transition ${
                     tier.popular
                       ? "bg-accent text-white hover:opacity-95"
@@ -197,8 +201,32 @@ export default function PricingFaq() {
             </div>
           </div>
 
-          <div className="mt-10 max-w-4xl text-left">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 md:p-8">
+          <div className="mx-auto mt-10 max-w-4xl text-center">
+            <div className="mx-auto grid w-full max-w-4xl justify-items-center gap-8 text-center md:grid-cols-2 md:gap-10">
+              <div className="w-full max-w-md">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                  {p.websitesTitle}
+                </h3>
+                <p className="mt-3 text-sm text-zinc-400">{p.websitesIntro}</p>
+                <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                  {p.websitesWeeks.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="w-full max-w-md">
+                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
+                  {p.subColumnTitle}
+                </h3>
+                <ul className="mt-4 space-y-2 text-sm text-zinc-400">
+                  {p.subBullets.map((line) => (
+                    <li key={line}>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6 text-center md:p-8">
               <h3 className="text-lg font-semibold text-white">{p.alaCarteTitle}</h3>
               <p className="mt-3 text-sm leading-relaxed text-zinc-400">
                 {p.alaCarteA}
@@ -213,31 +241,7 @@ export default function PricingFaq() {
               </p>
             </div>
 
-            <div className="mt-10 grid gap-8 md:grid-cols-2">
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
-                  {p.websitesTitle}
-                </h3>
-                <p className="mt-3 text-sm text-zinc-400">{p.websitesIntro}</p>
-                <ul className="mt-4 space-y-2 text-sm text-zinc-400">
-                  {p.websitesWeeks.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
-                  {p.subColumnTitle}
-                </h3>
-                <ul className="mt-4 space-y-2 text-sm text-zinc-400">
-                  {p.subBullets.map((line) => (
-                    <li key={line}>{line}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-10">
+            <div className="mt-10 text-left">
               <h3 className="text-xs font-semibold uppercase tracking-[0.15em] text-zinc-500">
                 {p.howToChoose}
               </h3>
@@ -251,21 +255,51 @@ export default function PricingFaq() {
               </ul>
             </div>
 
-            <div className="mt-10 rounded-2xl border border-dashed border-zinc-700 bg-zinc-900/20 p-6">
-              <h3 className="text-sm font-semibold text-white">
-                {p.hostingTitle}
-                <span className="font-normal text-zinc-500">{p.hostingOptional}</span>
-              </h3>
-              <ul className="mt-3 space-y-1.5 text-sm text-zinc-400">
-                {p.hostingBullets.map((line) => (
-                  <li key={line}>{line}</li>
-                ))}
-              </ul>
-            </div>
+            {hostingFaq && (
+              <div className="mt-10 text-left">
+                <div
+                  className={`overflow-hidden rounded-2xl border transition-colors duration-300 ${
+                    hostingOpen ? "border-accent/40 bg-zinc-900/80" : "border-zinc-800 bg-zinc-900/30"
+                  }`}
+                >
+                  <button
+                    type="button"
+                    onClick={() => setHostingOpen((v) => !v)}
+                    className="flex w-full items-center justify-between gap-4 p-5 text-left"
+                  >
+                    <span className="font-medium text-white">{hostingFaq.q}</span>
+                    <span
+                      className={`shrink-0 transition-colors duration-300 ${hostingOpen ? "text-accent" : "text-zinc-500"}`}
+                    >
+                      {hostingOpen ? (
+                        <Minus className="h-5 w-5" strokeWidth={2} />
+                      ) : (
+                        <Plus className="h-5 w-5" strokeWidth={2} />
+                      )}
+                    </span>
+                  </button>
+                  <div
+                    className={`grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none ${
+                      hostingOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+                    }`}
+                  >
+                    <div className="min-h-0 overflow-hidden">
+                      <div
+                        className={`border-t border-zinc-800/80 px-5 pb-5 transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none ${
+                          hostingOpen ? "translate-y-0 opacity-100" : "-translate-y-1 opacity-0"
+                        }`}
+                      >
+                        <p className="pt-4 text-sm leading-relaxed text-zinc-400">{hostingFaq.a}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <Link
-              href="#contact"
-              className="mt-8 inline-flex items-center gap-2 rounded-full border border-zinc-600 px-5 py-2.5 text-sm font-medium text-white transition hover:border-zinc-400 hover:bg-zinc-900"
+              href="/#book-meeting"
+              className="mx-auto mt-8 inline-flex items-center gap-2 rounded-full border border-zinc-600 px-5 py-2.5 text-sm font-medium text-white transition hover:border-zinc-400 hover:bg-zinc-900"
             >
               {p.talkScope}
               <ArrowRight className="h-4 w-4" />
@@ -283,7 +317,7 @@ export default function PricingFaq() {
           <p className="mt-4 max-w-lg text-sm text-zinc-500">{p.faqSubtitle}</p>
 
           <div className="mt-12 space-y-3">
-            {p.faq.map((item) => {
+            {faqMain.map((item) => {
               const open = openFaq === item.id;
               return (
                 <div

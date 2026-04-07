@@ -75,7 +75,7 @@ export const messages = {
         "Construimos con herramientas que usamos cada día—del framework al contenido y al comercio.",
     },
     testimonials: {
-      badge: "CON LA CONFIANZA DE CLIENTES — TESTIMONIOS —",
+      badge: "diseño a la velocidad de tu negocio · est. 2022 ·",
       items: [
         {
           quote:
@@ -356,7 +356,72 @@ export const messages = {
       usdAmounts: ["$1,000", "$1,800", "$2,000", "$1,800"],
       clpAmounts: ["$860.000", "$1.500.000", "$1.800.000", "$1.500.000"],
     },
+    book: {
+      section: {
+        eyebrow: "Exploratorio",
+        title: "Agenda una reunión exploratoria",
+        subtitle:
+          "Elige fecha y horario. En el siguiente paso completas tus datos y confirmamos el encuentro.",
+      },
+      meeting: {
+        cardTitle: "Reserva tu cita",
+        selectPrompt: "Selecciona fecha y hora para tu reunión.",
+        summaryLead: "Tu reunión exploratoria quedaría el",
+        summaryAt: "a las",
+        continue: "Continuar",
+        noSlotsForDay:
+          "No hay horarios disponibles este día. Prueba otra fecha.",
+        availabilityDbWarning:
+          "No hay base de datos conectada: los huecos pueden no reflejar reservas reales. Configura DATABASE_URL en el servidor.",
+        availabilityCaldavWarning:
+          "No pudimos leer tu calendario iCloud (CalDAV). Los huecos siguen la cuadrícula del sitio; revisa ICLOUD_* y los logs.",
+      },
+      confirm: {
+        title: "Confirma tu reunión",
+        subtitle: "Completa tus datos y envíanos el contexto que quieras.",
+        back: "Cambiar fecha u hora",
+        slotLabel: "Horario elegido",
+        name: "Nombre completo",
+        email: "Correo",
+        company: "Empresa (opcional)",
+        message: "¿Qué debemos saber? (opcional)",
+        submit: "Confirmar reunión exploratoria",
+        submitting: "Enviando…",
+        successTitle: "Listo",
+        successBody: "Cita agendada correctamente.",
+        successEmailLine:
+          "Te enviamos los detalles por correo (revisa spam).",
+        successNothingConfigured:
+          "Aún no hay integración activa (correo o .ics). Con los datos que enviaste, el equipo te contactará para coordinar.",
+        backHome: "Volver al inicio",
+        missingSlot: "Primero elige fecha y hora en la página principal.",
+        error: "No se pudo enviar. Intenta de nuevo.",
+        slotUnavailable:
+          "Ese horario ya no está disponible. Elige otra fecha u hora.",
+        databaseNotConfigured:
+          "Reservas no disponibles: falta DATABASE_URL en el servidor.",
+        organizerNotConfigured:
+          "Falta BOOKING_ORGANIZER_EMAIL en el servidor para enviar la invitación.",
+        icsBuildFailed:
+          "La reserva se guardó pero falló generar el calendario. Contacta al equipo con la fecha y hora elegidas.",
+        successEmailNotSentHint:
+          "La reserva quedó guardada, pero no pudimos enviar correos: verifica tu dominio en Resend (resend.com/domains) o usa RESEND_FROM_EMAIL con un remitente de un dominio ya verificado. Puedes descargar el .ics abajo.",
+        downloadIcs: "Descargar invitación (.ics)",
+        addToGoogleCalendar: "Google Calendar",
+      },
+    },
     footer: {
+      titleLine1: "Mente",
+      titleLine2: "Maestra",
+      tagline:
+        "Socio creativo para equipos que buscan claridad visual y ejecución senior sin montar un estudio interno completo.",
+      menuTitle: "Menú",
+      newsletterTitle: "Newsletter",
+      newsletterHint:
+        "Ideas puntuales sobre identidad de marca y diseño digital.",
+      subscribe: "Suscribirse",
+      socialTitle: "Redes sociales",
+      support: "Soporte",
       newsletter:
         "Recibe primero noticias sobre tendencias, inspiración y más",
       emailLabel: "Correo",
@@ -374,7 +439,7 @@ export const messages = {
       linksTitle: "Enlaces",
       terms: "Términos y condiciones",
       privacy: "Política de privacidad",
-      copyright: "© 2024 MenteMaestra.",
+      copyright: "© 2026 MenteMaestra.",
       rights: "Todos los derechos reservados",
     },
   },
@@ -452,7 +517,7 @@ export const messages = {
         "We ship on tools we trust every day—from the framework to content and commerce infra.",
     },
     testimonials: {
-      badge: "TRUSTED BY CLIENTS - TESTIMONIALS -",
+      badge: "design at the speed of business · est. 2022 ·",
       items: [
         {
           quote:
@@ -732,7 +797,71 @@ export const messages = {
       usdAmounts: ["$1,000", "$1,800", "$2,000", "$1,800"],
       clpAmounts: ["$860,000", "$1,500,000", "$1,800,000", "$1,500,000"],
     },
+    book: {
+      section: {
+        eyebrow: "Exploratory",
+        title: "Book an exploratory call",
+        subtitle:
+          "Pick a date and slot. On the next screen you will add your details and confirm the meeting.",
+      },
+      meeting: {
+        cardTitle: "Book your appointment",
+        selectPrompt: "Select a date and time for your meeting.",
+        summaryLead: "Your exploratory meeting would be on",
+        summaryAt: "at",
+        continue: "Continue",
+        noSlotsForDay:
+          "No open times on this day. Try another date.",
+        availabilityDbWarning:
+          "Database not connected—open times may not reflect real bookings. Set DATABASE_URL on the server.",
+        availabilityCaldavWarning:
+          "Could not read your iCloud calendar (CalDAV). Slots follow the site grid; check ICLOUD_* env and server logs.",
+      },
+      confirm: {
+        title: "Confirm your meeting",
+        subtitle: "Add your details and anything we should know beforehand.",
+        back: "Change date or time",
+        slotLabel: "Selected slot",
+        name: "Full name",
+        email: "Email",
+        company: "Company (optional)",
+        message: "What should we know? (optional)",
+        submit: "Confirm exploratory meeting",
+        submitting: "Sending…",
+        successTitle: "You are all set",
+        successBody: "Your meeting is booked.",
+        successEmailLine:
+          "We sent the details to your inbox (check spam).",
+        successNothingConfigured:
+          "No email or .ics integration is active yet. We’ll reach out using the details you sent.",
+        backHome: "Back to home",
+        missingSlot: "Please choose a date and time on the homepage first.",
+        error: "Something went wrong. Please try again.",
+        slotUnavailable:
+          "That time is no longer available. Pick another slot.",
+        databaseNotConfigured:
+          "Booking is unavailable: DATABASE_URL is not set on the server.",
+        organizerNotConfigured:
+          "BOOKING_ORGANIZER_EMAIL must be set on the server to send invites.",
+        icsBuildFailed:
+          "Your booking was saved but the calendar file could not be generated. Contact us with your chosen slot.",
+        successEmailNotSentHint:
+          "Your booking is saved, but we could not send email: verify your domain in Resend (resend.com/domains) or set RESEND_FROM_EMAIL to an address on a domain you have already verified. You can still download the .ics below.",
+        downloadIcs: "Download calendar invite (.ics)",
+        addToGoogleCalendar: "Google Calendar",
+      },
+    },
     footer: {
+      titleLine1: "Mente",
+      titleLine2: "Maestra",
+      tagline:
+        "A design partner for teams that want senior creative execution without the overhead of a full in-house studio.",
+      menuTitle: "Menu",
+      newsletterTitle: "Newsletter",
+      newsletterHint: "Occasional notes on brand identity and craft.",
+      subscribe: "Subscribe",
+      socialTitle: "Social media",
+      support: "Support",
       newsletter:
         "Be the first to get the latest news about trends, inspiration & more",
       emailLabel: "Email Address",
@@ -750,8 +879,8 @@ export const messages = {
       linksTitle: "Links",
       terms: "Terms & Conditions",
       privacy: "Privacy Policy",
-      copyright: "© 2024 MenteMaestra.",
-      rights: "All Right Reserved",
+      copyright: "© 2026 MenteMaestra.",
+      rights: "All rights reserved",
     },
   },
 } as const;
