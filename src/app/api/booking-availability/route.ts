@@ -49,6 +49,11 @@ export async function GET(req: Request) {
 
   const sql = getDb();
   let databaseConnected = hasDatabase();
+  if (!databaseConnected) {
+    console.warn(
+      "[booking-availability] DATABASE_URL is not set (or empty). Add it in Vercel → Environment Variables for Production, then redeploy.",
+    );
+  }
   if (sql) {
     try {
       const dbBusy = await listBusySlotsInRange(sql, from, to);

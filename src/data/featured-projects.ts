@@ -1,10 +1,8 @@
 /**
- * Featured work slides — aligned with mentemaestra_landing infinite menu projects.
- * Thumbnails: copy `public/imgs/project_images/*.webp` from that repo, or rely on the CDN base below.
+ * Featured work thumbnails live in `public/imgs/project_images/` (served from the site origin).
  */
 
-const PROJECT_IMAGE_BASE =
-  "https://cdn.jsdelivr.net/gh/blessedux/mentemaestra_landing@main/public/imgs/project_images";
+const PROJECT_IMAGE_BASE = "/imgs/project_images";
 
 export type FeaturedProject = {
   title: string;
@@ -27,8 +25,7 @@ export const featuredProjects: FeaturedProject[] = [
       "Ethereum community and development hub for Chilean blockchain ecosystem",
   },
   {
-    // One2b doesn't exist in the blessedux repo's `project_images/` folder,
-    // so we use a thumbnail extracted from their homepage.
+    // One2b: no local webp; external thumbnail.
     image:
       "https://ik.imagekit.io/3bfeucft4/kling_20260113_Image_to_Video____________5377_0.mp4/ik-thumbnail.jpg?updatedAt=1769294639705",
     link: "https://one2b.io/",
