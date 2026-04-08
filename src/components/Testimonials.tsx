@@ -21,12 +21,16 @@ export default function Testimonials() {
       : "fill-white text-[14px] uppercase leading-none tracking-[0.125em] [text-rendering:geometricPrecision]";
 
   return (
-    <section className="px-6 py-24">
+    <section className="border-b-0 px-6 py-24">
       <div className="mx-auto max-w-7xl">
         <div className="grid items-center gap-12 lg:grid-cols-12">
           <div className="flex justify-center lg:col-span-3 lg:justify-start">
-            <div className="relative h-40 w-40">
-              <svg className="h-full w-full animate-spin-slow" viewBox="0 0 200 200">
+            <div className="relative grid h-40 w-40 place-items-center">
+              <svg
+                className="col-start-1 row-start-1 h-full w-full animate-spin-slow-reverse [transform-box:fill-box] [transform-origin:center]"
+                viewBox="0 0 200 200"
+                aria-hidden
+              >
                 <defs>
                   <path
                     id="testimonialCircle"
@@ -37,6 +41,8 @@ export default function Testimonials() {
                 <text xmlSpace="preserve" className={ringTextClass}>
                   <textPath
                     href="#testimonialCircle"
+                    startOffset="50%"
+                    textAnchor="middle"
                     textLength={BADGE_PATH_LENGTH}
                     lengthAdjust="spacing"
                   >
@@ -44,9 +50,12 @@ export default function Testimonials() {
                   </textPath>
                 </text>
               </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-serif text-6xl text-white/90">&ldquo;&ldquo;</span>
-              </div>
+              <span
+                className="pointer-events-none col-start-1 row-start-1 flex h-[1em] w-[1em] items-center justify-center font-serif text-6xl leading-none text-white/90"
+                aria-hidden
+              >
+                &ldquo;
+              </span>
             </div>
           </div>
 

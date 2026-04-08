@@ -128,7 +128,7 @@ export default function PricingFaq() {
                       : "border border-zinc-600 text-white hover:border-zinc-400 hover:bg-zinc-900"
                   }`}
                 >
-                  {p.subCta}
+                  {tier.tierKind === "project" ? p.projectCta : p.subCta}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>

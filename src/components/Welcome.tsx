@@ -1,9 +1,31 @@
 "use client";
 
 import Image from "next/image";
+import { Fragment } from "react";
 
 import { MagicText } from "@/components/ui/magic-text";
 import { useLocale } from "@/i18n/LocaleProvider";
+
+const HEADLINE_MARK_RE = /(‖[^‖]+‖)/g;
+
+function WelcomeHeadline({ text }: { text: string }) {
+  const parts = text.split(HEADLINE_MARK_RE);
+  return (
+    <h2 className="mt-6 max-w-4xl text-3xl font-medium leading-tight text-white md:text-4xl lg:text-5xl">
+      {parts.map((part, i) => {
+        if (part.startsWith("‖") && part.endsWith("‖")) {
+          const inner = part.slice(1, -1);
+          return (
+            <span key={`a-${i}`} className="text-accent">
+              {inner}
+            </span>
+          );
+        }
+        return <Fragment key={`t-${i}`}>{part}</Fragment>;
+      })}
+    </h2>
+  );
+}
 
 export default function Welcome() {
   const { t } = useLocale();
@@ -40,9 +62,7 @@ export default function Welcome() {
               highlightedInactiveClassName="absolute inset-0 text-zinc-500"
               highlightedActiveClassName="relative text-white"
             />
-            <h2 className="mt-6 max-w-4xl text-3xl font-medium leading-tight text-white md:text-4xl lg:text-5xl">
-              {t.welcome.headline}
-            </h2>
+            <WelcomeHeadline text={t.welcome.headline} />
             <MagicText
               text={t.welcome.magicBody}
               className="mt-6 flex max-w-2xl flex-wrap"

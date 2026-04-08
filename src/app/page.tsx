@@ -5,7 +5,7 @@ import Welcome from "@/components/Welcome";
 import Services from "@/components/Services";
 import Marquee from "@/components/Marquee";
 import FeaturedWorks from "@/components/FeaturedWorks";
-import Partners from "@/components/Partners";
+import Stack from "@/components/Stack";
 import BookMeetingSection from "@/components/BookMeetingSection";
 import Testimonials from "@/components/Testimonials";
 import PricingFaq from "@/components/PricingFaq";
@@ -22,7 +22,7 @@ export default function Home() {
       <Services />
       <Marquee />
       <FeaturedWorks />
-      <Partners />
+      <Stack />
       <Experience />
       <Testimonials />
       <BookMeetingSection />

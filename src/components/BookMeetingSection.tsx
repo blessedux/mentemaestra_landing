@@ -74,7 +74,7 @@ export default function BookMeetingSection() {
   return (
     <section
       id="book-meeting"
-      className="relative scroll-mt-28 border-t border-accent/25 bg-[#0a0a0a] px-6 py-24"
+      className="relative scroll-mt-28 border-t border-zinc-800/90 bg-[#0a0a0a] px-6 py-24"
     >
       {overlayOpen ? (
         <div

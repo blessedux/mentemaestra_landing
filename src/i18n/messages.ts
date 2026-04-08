@@ -13,17 +13,17 @@ export const messages = {
       subtitle: "Socio de diseño para empresas que escalan.",
       description:
         "Nos hacemos cargo de tu presencia digital, web, actualizaciones y diseño continuo, para que puedas enfocarte en hacer crecer tu negocio.",
-      badge: "Agencia Recomendada desde 2022",
+      badge: "Estudio recomendado desde 2022",
     },
     welcome: {
       label: "Donde la claridad encuentra la innovación",
       magicLead: "Diseño bajo demanda",
       headline:
-        "Para equipos que necesitan ejecución creativa senior sin el costo de contratar, integrar y gestionar un departamento completo.",
+        "Para equipos que necesitan ejecución ‖creativa‖ senior sin el costo de contratar, integrar y gestionar un ‖equipo‖ de ‖diseño‖ interno.",
       magicBody:
         "Avanza más rápido con un socio de diseño flexible que cubre web, producto, branding y peticiones creativas día a día. Calidad consistente, entregas ágiles y un flujo claro sin la complejidad de construirlo todo in house.",
       highlightsLead: ["diseño"],
-      highlightsBody: ["consistente", "ágiles"],
+      highlightsBody: ["creativas", "consistente", "ágiles"],
     },
     services: {
       title: "Servicios",
@@ -69,7 +69,7 @@ export const messages = {
       next: "Siguiente",
       magicHighlights: ["personas", "resultados"],
     },
-    partners: {
+    stack: {
       label: "Stack moderno",
       blurb:
         "Construimos con herramientas que usamos cada día—del framework al contenido y al comercio.",
@@ -120,6 +120,12 @@ export const messages = {
     },
     experience: {
       leftLabel: "Sistema creativo integral",
+      brainThoughts: [
+        "Ideas que ordenan y aceleran.",
+        "Diseño con criterio y constancia.",
+        "Menos ruido, más impacto.",
+        "Claridad en cada punto de contacto.",
+      ],
       leftTitle:
         "Estrategia, diseño, desarrollo y acompañamiento en una sola alianza enfocada.",
       leftBody:
@@ -128,7 +134,7 @@ export const messages = {
       stat1Title:
         "Acompañamos a estudios y equipos creativos a conectar su oficio con clientes que valoran el trabajo bien hecho.",
       stat1Unit: "Años de\nexperiencia",
-      stat2Label: "Proyectos entregados",
+      stat2Label: "Impacto",
       stat2Title:
         "Un equipo enfocado en diseño y desarrollo que prioriza entregas claras y resultados medibles.",
       stat2Unit: "Proyectos\ncompletados",
@@ -160,7 +166,8 @@ export const messages = {
       ],
       subTagline:
         "El equilibrio entre alcance, velocidad y libertad para pausar cuando quieras.",
-      subCta: "Empezar con suscripción",
+      projectCta: "Iniciar proyecto",
+      subCta: "Suscribirse",
       unlimitedTitle: "MenteMaestra Ilimitado",
       subscriptionTiers: [
         {
@@ -226,7 +233,7 @@ export const messages = {
           yearlyMaintenance: "",
           yearlyMaintenanceLabel: "",
           yearlyMaintenanceNote: "",
-          priceMonthly: "$2.300.000",
+          priceMonthly: "$3.100.000",
           priceNote:
             "El plan más amplio: redes, contenido, producto y branding en un solo retainer.",
           features: [
@@ -358,7 +365,7 @@ export const messages = {
     },
     book: {
       section: {
-        eyebrow: "Exploratorio",
+        eyebrow: "Cotiza tu proyecto",
         title: "Agenda una reunión exploratoria",
         subtitle:
           "Elige fecha y horario. En el siguiente paso completas tus datos y confirmamos el encuentro.",
@@ -457,17 +464,17 @@ export const messages = {
       subtitle: "A design partner for companies that scale.",
       description:
         "We take full ownership of your digital presence, web, updates, and ongoing design, so you can focus on growing your business.",
-      badge: "Recommended agency since 2022",
+      badge: "Recommended studio since 2022",
     },
     welcome: {
       label: "Where clarity meets innovation",
       magicLead: "On-demand design support",
       headline:
-        "For teams that need senior creative execution without the overhead of hiring, onboarding, and managing a full in-house department.",
+        "For teams that need senior ‖creative‖ execution without the overhead of hiring, onboarding, and managing a full in-house ‖design‖ ‖team‖.",
       magicBody:
         "Move faster with a flexible design partner that can handle web, product, branding, and day-to-day creative requests as your business evolves. You get consistent quality, quicker turnaround, and a smoother workflow without the cost and complexity of building everything internally.",
       highlightsLead: ["design"],
-      highlightsBody: ["consistent", "quicker"],
+      highlightsBody: ["creative", "consistent", "quicker"],
     },
     services: {
       title: "Our Services",
@@ -513,7 +520,7 @@ export const messages = {
       prev: "Prev Slide",
       next: "Next Slide",
     },
-    partners: {
+    stack: {
       label: "Built with a modern stack",
       blurb:
         "We ship on tools we trust every day—from the framework to content and commerce infra.",
@@ -564,6 +571,12 @@ export const messages = {
     },
     experience: {
       leftLabel: "End-to-end creative system",
+      brainThoughts: [
+        "Ideas that align what you ship.",
+        "Design with judgment and consistency.",
+        "Less noise, more traction.",
+        "Clear presence at every touchpoint.",
+      ],
       leftTitle:
         "Strategy, design, build, and growth support in one focused creative partnership.",
       leftBody:
@@ -605,7 +618,8 @@ export const messages = {
       ],
       subTagline:
         "The sweet spot between full coverage, fast replies, and the freedom to pause.",
-      subCta: "Start with subscription",
+      projectCta: "Start your project",
+      subCta: "Subscribe",
       unlimitedTitle: "MenteMaestra Unlimited",
       subscriptionTiers: [
         {
@@ -616,7 +630,7 @@ export const messages = {
           blurb:
             "Design, build, and launch—plus an annual plan for hosting, domain, email, and day-to-day operations.",
           popular: false,
-          priceOneTime: "$1,850",
+          priceOneTime: "$2,000",
           priceOneTimeLabel: "USD one-time",
           priceOneTimeNote:
             "Fixed project investment for design, development, and agreed launch scope.",
@@ -671,7 +685,7 @@ export const messages = {
           yearlyMaintenance: "",
           yearlyMaintenanceLabel: "",
           yearlyMaintenanceNote: "",
-          priceMonthly: "$2,370",
+          priceMonthly: "$3,400",
           priceNote:
             "Our broadest plan—social, content, product, and branding in one retainer.",
           features: [
@@ -801,7 +815,7 @@ export const messages = {
     },
     book: {
       section: {
-        eyebrow: "Exploratory",
+        eyebrow: "Get to know us",
         title: "Book an exploratory call",
         subtitle:
           "Pick a date and slot. On the next screen you will add your details and confirm the meeting.",

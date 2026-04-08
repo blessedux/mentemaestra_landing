@@ -89,9 +89,121 @@ h1, h2, h3, h4, h5, h6 {
   animation: spin-slow 10s linear infinite;
 }
 
+@keyframes spin-slow-reverse {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+.animate-spin-slow-reverse {
+  animation: spin-slow-reverse 10s linear infinite;
+}
+
 /* Hero badge: half the RPM of `.animate-spin-slow` */
 .animate-spin-slower {
   animation: spin-slow 20s linear infinite;
+}
+
+/* Hero dithering card: background fade, then title lines slide up */
+@keyframes hero-bg-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes hero-title-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(1.25rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-bg-fade-in {
+  animation: hero-bg-fade 2s ease-out forwards;
+}
+
+.hero-title-line-1 {
+  opacity: 0;
+  animation: hero-title-slide-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards;
+}
+
+.hero-title-line-2 {
+  opacity: 0;
+  animation: hero-title-slide-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 2.32s forwards;
+}
+
+/* After second title line finishes (~2.87s): subtitle, then description */
+@keyframes hero-support-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.65rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero-support-line-1 {
+  opacity: 0;
+  animation: hero-support-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 2.92s forwards;
+}
+
+.hero-support-line-2 {
+  opacity: 0;
+  animation: hero-support-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 3.14s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg-fade-in {
+    animation: none;
+    opacity: 1;
+  }
+
+  .hero-title-line-1,
+  .hero-title-line-2,
+  .hero-support-line-1,
+  .hero-support-line-2 {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Progressive bottom scrim: stacked blurred bands + feathered masks (blur ramps toward bottom) */
+.hero-progressive-blur-band {
+  pointer-events: none;
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  -webkit-mask-image: linear-gradient(
+    to top,
+    #000 0%,
+    #000 28%,
+    rgba(0, 0, 0, 0.55) 62%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to top,
+    #000 0%,
+    #000 28%,
+    rgba(0, 0, 0, 0.55) 62%,
+    transparent 100%
+  );
+  -webkit-mask-size: 100% 100%;
+  mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
 }
 
 /* Custom scrollbar */
