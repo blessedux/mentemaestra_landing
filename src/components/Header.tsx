@@ -74,8 +74,8 @@ const navLinks = [
   { href: "/#works", labelKey: "works" as const },
   { href: "/#experience", labelKey: "experience" as const },
   { href: "/#book-meeting", labelKey: "book" as const },
-  { href: "/#pricing", labelKey: "pricing" as const },
-  { href: "/#faq", labelKey: "faq" as const },
+  { href: "/onboarding#pricing", labelKey: "pricing" as const },
+  { href: "/onboarding#faq", labelKey: "faq" as const },
 ];
 
 export default function Header() {
@@ -188,7 +188,7 @@ export default function Header() {
           <div className="flex shrink-0 flex-col items-end gap-3 sm:flex-row sm:items-center sm:gap-4">
             <LangToggle locale={locale} setLocale={setLocale} />
             <Link
-              href="/#book-meeting"
+              href="/onboarding"
               className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black transition-colors hover:bg-zinc-200 sm:px-5 sm:py-2.5"
               onClick={closeMenu}
             >

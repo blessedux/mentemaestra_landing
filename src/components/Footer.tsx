@@ -64,17 +64,17 @@ export default function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/#pricing" className={menuLinkClass}>
+                    <Link href="/onboarding#pricing" className={menuLinkClass}>
                       {t.nav.pricing}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/#faq" className={menuLinkClass}>
+                    <Link href="/onboarding#faq" className={menuLinkClass}>
                       {t.nav.faq}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/#book-meeting" className={menuLinkClass}>
+                    <Link href="/onboarding" className={menuLinkClass}>
                       {t.nav.cta}
                     </Link>
                   </li>

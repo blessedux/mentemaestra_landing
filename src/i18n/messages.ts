@@ -18,6 +18,13 @@ export const messages = {
         "Nos hacemos cargo de tu presencia digital, web, actualizaciones y diseño continuo, para que puedas enfocarte en hacer crecer tu negocio.",
       badge: "Estudio recomendado desde 2022",
     },
+    onboardingMap: {
+      sectionLabel: "Studio global",
+      title: "Tu próximo paso, en un solo lugar",
+      subtitle:
+        "Planes, precios y preguntas frecuentes — empezá cuando quieras.",
+      cta: "Ver planes e iniciar",
+    },
     welcome: {
       label: "Donde la claridad encuentra la innovación",
       magicLead: "Diseño bajo demanda",
@@ -473,6 +480,12 @@ export const messages = {
       description:
         "We take full ownership of your digital presence, web, updates, and ongoing design, so you can focus on growing your business.",
       badge: "Recommended studio since 2022",
+    },
+    onboardingMap: {
+      sectionLabel: "Global studio",
+      title: "Your next step, all in one place",
+      subtitle: "Plans, pricing, and FAQs — start when you're ready.",
+      cta: "View plans & get started",
     },
     welcome: {
       label: "Where clarity meets innovation",

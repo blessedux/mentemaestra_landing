@@ -113,7 +113,7 @@ export default function Experience() {
     <section
       ref={sectionRef}
       id="experience"
-      className="relative scroll-mt-28 px-6 py-24"
+      className="relative px-6 py-24"
     >
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-12 lg:grid-cols-2">

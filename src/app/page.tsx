@@ -8,7 +8,7 @@ import FeaturedWorks from "@/components/FeaturedWorks";
 import Stack from "@/components/Stack";
 import BookMeetingSection from "@/components/BookMeetingSection";
 import Testimonials from "@/components/Testimonials";
-import PricingFaq from "@/components/PricingFaq";
+import OnboardingGlobeMapSection from "@/components/OnboardingGlobeMapSection";
 import Experience from "@/components/Experience";
 import Footer from "@/components/Footer";
 
@@ -26,7 +26,7 @@ export default function Home() {
       <Experience />
       <Testimonials />
       <BookMeetingSection />
-      <PricingFaq />
+      <OnboardingGlobeMapSection />
       <Footer />
     </main>
   );
