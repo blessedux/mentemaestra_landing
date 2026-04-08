@@ -35,8 +35,6 @@
         "react": "^18.3.1",
         "react-day-picker": "^9.14.0",
         "react-dom": "^18.3.1",
-        "react-grab": "latest",
-        "same-runtime": "^0.0.1",
         "tailwind-merge": "^3.3.0",
         "tailwindcss-animate": "^1.0.7",
         "three": "0.91.0",

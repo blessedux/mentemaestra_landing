@@ -32,7 +32,7 @@ class AbstractApplication {
 
     const particlesOnly = Boolean(options.particlesOnly);
     this._particlesOnly = particlesOnly;
-    /** When false (landing): no wheel-zoom or pan; drag-to-rotate still on fine pointers. */
+    /** When false (landing): no wheel-zoom or pan; drag still rotates (mouse + touch). */
     this._orbitZoomEnabled = options.enableOrbitZoom !== false;
     const embedLight = particlesOnly && !this._orbitZoomEnabled;
 
@@ -120,16 +120,9 @@ class AbstractApplication {
     this.orbitControls.autoRotateSpeed = 0.5;
     this.orbitControls.rotateSpeed = 0.1;
     this.orbitControls.screenSpacePanning = true;
-    /** Touch-first devices: don't steal vertical scroll on the canvas when zoom is off (landing). */
-    const coarsePointer =
-      typeof window !== "undefined" &&
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(pointer: coarse)").matches;
-    if (!this._orbitZoomEnabled && coarsePointer) {
-      this.orbitControls.enableRotate = false;
-    }
     const canvas = this.a_renderer.domElement;
-    canvas.style.touchAction = !this._orbitZoomEnabled ? "pan-y" : "none";
+    /** Let one-finger drag rotate on touch; scroll the page from outside the canvas. */
+    canvas.style.touchAction = "none";
 
     this._resize = () => {
       if (this._disposed || !this._container) return;

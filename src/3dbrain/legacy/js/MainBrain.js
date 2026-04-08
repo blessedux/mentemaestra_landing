@@ -61,12 +61,6 @@ class MainBrain extends AbstractApplication {
     this._onCanvasPointerLeave = null;
     this._onCanvasPointerMove = null;
     this._particlesPointerBurstAttached = false;
-
-    this._introTimer = setTimeout(() => {
-      if (this._brainDisposed) return;
-      this.startIntro();
-    }, 400);
-
   }
 
   onContainerResize(w, h) {
@@ -176,7 +170,7 @@ class MainBrain extends AbstractApplication {
   }
 
   startIntro() {
-    if (this._brainDisposed) return;
+    if (this._brainDisposed || !this.particlesSystem) return;
     const progress = { p: 1000 };
     TweenMax.fromTo(
       progress,
@@ -262,6 +256,7 @@ class MainBrain extends AbstractApplication {
       this.thinkingAnimation.isActive(true);
     }
 
+    this.startIntro();
     this.animate();
   }
 
@@ -462,9 +457,6 @@ class MainBrain extends AbstractApplication {
     this._particlesPointerBurstAttached = false;
     if (this.particlesSystem) {
       this.particlesSystem.stopBurstPulseLoop();
-    }
-    if (this._introTimer) {
-      clearTimeout(this._introTimer);
     }
     if (typeof TweenMax.killAll === "function") {
       TweenMax.killAll(false, true, true);
