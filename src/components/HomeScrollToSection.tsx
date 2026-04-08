@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect } from "react";
+import { useLenis } from "lenis/react";
+import { hashScrollOptions } from "@/components/SmoothScrollRoot";
 
 /**
  * Scrolls to `#book-meeting` (or another id) after the home page mounts.
@@ -9,7 +11,11 @@ import { useEffect } from "react";
  * Mode’s double effect does not consume it on the first run and leave the second empty).
  */
 export default function HomeScrollToSection() {
+  const lenis = useLenis();
+
   useEffect(() => {
+    if (!lenis) return;
+
     let id = "";
     let idFromStorage = false;
     try {
@@ -29,10 +35,14 @@ export default function HomeScrollToSection() {
 
     if (!id) return;
 
+    const reducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+
     const scrollToId = () => {
       const el = document.getElementById(id);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+        lenis.scrollTo(`#${id}`, hashScrollOptions(reducedMotion));
         if (idFromStorage) {
           try {
             sessionStorage.removeItem("mm-scroll-to-section");
@@ -53,7 +63,7 @@ export default function HomeScrollToSection() {
       window.clearTimeout(t2);
       window.clearTimeout(t3);
     };
-  }, []);
+  }, [lenis]);
 
   return null;
 }

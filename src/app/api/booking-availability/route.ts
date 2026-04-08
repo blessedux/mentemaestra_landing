@@ -1,18 +1,8 @@
 import { NextResponse } from "next/server";
 
-import {
-  getBookingTimezone,
-  parseBlockedDates,
-  parseBusySlotsJson,
-} from "@/lib/booking-env";
-import { listBusySlotsInRange } from "@/lib/bookings-store";
-import { getDb, hasDatabase } from "@/lib/db";
-import { fetchIcloudBusyByDate } from "@/lib/icloud-caldav";
-import {
-  buildBaseAvailableSlotsByDate,
-  mergeBusyMaps,
-  subtractBusyFromAvailable,
-} from "@/lib/native-availability";
+import { computeNativeAvailability } from "@/lib/compute-native-availability";
+
+export const dynamic = "force-dynamic";
 
 function pad2(n: number) {
   return String(n).padStart(2, "0");
@@ -31,12 +21,8 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const fromParam = parseYmdParam(searchParams.get("from"));
   const toParam = parseYmdParam(searchParams.get("to"));
+  const debugAvailability = searchParams.get("debug") === "1";
 
-  const blockedDatesArr = parseBlockedDates(process.env.BOOKING_BLOCKED_DATES);
-  const blockedSet = new Set(blockedDatesArr);
-  const envBusy = parseBusySlotsJson(process.env.BOOKING_BUSY_SLOTS_JSON);
-
-  const tz = getBookingTimezone();
   const now = new Date();
   const defaultFrom = new Date(now.getFullYear(), now.getMonth(), 1);
   const defaultTo = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -44,52 +30,24 @@ export async function GET(req: Request) {
   const from = fromParam ?? ymdFromDate(defaultFrom);
   const to = toParam ?? ymdFromDate(defaultTo);
 
-  const base = buildBaseAvailableSlotsByDate(from, to, blockedSet);
-  let combinedBusy = { ...envBusy };
-
-  const sql = getDb();
-  const databaseConfigured = hasDatabase();
-  let databaseConnected = false;
-  if (!databaseConfigured) {
-    console.warn(
-      "[booking-availability] DATABASE_URL is not set (or empty). Add it in Vercel → Environment Variables for Production, then redeploy.",
-    );
-  } else if (sql) {
-    try {
-      const dbBusy = await listBusySlotsInRange(sql, from, to);
-      combinedBusy = mergeBusyMaps(combinedBusy, dbBusy);
-      databaseConnected = true;
-    } catch (e) {
-      const msg = e instanceof Error ? e.message : String(e);
-      console.error("[booking-availability] DB query failed:", msg);
-      if (/relation ["']bookings["'] does not exist/i.test(msg)) {
-        console.error(
-          "[booking-availability] Apply backend/migrations/001_bookings.sql to this database (Supabase SQL editor or psql).",
-        );
-      }
-      databaseConnected = false;
-    }
-  }
-
-  const caldav = await fetchIcloudBusyByDate({
+  const computed = await computeNativeAvailability({
     fromYmd: from,
     toYmd: to,
-    bookingTimezone: tz,
+    debug: debugAvailability,
   });
-  if (caldav.ok && Object.keys(caldav.busyByDate).length > 0) {
-    combinedBusy = mergeBusyMaps(combinedBusy, caldav.busyByDate);
-  }
 
-  const availableSlotsByDate = subtractBusyFromAvailable(base, combinedBusy);
+  const { debug, ...rest } = computed;
 
-  return NextResponse.json({
-    source: "native" as const,
-    timezone: tz,
-    availableSlotsByDate,
-    blockedDates: blockedDatesArr,
-    databaseConfigured,
-    databaseConnected,
-    caldavOk: caldav.ok,
-    caldavError: caldav.ok ? undefined : caldav.error,
-  });
+  return NextResponse.json(
+    {
+      source: "native" as const,
+      ...rest,
+      ...(debug ? { _debug: debug } : {}),
+    },
+    {
+      headers: {
+        "Cache-Control": "private, no-store, max-age=0",
+      },
+    },
+  );
 }

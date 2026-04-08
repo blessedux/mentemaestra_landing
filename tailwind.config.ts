@@ -56,6 +56,10 @@ export default {
         md: 'calc(var(--radius) - 2px)',
         sm: 'calc(var(--radius) - 4px)'
       },
+      transitionDuration: {
+        600: "600ms",
+        2000: "2000ms",
+      },
       container: {
       center: true,
       padding: {

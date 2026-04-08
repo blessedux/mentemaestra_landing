@@ -58,14 +58,27 @@ function parseIcalDateValue(
   if (value.length === 8 && /^\d{8}$/.test(value)) {
     return DateTime.fromFormat(value, "yyyyLLdd", { zone }).startOf("day");
   }
-  const clean = value.replace(/Z$/, "");
-  if (/^\d{8}T\d{6}$/.test(clean)) {
-    const iso = `${clean.slice(0, 4)}-${clean.slice(4, 6)}-${clean.slice(6, 8)}T${clean.slice(9, 11)}:${clean.slice(11, 13)}:${clean.slice(13, 15)}`;
-    if (propLine.includes("Z")) {
+
+  // Compact local offset: 20250408T090000-0300 (Z is not in propLine, only in value for UTC)
+  const offCompact = /^(\d{8}T\d{6})([+-])(\d{2})(\d{2})$/.exec(value);
+  if (offCompact) {
+    const c = offCompact[1];
+    const iso = `${c.slice(0, 4)}-${c.slice(4, 6)}-${c.slice(6, 8)}T${c.slice(9, 11)}:${c.slice(11, 13)}:${c.slice(13, 15)}`;
+    const o = `${offCompact[2]}${offCompact[3]}:${offCompact[4]}`;
+    const dt = DateTime.fromISO(`${iso}${o}`);
+    return dt.isValid ? dt : null;
+  }
+
+  const endsZulu = /Z$/i.test(value);
+  const noZulu = value.replace(/Z$/i, "");
+  if (/^\d{8}T\d{6}$/.test(noZulu)) {
+    const iso = `${noZulu.slice(0, 4)}-${noZulu.slice(4, 6)}-${noZulu.slice(6, 8)}T${noZulu.slice(9, 11)}:${noZulu.slice(11, 13)}:${noZulu.slice(13, 15)}`;
+    if (endsZulu) {
       return DateTime.fromISO(`${iso}Z`, { zone: "utc" });
     }
     return DateTime.fromISO(iso, { zone });
   }
+
   if (value.endsWith("Z")) {
     return DateTime.fromISO(value, { zone: "utc" });
   }
@@ -95,6 +108,8 @@ function extractIntervalsFromICal(ical: string, fallbackZone: string): BusyInter
     let dtEndLine = "";
     let dtEndVal = "";
     let durationMin: number | null = null;
+    let statusVal = "";
+    let transpVal = "";
     for (const line of lines) {
       if (line.startsWith("DTSTART")) {
         const i = line.indexOf(":");
@@ -107,15 +122,29 @@ function extractIntervalsFromICal(ical: string, fallbackZone: string): BusyInter
         dtEndLine = line.slice(0, i);
         dtEndVal = line.slice(i + 1);
       } else if (line.startsWith("DURATION:")) {
-        const m = /PT(?:(\d+)H)?(?:(\d+)M)?/.exec(line.slice("DURATION:".length));
+        const raw = line.slice("DURATION:".length).trim();
+        const dayPart = /^P(\d+)D(?:T|$)/i.exec(raw);
+        if (dayPart) {
+          durationMin = Number(dayPart[1]) * 24 * 60;
+        }
+        const m = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/.exec(raw);
         if (m) {
           const h = m[1] ? Number(m[1]) : 0;
           const mm = m[2] ? Number(m[2]) : 0;
-          durationMin = h * 60 + mm;
+          const s = m[3] ? Number(m[3]) : 0;
+          durationMin = (durationMin ?? 0) + h * 60 + mm + Math.ceil(s / 60);
         }
+      } else if (/^STATUS(?:;|$)/i.test(line)) {
+        const i = line.lastIndexOf(":");
+        if (i !== -1) statusVal = line.slice(i + 1).trim();
+      } else if (/^TRANSP(?:;|$)/i.test(line)) {
+        const i = line.lastIndexOf(":");
+        if (i !== -1) transpVal = line.slice(i + 1).trim();
       }
     }
     if (!dtStartVal) continue;
+    if (statusVal.toUpperCase() === "CANCELLED") continue;
+    if (transpVal.toUpperCase() === "TRANSPARENT") continue;
     const start = parseIcalDateValue(dtStartLine, dtStartVal, fallbackZone);
     if (!start) continue;
     let end: DateTime | null = null;
@@ -123,6 +152,9 @@ function extractIntervalsFromICal(ical: string, fallbackZone: string): BusyInter
       end = parseIcalDateValue(dtEndLine, dtEndVal, fallbackZone);
     } else if (durationMin != null) {
       end = start.plus({ minutes: durationMin });
+    } else if (/^\d{8}$/.test(dtStartVal)) {
+      // All-day VEVENT with only DTSTART;VALUE=DATE (RFC: end = next day 00:00 exclusive)
+      end = start.plus({ days: 1 });
     } else {
       end = start.plus({ hours: 1 });
     }
@@ -178,12 +210,56 @@ function intervalsToBusySlots(
   return out;
 }
 
+export type CaldavFetchDebug = {
+  resolvedCalendarDisplayName: string | undefined;
+  resolvedCalendarUrl: string | undefined;
+  rawObjectCount: number;
+  veventObjectCount: number;
+  intervalCount: number;
+  /** Longest single VEVENT span (hours); huge value ⇒ month-long / all-day block. */
+  largestIntervalHours: number;
+  /** First few intervals (UTC ISO) — find the event in Apple Calendar by time range. */
+  intervalSamplesUtc: Array<{ start: string; end: string }>;
+};
+
+function buildCaldavFetchDebug(
+  calendar: { displayName?: unknown; url?: unknown },
+  objects: { data?: unknown }[],
+  allIntervals: BusyInterval[],
+): CaldavFetchDebug {
+  let largest = 0;
+  for (const inv of allIntervals) {
+    const h = inv.end.diff(inv.start, "hours").hours;
+    if (Number.isFinite(h) && h > largest) largest = h;
+  }
+  const veventObjectCount = objects.filter((o) => {
+    const raw = typeof o.data === "string" ? o.data : String(o.data ?? "");
+    return raw.includes("VEVENT");
+  }).length;
+  const dn = calendar.displayName;
+  return {
+    resolvedCalendarDisplayName: typeof dn === "string" ? dn : undefined,
+    resolvedCalendarUrl:
+      typeof calendar.url === "string" ? calendar.url : undefined,
+    rawObjectCount: objects.length,
+    veventObjectCount,
+    intervalCount: allIntervals.length,
+    largestIntervalHours: Math.round(largest * 10) / 10,
+    intervalSamplesUtc: allIntervals.slice(0, 8).map((inv) => ({
+      start: inv.start.toUTC().toISO() ?? inv.start.toISO()!,
+      end: inv.end.toUTC().toISO() ?? inv.end.toISO()!,
+    })),
+  };
+}
+
 export async function fetchIcloudBusyByDate(opts: {
   fromYmd: string;
   toYmd: string;
   bookingTimezone: string;
+  /** When true (dev only), include `caldavDebug` with interval stats. */
+  debug?: boolean;
 }): Promise<
-  | { ok: true; busyByDate: Record<string, string[]> }
+  | { ok: true; busyByDate: Record<string, string[]>; caldavDebug?: CaldavFetchDebug }
   | { ok: false; busyByDate: Record<string, never>; error: string }
 > {
   if (!isIcloudCaldavEnabled()) {
@@ -230,7 +306,11 @@ export async function fetchIcloudBusyByDate(opts: {
       opts.toYmd,
       opts.bookingTimezone,
     );
-    return { ok: true, busyByDate };
+    const caldavDebug =
+      opts.debug === true
+        ? buildCaldavFetchDebug(calendar, objects, allIntervals)
+        : undefined;
+    return { ok: true, busyByDate, ...(caldavDebug ? { caldavDebug } : {}) };
   } catch (e) {
     const msg = e instanceof Error ? e.message : "caldav_error";
     console.warn("[icloud-caldav] fetch busy failed", msg);

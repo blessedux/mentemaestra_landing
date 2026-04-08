@@ -44,6 +44,16 @@ function LangToggle({
 const navItemClass =
   "block w-fit rounded-sm py-0.5 text-left text-sm font-medium text-zinc-400 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/20 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent";
 
+const navLinks = [
+  { href: "/#design", labelKey: "design" as const },
+  { href: "/#services", labelKey: "services" as const },
+  { href: "/#works", labelKey: "works" as const },
+  { href: "/#experience", labelKey: "experience" as const },
+  { href: "/#book-meeting", labelKey: "book" as const },
+  { href: "/#pricing", labelKey: "pricing" as const },
+  { href: "/#faq", labelKey: "faq" as const },
+];
+
 export default function Header() {
   const { locale, setLocale, t } = useLocale();
 
@@ -54,34 +64,15 @@ export default function Header() {
           className="ml-[3%] mt-[3%] flex min-w-0 flex-col items-start gap-0.5"
           aria-label="Main"
         >
-          <Link href="/" className={navItemClass}>
-            <TextScramble
-              text={t.nav.home}
-              className="w-fit"
-              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
-            />
-          </Link>
-          <Link href="/#services" className={navItemClass}>
-            <TextScramble
-              text={t.nav.studio}
-              className="w-fit"
-              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
-            />
-          </Link>
-          <Link href="/#works" className={navItemClass}>
-            <TextScramble
-              text={t.nav.works}
-              className="w-fit"
-              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
-            />
-          </Link>
-          <Link href="/#pricing" className={navItemClass}>
-            <TextScramble
-              text={t.nav.pricing}
-              className="w-fit"
-              labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
-            />
-          </Link>
+          {navLinks.map(({ href, labelKey }) => (
+            <Link key={href} href={href} className={navItemClass}>
+              <TextScramble
+                text={t.nav[labelKey]}
+                className="w-fit"
+                labelClassName="font-mono text-sm font-medium tracking-widest uppercase text-inherit"
+              />
+            </Link>
+          ))}
         </nav>
 
         <div className="flex shrink-0 flex-col items-end gap-3 sm:flex-row sm:items-center sm:gap-4">

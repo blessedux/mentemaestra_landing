@@ -104,7 +104,10 @@ export default function BookMeetingSection() {
               e.stopPropagation();
             }}
           >
-            <div className="max-h-[min(86dvh,calc(100svh-2rem))] min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain rounded-2xl border border-zinc-800/50 bg-[#0a0a0a]/95 p-3 shadow-[0_28px_90px_rgba(0,0,0,0.55)] sm:p-4">
+            <div
+              data-lenis-prevent
+              className="max-h-[min(86dvh,calc(100svh-2rem))] min-h-0 overflow-y-auto overflow-x-hidden overscroll-y-contain rounded-2xl border border-zinc-800/50 bg-[#0a0a0a]/95 p-3 shadow-[0_28px_90px_rgba(0,0,0,0.55)] sm:p-4"
+            >
               <BookMeetingConfirmPanel
                 dateStr={slotDate}
                 timeStr={slotTime}

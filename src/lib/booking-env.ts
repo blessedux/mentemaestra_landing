@@ -1,7 +1,7 @@
 /**
  * Booking configuration (see `/api/book-meeting`, `/api/booking-availability`).
  *
- * • `DATABASE_URL` — Postgres connection string (required; run `../backend/migrations/001_bookings.sql`). Local Docker Compose uses host port **5433** (see `../backend/docker-compose.yml`).
+ * • `DATABASE_URL` — Postgres connection string (required; run `../backend/migrations/001_bookings.sql`). **Supabase** (local dev + production): use the **transaction pooler** URI (port **6543**) with `?pgbouncer=true&sslmode=require`; `src/lib/db.ts` patches common omissions for `pooler.supabase.com`. Optional offline DB: `../backend/docker-compose.yml` on port **5433**.
  * • `BOOKING_ORGANIZER_EMAIL` — organizer mailbox for ICS + Resend (required).
  * • `BOOKING_TIMEZONE` — IANA zone for slots and ICS (default `America/Santiago`).
  * • `BOOKING_BLOCKED_DATES` — comma-separated `YYYY-MM-DD` (whole days off).
@@ -18,6 +18,7 @@
  * • `ICLOUD_APPLE_ID`, `ICLOUD_APP_SPECIFIC_PASSWORD`
  * • `ICLOUD_CALDAV_CALENDAR_URL` or `ICLOUD_CALDAV_CALENDAR_NAME` — target calendar for read (busy) + write (new events).
  * If CalDAV read fails, availability still uses the site grid + DB; check server logs.
+ * A **multi-day or all-day** event that spans your booking range marks **every** 15-minute slot in that range as busy (same as being fully booked). Use `pnpm booking:availability --debug` (non-production) to inspect `largestIntervalHours` and interval samples if the grid is unexpectedly empty.
  */
 
 export function parseBlockedDates(raw: string | undefined): string[] {

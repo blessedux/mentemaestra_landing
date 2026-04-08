@@ -6,6 +6,8 @@ import {
   parseBlockedDates,
   parseBusySlotsJson,
 } from "@/lib/booking-env";
+import { TIME_SLOTS } from "@/lib/booking-slots";
+import { computeNativeAvailability } from "@/lib/compute-native-availability";
 import { createBooking } from "@/lib/bookings-store";
 import { getDb, hasDatabase } from "@/lib/db";
 import { buildGoogleCalendarTemplateUrl } from "@/lib/google-calendar-link";
@@ -24,6 +26,8 @@ import {
   renderMeetingConfirmationEmailEs,
 } from "@/lib/meeting-confirmation-email";
 import { getPublicSiteUrl, getSocialUrlsForEmail } from "@/lib/public-site-url";
+
+export const dynamic = "force-dynamic";
 
 type Body = {
   date: string;
@@ -120,6 +124,25 @@ export async function POST(req: Request) {
   }
 
   if (isSlotBlockedLocally(date, time)) {
+    return NextResponse.json(
+      { ok: false, error: "slot_unavailable" },
+      { status: 409 },
+    );
+  }
+
+  if (!TIME_SLOTS.includes(time)) {
+    return NextResponse.json({ ok: false, error: "invalid_slot" }, {
+      status: 400,
+    });
+  }
+
+  const liveAvail = await computeNativeAvailability({
+    fromYmd: date,
+    toYmd: date,
+    debug: false,
+  });
+  const allowedStarts = liveAvail.availableSlotsByDate[date] ?? [];
+  if (!allowedStarts.includes(time)) {
     return NextResponse.json(
       { ok: false, error: "slot_unavailable" },
       { status: 409 },

@@ -52,6 +52,16 @@ class MainBrain extends AbstractApplication {
     this.gui = null;
     this.thinkingAnimation = null;
 
+    /** particlesOnly: ray vs brain bounds → smooth uBurst on hover */
+    this._burstHoverTarget = 0;
+    this._mouseNdc = new THREE.Vector2();
+    this._raycaster = new THREE.Raycaster();
+    this._brainBurstCenter = null;
+    this._brainBurstRadius = 1;
+    this._onCanvasPointerLeave = null;
+    this._onCanvasPointerMove = null;
+    this._particlesPointerBurstAttached = false;
+
     this._introTimer = setTimeout(() => {
       if (this._brainDisposed) return;
       this.startIntro();
@@ -186,7 +196,7 @@ class MainBrain extends AbstractApplication {
         onComplete: () => {
           if (this._brainDisposed) return;
           if (this.brainOptions.particlesOnly) {
-            this.particlesSystem.startBurstPulseLoop();
+            this._attachParticlesOnlyPointerBurst();
           } else {
             this.particlesSystem.xRay.material.uniforms.c.value = 1.0;
             this.startAutoDemo();
@@ -273,6 +283,12 @@ class MainBrain extends AbstractApplication {
       this.camera,
       this.particlesSystem.xRay
     );
+    if (this.brainOptions.particlesOnly && this.particlesSystem) {
+      const ub = this.particlesSystem.particles.material.uniforms.uBurst;
+      const target = this._burstHoverTarget;
+      const k = 1 - Math.exp(-dt * 11);
+      ub.value += (target - ub.value) * k;
+    }
     if (this.thinkingAnimation) {
       this.thinkingAnimation.update(this.camera, this.deltaTime);
     }
@@ -304,9 +320,122 @@ class MainBrain extends AbstractApplication {
     }
   }
   onMouseMove(event) {
-    const y = window.innerHeight - event.clientY;
-    const x = window.innerHeight - event.clientX;
+    this._updateBurstHoverFromPointer(event.clientX, event.clientY);
   }
+
+  static computeBrainBoundingSphere(bufferGeometry) {
+    const attr = bufferGeometry.attributes.position;
+    if (!attr || !attr.array) {
+      return { center: new THREE.Vector3(), radius: 120 };
+    }
+    const arr = attr.array;
+    let minX = Infinity;
+    let minY = Infinity;
+    let minZ = Infinity;
+    let maxX = -Infinity;
+    let maxY = -Infinity;
+    let maxZ = -Infinity;
+    for (let i = 0; i < arr.length; i += 3) {
+      const x = arr[i];
+      const y = arr[i + 1];
+      const z = arr[i + 2];
+      minX = Math.min(minX, x);
+      minY = Math.min(minY, y);
+      minZ = Math.min(minZ, z);
+      maxX = Math.max(maxX, x);
+      maxY = Math.max(maxY, y);
+      maxZ = Math.max(maxZ, z);
+    }
+    const cx = (minX + maxX) * 0.5;
+    const cy = (minY + maxY) * 0.5;
+    const cz = (minZ + maxZ) * 0.5;
+    const center = new THREE.Vector3(cx, cy, cz);
+    let maxR = 0;
+    for (let i = 0; i < arr.length; i += 3) {
+      const dx = arr[i] - cx;
+      const dy = arr[i + 1] - cy;
+      const dz = arr[i + 2] - cz;
+      const d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+      if (d > maxR) maxR = d;
+    }
+    return { center, radius: Math.max(maxR, 1) };
+  }
+
+  _updateBurstHoverFromPointer(clientX, clientY) {
+    if (
+      !this.brainOptions.particlesOnly ||
+      this._brainDisposed ||
+      !this.particlesSystem ||
+      !this._brainBurstCenter
+    ) {
+      return;
+    }
+    const canvas = this.renderer.domElement;
+    const rect = canvas.getBoundingClientRect();
+    if (
+      clientX < rect.left ||
+      clientX > rect.right ||
+      clientY < rect.top ||
+      clientY > rect.bottom
+    ) {
+      this._burstHoverTarget = 0;
+      return;
+    }
+    this._mouseNdc.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+    this._mouseNdc.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+    this._raycaster.setFromCamera(this._mouseNdc, this.camera);
+    const ray = this._raycaster.ray;
+    const c = this._brainBurstCenter;
+    const oc = new THREE.Vector3().subVectors(c, ray.origin);
+    const t = Math.max(0, oc.dot(ray.direction));
+    const closest = new THREE.Vector3()
+      .copy(ray.direction)
+      .multiplyScalar(t)
+      .add(ray.origin);
+    const dist = closest.distanceTo(c);
+    const r = this._brainBurstRadius;
+    const fullSpread = r * 0.42;
+    const brainShape = r * 2.55;
+    let burst = 0;
+    if (dist <= fullSpread) {
+      burst = 1;
+    } else if (dist >= brainShape) {
+      burst = 0;
+    } else {
+      burst = 1 - (dist - fullSpread) / (brainShape - fullSpread);
+      burst = burst * burst * (3 - 2 * burst);
+    }
+    this._burstHoverTarget = burst;
+  }
+
+  _attachParticlesOnlyPointerBurst() {
+    if (this._brainDisposed || !this.renderer) return;
+    const sphere = MainBrain.computeBrainBoundingSphere(this.endPointsCollections);
+    this._brainBurstCenter = sphere.center;
+    this._brainBurstRadius = sphere.radius;
+
+    this.particlesSystem.stopBurstPulseLoop();
+    const mat = this.particlesSystem.particles.material;
+    mat.uniforms.uBurst.value = 0;
+    mat.uniforms.uScatterSeed.value = Math.random() * 2000.0;
+
+    if (this._particlesPointerBurstAttached) return;
+    this._particlesPointerBurstAttached = true;
+    const canvas = this.renderer.domElement;
+    this._onCanvasPointerLeave = () => {
+      this._burstHoverTarget = 0;
+    };
+    this._onCanvasPointerMove = (e) => {
+      this._updateBurstHoverFromPointer(e.clientX, e.clientY);
+    };
+    canvas.addEventListener("pointerleave", this._onCanvasPointerLeave, {
+      passive: true,
+    });
+    canvas.addEventListener("pointermove", this._onCanvasPointerMove, {
+      passive: true,
+    });
+  }
+
   addParticlesSystem() {
     this.particlesSystem = new ParticleSystem(
       this,
@@ -319,6 +448,21 @@ class MainBrain extends AbstractApplication {
   destroy() {
     if (this._brainDisposed) return;
     this._brainDisposed = true;
+    if (this.renderer && this.renderer.domElement) {
+      const canvas = this.renderer.domElement;
+      if (this._onCanvasPointerLeave) {
+        canvas.removeEventListener("pointerleave", this._onCanvasPointerLeave);
+        this._onCanvasPointerLeave = null;
+      }
+      if (this._onCanvasPointerMove) {
+        canvas.removeEventListener("pointermove", this._onCanvasPointerMove);
+        this._onCanvasPointerMove = null;
+      }
+    }
+    this._particlesPointerBurstAttached = false;
+    if (this.particlesSystem) {
+      this.particlesSystem.stopBurstPulseLoop();
+    }
     if (this._introTimer) {
       clearTimeout(this._introTimer);
     }

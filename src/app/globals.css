@@ -224,9 +224,9 @@ h1, h2, h3, h4, h5, h6 {
   background: hsl(var(--muted-foreground));
 }
 
-/* Smooth scroll */
+/* Lenis drives scrolling; native smooth conflicts with programmatic scroll */
 html {
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
 }
 
 /* Service card hover effect */

@@ -56,6 +56,9 @@ type AvailabilityResponse = {
   databaseConnected?: boolean;
   caldavOk?: boolean;
   caldavError?: string;
+  caldavConfigured?: boolean;
+  /** Present when DATABASE_URL is set but the bookings query failed. */
+  databaseIssue?: "local" | "hosted";
 };
 
 type BookMeetingCardProps = {
@@ -92,6 +95,7 @@ export default function BookMeetingCard({
     try {
       const res = await fetch(
         `/api/booking-availability?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`,
+        { cache: "no-store" },
       );
       if (!res.ok) return;
       const data = (await res.json()) as AvailabilityResponse;
@@ -112,12 +116,25 @@ export default function BookMeetingCard({
     const onVisibility = () => {
       if (document.visibilityState === "visible") void loadAvailability();
     };
+    const onFocus = () => {
+      void loadAvailability();
+    };
     window.addEventListener("mm-bookings-changed", onBookingsChanged);
     document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", onFocus);
     return () => {
       window.removeEventListener("mm-bookings-changed", onBookingsChanged);
       document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", onFocus);
     };
+  }, [loadAvailability]);
+
+  /** Reconcile picker with live CalDAV/DB without waiting for tab switch (long sessions). */
+  useEffect(() => {
+    const t = window.setInterval(() => {
+      void loadAvailability();
+    }, 60_000);
+    return () => window.clearInterval(t);
   }, [loadAvailability]);
 
   const blockedDateKeys = useMemo(
@@ -146,18 +163,47 @@ export default function BookMeetingCard({
     });
   }, [blockedDateKeys]);
 
-  const visibleTimeSlots = useMemo(() => {
-    if (!date) {
-      if (!availability) return TIME_SLOTS;
-      return [];
-    }
+  /** Slots the API marks as bookable for the selected day. Empty while loading (avoid flash of false “open” slots). */
+  const allowedSlotSet = useMemo(() => {
+    if (!date) return null;
     const key = toLocalDateKey(date);
-    if (availability?.source === "native") {
-      return availability.availableSlotsByDate[key] ?? [];
+    if (!availability) return new Set<string>();
+    if (availability.source !== "native") {
+      const busy = busySlotsByDate[key] ?? [];
+      return new Set(TIME_SLOTS.filter((s) => !busy.includes(s)));
     }
-    const busy = busySlotsByDate[key] ?? [];
-    return TIME_SLOTS.filter((slot) => !busy.includes(slot));
+    return new Set(availability.availableSlotsByDate[key] ?? []);
   }, [date, availability, busySlotsByDate]);
+
+  useEffect(() => {
+    if (!selectedTime || !date) return;
+    const key = toLocalDateKey(date);
+    if (!availability || availability.source !== "native") {
+      if (!availability) return;
+      const busy = busySlotsByDate[key] ?? [];
+      if (busy.includes(selectedTime)) setSelectedTime(null);
+      return;
+    }
+    const allowed = availability.availableSlotsByDate[key] ?? [];
+    if (!allowed.includes(selectedTime)) setSelectedTime(null);
+  }, [selectedTime, date, availability, busySlotsByDate]);
+
+  const calendarDayUnavailable = useCallback(
+    (d: Date) => {
+      if (!availability || availability.source !== "native") return false;
+      const x = new Date(d);
+      x.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (x < today) return false;
+      if (x.getDay() === 0 || x.getDay() === 6) return false;
+      const key = toLocalDateKey(x);
+      if (blockedDateKeys.includes(key)) return false;
+      const slots = availability.availableSlotsByDate[key];
+      return !slots || slots.length === 0;
+    },
+    [availability, blockedDateKeys],
+  );
 
   const weekdayFormatter = useMemo(
     () => ({
@@ -234,6 +280,10 @@ export default function BookMeetingCard({
     availability?.source === "native" &&
     (dbWarn || Boolean(availability.caldavError));
 
+  const timeColumnDisabled = Boolean(
+    !date || (date ? dateDisabled(date) : false),
+  );
+
   return (
     <Card className="gap-0 overflow-hidden border-zinc-800 bg-zinc-950/60 p-0 text-zinc-100 shadow-none">
         <CardHeader className="flex h-max justify-center border-b border-zinc-800 bg-zinc-950/80 p-4">
@@ -246,7 +296,9 @@ export default function BookMeetingCard({
             <p className="border-b border-amber-900/40 bg-amber-950/30 px-6 py-3 text-xs text-amber-100/85">
               {dbWarn
                 ? configured
-                  ? copy.availabilityDbQueryFailed
+                  ? availability?.databaseIssue === "local"
+                    ? copy.availabilityDbQueryFailedLocal
+                    : copy.availabilityDbQueryFailed
                   : copy.availabilityDbWarning
                 : copy.availabilityCaldavWarning}
             </p>
@@ -260,33 +312,57 @@ export default function BookMeetingCard({
               onSelect={onSelectDate}
               disabled={dateDisabled}
               showOutsideDays={false}
-              modifiers={{ booked: bookedDates }}
+              modifiers={{
+                booked: bookedDates,
+                dayUnavailable: calendarDayUnavailable,
+              }}
               modifiersClassNames={{
                 booked: "[&>button]:line-through opacity-100",
+                dayUnavailable: "[&>button]:line-through opacity-100",
               }}
               className="bg-transparent p-0 text-foreground [--cell-size:2.5rem]"
               formatters={weekdayFormatter}
             />
           </div>
-          <div className="inset-y-0 right-0 flex max-h-[min(360px,50vh)] w-full flex-col gap-4 border-t border-zinc-800 md:absolute md:max-h-none md:w-48 md:border-t-0 md:border-l md:border-zinc-800">
-            <ScrollArea className="h-60 md:h-full md:min-h-[280px]">
+          <div
+            className="relative z-20 inset-y-0 right-0 flex max-h-[min(360px,50vh)] w-full flex-col gap-4 border-t border-zinc-800 md:absolute md:max-h-none md:w-48 md:border-t-0 md:border-l md:border-zinc-800"
+            data-lenis-prevent
+          >
+            <ScrollArea
+              className="h-60 md:h-full md:min-h-[280px]"
+              data-lenis-prevent
+            >
               <div className="flex flex-col gap-2 p-6">
-                {date && visibleTimeSlots.length === 0 ? (
+                {date && timeColumnDisabled ? (
                   <p className="text-center text-xs text-zinc-500">
                     {copy.noSlotsForDay}
                   </p>
                 ) : null}
-                {visibleTimeSlots.map((time) => (
-                  <Button
-                    key={time}
-                    type="button"
-                    variant={selectedTime === time ? "default" : "outline"}
-                    onClick={() => setSelectedTime(time)}
-                    className="w-full border-zinc-700 bg-zinc-900/40 text-zinc-200 shadow-none hover:bg-zinc-800"
-                  >
-                    {time}
-                  </Button>
-                ))}
+                {TIME_SLOTS.map((time) => {
+                  const allowed = allowedSlotSet?.has(time) ?? true;
+                  const inactive = timeColumnDisabled || !allowed;
+                  return (
+                    <Button
+                      key={time}
+                      type="button"
+                      disabled={inactive}
+                      variant={
+                        selectedTime === time && !inactive ? "default" : "outline"
+                      }
+                      onClick={() => {
+                        if (inactive) return;
+                        setSelectedTime(time);
+                      }}
+                      className={
+                        inactive
+                          ? "w-full cursor-not-allowed border-zinc-800 bg-zinc-950/40 text-zinc-600 opacity-50 shadow-none hover:bg-zinc-950/40"
+                          : "w-full border-zinc-700 bg-zinc-900/40 text-zinc-200 shadow-none hover:bg-zinc-800"
+                      }
+                    >
+                      {time}
+                    </Button>
+                  );
+                })}
               </div>
             </ScrollArea>
           </div>

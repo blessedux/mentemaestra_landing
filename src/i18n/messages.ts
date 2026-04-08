@@ -3,10 +3,13 @@ export type Locale = "es" | "en";
 export const messages = {
   es: {
     nav: {
-      home: "Inicio",
-      studio: "Estudio",
+      design: "Diseño",
+      services: "Servicios",
       works: "Proyectos",
+      experience: "Experiencia",
+      book: "Agenda",
       pricing: "Precios",
+      faq: "FAQ",
       cta: "Iniciar proyecto",
     },
     hero: {
@@ -382,6 +385,8 @@ export const messages = {
           "No hay base de datos conectada: los huecos pueden no reflejar reservas reales. Configura DATABASE_URL en el servidor.",
         availabilityDbQueryFailed:
           "DATABASE_URL está definido pero no pudimos leer reservas. En Supabase añade ?pgbouncer=true al pooler (puerto 6543), asegura sslmode=require, codifica la contraseña en la URL y ejecuta la migración 001_bookings.sql en este proyecto.",
+        availabilityDbQueryFailedLocal:
+          "DATABASE_URL apunta a tu Postgres local pero no hubo conexión. Desde `backend/`: `docker compose up -d`, luego aplica `backend/migrations/001_bookings.sql` (psql o consola SQL). Usa el host `127.0.0.1` y el puerto publicado (p. ej. 5433 en docker-compose).",
         availabilityCaldavWarning:
           "No pudimos leer tu calendario iCloud (CalDAV). Los huecos siguen la cuadrícula del sitio; revisa ICLOUD_* y los logs.",
       },
@@ -454,10 +459,13 @@ export const messages = {
   },
   en: {
     nav: {
-      home: "Home",
-      studio: "Studio",
+      design: "Design",
+      services: "Services",
       works: "Works",
+      experience: "Experience",
+      book: "Book",
       pricing: "Pricing",
+      faq: "FAQ",
       cta: "Start Project",
     },
     hero: {
@@ -832,6 +840,8 @@ export const messages = {
           "Database not connected—open times may not reflect real bookings. Set DATABASE_URL on the server.",
         availabilityDbQueryFailed:
           "DATABASE_URL is set but we could not load bookings from the database. On Supabase use the transaction pooler with pgbouncer=true (port 6543), ensure sslmode=require, URL-encode the password, and run migration 001_bookings.sql on this project.",
+        availabilityDbQueryFailedLocal:
+          "DATABASE_URL points at local Postgres but the connection failed. From `backend/` run `docker compose up -d`, apply `backend/migrations/001_bookings.sql`, and use host `127.0.0.1` with the mapped port (e.g. 5433 from docker-compose).",
         availabilityCaldavWarning:
           "Could not read your iCloud calendar (CalDAV). Slots follow the site grid; check ICLOUD_* env and server logs.",
       },

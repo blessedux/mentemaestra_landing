@@ -129,7 +129,7 @@ export default function FeaturedWorks() {
   };
 
   return (
-    <section id="works" className="px-6 py-24">
+    <section id="works" className="scroll-mt-28 px-6 py-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 grid gap-8 lg:grid-cols-2">
           <div className="flex items-center gap-3">

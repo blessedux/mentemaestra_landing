@@ -53,3 +53,14 @@ export function getDb(): ReturnType<typeof postgres> | null {
 export function hasDatabase(): boolean {
   return Boolean(process.env.DATABASE_URL?.trim());
 }
+
+/** Host is loopback — typical Docker Compose Postgres (`backend/docker-compose.yml` port 5433). */
+export function isLocalDatabaseHost(rawUrl: string | undefined): boolean {
+  if (!rawUrl?.trim()) return false;
+  try {
+    const host = new URL(resolveDatabaseUrl(rawUrl.trim())).hostname.toLowerCase();
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+  } catch {
+    return false;
+  }
+}

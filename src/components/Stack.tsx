@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useLocale } from "@/i18n/LocaleProvider";
+import { useEffect, useState } from "react";
 
 const BASE = "/imgs/stack_images";
 
@@ -39,44 +39,146 @@ const STACK_ITEMS = [
   },
 ] as const;
 
+/** Positions 1+3, then 2+4 — overlapping pairs so the grid never fully empties. */
+const EXIT_GROUPS = [
+  [0, 2],
+  [1, 3],
+] as const;
+
+/**
+ * Each slot walks its own permutation of icon indices so choreography stays varied
+ * and we can pick a next icon that is never already on another slot.
+ */
+const SLOT_CYCLES: ReadonlyArray<readonly number[]> = [
+  [0, 1, 2, 3, 4, 5],
+  [1, 3, 5, 0, 2, 4],
+  [2, 5, 1, 4, 0, 3],
+  [3, 4, 0, 5, 2, 1],
+];
+
+type SlotPhase = "idle" | "out" | "in";
+
+const BLUR_LEG_MS = 600;
+const HOLD_MS = 2500;
+
+const idlePhases = (): SlotPhase[] => ["idle", "idle", "idle", "idle"];
+
+function pickNextIcon(slot: number, current: number[], n: number): number {
+  const forbidden = new Set<number>();
+  for (let i = 0; i < 4; i++) {
+    if (i !== slot) forbidden.add(current[i]);
+  }
+
+  const cycle = SLOT_CYCLES[slot];
+  const cur = current[slot];
+  const startPos = cycle.indexOf(cur);
+  const base = startPos >= 0 ? startPos : 0;
+
+  for (let step = 1; step <= n; step++) {
+    const cand = cycle[(base + step) % cycle.length];
+    if (!forbidden.has(cand)) return cand;
+  }
+
+  for (let v = 0; v < n; v++) {
+    if (!forbidden.has(v)) return v;
+  }
+
+  return cur;
+}
+
 export default function Stack() {
-  const { t } = useLocale();
+  const n = STACK_ITEMS.length;
+  const [indices, setIndices] = useState<number[]>([0, 1, 2, 3]);
+  const [phases, setPhases] = useState<SlotPhase[]>(idlePhases);
+
+  useEffect(() => {
+    let cancelled = false;
+    const wait = (ms: number) =>
+      new Promise<void>((resolve) => {
+        setTimeout(resolve, ms);
+      });
+
+    const run = async () => {
+      while (!cancelled) {
+        await wait(HOLD_MS);
+        if (cancelled) break;
+
+        for (const group of EXIT_GROUPS) {
+          if (cancelled) break;
+
+          for (const slot of group) {
+            if (cancelled) break;
+            setPhases((p) => {
+              const next = [...p];
+              next[slot] = "out";
+              return next;
+            });
+            await wait(BLUR_LEG_MS);
+          }
+          if (cancelled) break;
+
+          setIndices((prev) => {
+            const work = [...prev];
+            for (const slot of group) {
+              work[slot] = pickNextIcon(slot, work, n);
+            }
+            return work;
+          });
+
+          setPhases((p) => {
+            const next = [...p];
+            for (const slot of group) next[slot] = "in";
+            return next;
+          });
+          await wait(BLUR_LEG_MS);
+          if (cancelled) break;
+
+          setPhases((p) => {
+            const next = [...p];
+            for (const slot of group) next[slot] = "idle";
+            return next;
+          });
+        }
+      }
+    };
+
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [n]);
 
   return (
-    <section className="bg-zinc-900/50 px-6 py-24">
+    <section className="bg-black px-6 py-24">
       <div className="mx-auto max-w-7xl">
-        <div className="mb-4 flex items-center gap-3">
-          <div className="h-2 w-2 rounded-full bg-white" />
-          <span className="text-xs uppercase tracking-[0.2em] text-zinc-400">
-            {t.stack.label}
-          </span>
-        </div>
-        <p className="mb-12 max-w-xl text-sm text-zinc-500">{t.stack.blurb}</p>
+        <div className="grid grid-cols-2 place-items-center gap-x-16 gap-y-12 md:grid-cols-4 md:gap-x-20 md:gap-y-16">
+          {[0, 1, 2, 3].map((slot) => {
+            const idx = indices[slot]!;
+            const item = STACK_ITEMS[idx];
+            const phase = phases[slot];
+            const phaseClass =
+              phase === "out"
+                ? "opacity-0 blur-[14px]"
+                : "opacity-100 blur-0";
 
-        <div className="flex flex-wrap items-center justify-center gap-x-12 gap-y-10 md:gap-x-16 md:gap-y-12">
-          {STACK_ITEMS.map((item) => (
-            <div
-              key={item.name}
-              className="flex cursor-default items-center gap-3 text-zinc-400 opacity-80 transition-opacity hover:opacity-100"
-            >
+            return (
               <div
-                className={`relative flex shrink-0 items-center justify-center ${
-                  item.wide ? "h-10 w-[140px]" : "h-10 w-10"
-                }`}
+                key={slot}
+                className={`relative shrink-0 transition-[opacity,filter] duration-600 ease-in-out ${
+                  item.wide ? "h-20 w-[280px]" : "h-20 w-20"
+                } ${phaseClass}`}
               >
                 <Image
+                  key={`${slot}-${idx}`}
                   src={item.src}
                   alt=""
                   fill
-                  sizes={item.wide ? "140px" : "40px"}
+                  sizes={item.wide ? "280px" : "80px"}
                   className="object-contain"
                 />
               </div>
-              <span className="text-sm font-semibold tracking-tight text-zinc-300">
-                {item.name}
-              </span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>

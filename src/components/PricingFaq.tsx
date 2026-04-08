@@ -308,7 +308,10 @@ export default function PricingFaq() {
         </div>
       </section>
 
-      <section className="border-t border-zinc-800/80 px-6 py-24">
+      <section
+        id="faq"
+        className="scroll-mt-28 border-t border-zinc-800/80 px-6 py-24"
+      >
         <div className="mx-auto max-w-3xl text-left">
           <h2 className="text-4xl font-bold md:text-5xl">
             {p.faqTitle}

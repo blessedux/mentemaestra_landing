@@ -39,13 +39,13 @@ export default function Footer() {
                 <p className={subheadingClass}>{t.footer.menuTitle}</p>
                 <ul className="flex flex-col gap-1">
                   <li>
-                    <Link href="/" className={menuLinkClass}>
-                      {t.nav.home}
+                    <Link href="/#design" className={menuLinkClass}>
+                      {t.nav.design}
                     </Link>
                   </li>
                   <li>
                     <Link href="/#services" className={menuLinkClass}>
-                      {t.nav.studio}
+                      {t.nav.services}
                     </Link>
                   </li>
                   <li>
@@ -54,8 +54,23 @@ export default function Footer() {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/#experience" className={menuLinkClass}>
+                      {t.nav.experience}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/#book-meeting" className={menuLinkClass}>
+                      {t.nav.book}
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/#pricing" className={menuLinkClass}>
                       {t.nav.pricing}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/#faq" className={menuLinkClass}>
+                      {t.nav.faq}
                     </Link>
                   </li>
                   <li>

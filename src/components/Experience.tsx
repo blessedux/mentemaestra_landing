@@ -110,7 +110,11 @@ export default function Experience() {
   const stat3Range: [number, number] = [2 / 3, 1];
 
   return (
-    <section ref={sectionRef} className="relative px-6 py-24">
+    <section
+      ref={sectionRef}
+      id="experience"
+      className="relative scroll-mt-28 px-6 py-24"
+    >
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-12 lg:grid-cols-2">
           <div className="relative">
