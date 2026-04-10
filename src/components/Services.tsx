@@ -18,7 +18,7 @@ export default function Services() {
   ] as const;
 
   return (
-    <section id="services" className="scroll-mt-28 px-6 py-24">
+    <section id="services" className="px-6 py-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <h2 className="text-4xl font-bold md:text-5xl">{t.services.title}</h2>

@@ -11,6 +11,7 @@ import {
 } from "motion/react";
 
 import { useLocale } from "@/i18n/LocaleProvider";
+import { portfolioProjects } from "@/data/portfolio-projects";
 
 const Brain3dExperience = dynamic(
   () => import("@/components/Brain3dExperience"),
@@ -109,11 +110,13 @@ export default function Experience() {
   const stat2Range: [number, number] = [1 / 3, 2 / 3];
   const stat3Range: [number, number] = [2 / 3, 1];
 
+  const projectsShipped = portfolioProjects.length;
+
   return (
     <section
       ref={sectionRef}
       id="experience"
-      className="relative scroll-mt-28 px-6 py-24"
+      className="relative px-6 py-24"
     >
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-12 lg:grid-cols-2">
@@ -195,7 +198,7 @@ export default function Experience() {
               </h3>
               <div className="border-t border-zinc-800 pt-6">
                 <div className="flex items-baseline gap-4">
-                  <CountUpNumber target={32} active={stat2InView} />
+                  <CountUpNumber target={projectsShipped} active={stat2InView} />
                   <div className="text-xs uppercase tracking-[0.15em] text-zinc-500 whitespace-pre-line">
                     {t.experience.stat2Unit}
                   </div>

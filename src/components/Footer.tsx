@@ -1,8 +1,9 @@
 "use client";
 
+import { faInstagram, faLinkedinIn, faXTwitter } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Image from "next/image";
 import Link from "next/link";
-import { Instagram, Linkedin, X as XLogo } from "lucide-react";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ParallaxComponent } from "@/components/ui/parallax-scrolling";
 
@@ -17,6 +18,8 @@ const menuLinkClass =
   "block w-fit rounded-sm py-0.5 text-sm font-medium text-white/75 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/25";
 
 const subheadingClass = "text-xs font-medium uppercase tracking-[0.2em] text-white/50";
+
+const footerSocialIconStyle = { color: "rgb(255, 255, 255)" } as const;
 
 export default function Footer() {
   const { t } = useLocale();
@@ -64,17 +67,17 @@ export default function Footer() {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/#pricing" className={menuLinkClass}>
+                    <Link href="/onboarding#pricing" className={menuLinkClass}>
                       {t.nav.pricing}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/#faq" className={menuLinkClass}>
+                    <Link href="/onboarding#faq" className={menuLinkClass}>
                       {t.nav.faq}
                     </Link>
                   </li>
                   <li>
-                    <Link href="/#book-meeting" className={menuLinkClass}>
+                    <Link href="/onboarding" className={menuLinkClass}>
                       {t.nav.cta}
                     </Link>
                   </li>
@@ -120,10 +123,14 @@ export default function Footer() {
                       href={FOOTER_SOCIAL_HREFS.instagram}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white transition-opacity hover:opacity-80"
+                      className="inline-flex text-white transition-opacity hover:opacity-80"
                       aria-label="Instagram"
                     >
-                      <Instagram className="h-5 w-5" aria-hidden />
+                      <FontAwesomeIcon
+                        icon={faInstagram}
+                        style={footerSocialIconStyle}
+                        className="h-5 w-5"
+                      />
                     </a>
                   </li>
                   <li>
@@ -131,10 +138,14 @@ export default function Footer() {
                       href={FOOTER_SOCIAL_HREFS.x}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white transition-opacity hover:opacity-80"
+                      className="inline-flex text-white transition-opacity hover:opacity-80"
                       aria-label="X"
                     >
-                      <XLogo className="h-5 w-5" aria-hidden />
+                      <FontAwesomeIcon
+                        icon={faXTwitter}
+                        style={footerSocialIconStyle}
+                        className="h-5 w-5"
+                      />
                     </a>
                   </li>
                   <li>
@@ -142,10 +153,14 @@ export default function Footer() {
                       href={FOOTER_SOCIAL_HREFS.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-white transition-opacity hover:opacity-80"
+                      className="inline-flex text-white transition-opacity hover:opacity-80"
                       aria-label="LinkedIn"
                     >
-                      <Linkedin className="h-5 w-5" aria-hidden />
+                      <FontAwesomeIcon
+                        icon={faLinkedinIn}
+                        style={footerSocialIconStyle}
+                        className="h-5 w-5"
+                      />
                     </a>
                   </li>
                 </ul>

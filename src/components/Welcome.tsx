@@ -33,7 +33,7 @@ export default function Welcome() {
   return (
     <section
       id="design"
-      className="scroll-mt-28 px-6 pb-24 pt-6 md:pt-8"
+      className="px-6 pb-24 pt-6 md:pt-8"
     >
       <div className="mx-auto max-w-7xl">
         <div className="grid items-start gap-12 lg:grid-cols-2">

@@ -27,7 +27,7 @@ export default function PricingFaq() {
     <>
       <section
         id="pricing"
-        className="scroll-mt-28 border-t border-zinc-800/80 bg-zinc-950/40 px-[20px] py-24"
+        className="scroll-mt-24 mt-8 border-t border-zinc-800/80 bg-zinc-950/40 px-[20px] py-24 md:scroll-mt-28 md:mt-10"
       >
         <div className="w-full text-left">
           <div className="mb-12 flex flex-col gap-8 md:mb-14 md:flex-row md:items-end md:justify-between">
@@ -310,7 +310,7 @@ export default function PricingFaq() {
 
       <section
         id="faq"
-        className="scroll-mt-28 border-t border-zinc-800/80 px-6 py-24"
+        className="border-t border-zinc-800/80 px-6 py-24"
       >
         <div className="mx-auto max-w-3xl text-left">
           <h2 className="text-4xl font-bold md:text-5xl">
