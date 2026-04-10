@@ -8,9 +8,7 @@ export default function OnboardingPage() {
     <main className="min-h-screen overflow-x-hidden bg-[#0a0a0a] text-white">
       <HomeScrollToSection />
       <Header />
-      <div className="pt-24 md:pt-28">
-        <PricingFaq />
-      </div>
+      <PricingFaq />
       <Footer />
     </main>
   );

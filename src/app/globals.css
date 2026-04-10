@@ -75,6 +75,35 @@ h1, h2, h3, h4, h5, h6 {
   animation: marquee-reverse 30s linear infinite;
 }
 
+/* Featured works: vertical infinite scroll inside 3D grid (CSS — reliable timing vs Motion % inside 3D) */
+@keyframes marquee-3d-y-down {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(0, -50%, 0);
+  }
+}
+
+@keyframes marquee-3d-y-up {
+  from {
+    transform: translate3d(0, -50%, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.three-d-marquee-column:hover .three-d-marquee-track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .three-d-marquee-track {
+    animation: none !important;
+  }
+}
+
 /* Rotating badge */
 @keyframes spin-slow {
   from {
@@ -454,7 +483,6 @@ html {
   background: radial-gradient(100% 90% at 50% 100%, rgba(88, 28, 135, 0.35) 0%, transparent 50%),
     linear-gradient(to top, rgba(5, 8, 16, 0.95) 0%, transparent 40%);
 }
-
 
 .parallax__fade {
   --parallax-fade-rgb: 0, 0, 0;

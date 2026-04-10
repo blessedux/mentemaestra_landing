@@ -60,6 +60,17 @@ export default {
         600: "600ms",
         2000: "2000ms",
       },
+      spacing: {
+        100: "25rem",
+        120: "30rem",
+        140: "35rem",
+        180: "45rem",
+      },
+      scale: {
+        110: "1.1",
+        130: "1.3",
+        135: "1.35",
+      },
       container: {
       center: true,
       padding: {

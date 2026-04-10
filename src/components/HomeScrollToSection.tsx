@@ -33,11 +33,16 @@ export default function HomeScrollToSection() {
       }
     }
 
-    if (!id) return;
-
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
+
+    if (!id) {
+      // Lenis keeps scroll offset across App Router navigations; without a hash
+      // or stored target, reset so routes like /onboarding start at the top.
+      lenis.scrollTo(0, { immediate: true });
+      return;
+    }
 
     const scrollToId = () => {
       const el = document.getElementById(id);

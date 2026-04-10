@@ -7,37 +7,17 @@ const BASE = "/imgs/stack_images";
 
 /** Local stack logos — filenames match `public/imgs/stack_images`. */
 const STACK_ITEMS = [
-  {
-    name: "Next.js",
-    src: `${BASE}/39f54d8453cf0502b7fc74c1d9ad4d1bb005c697-1080x1080.webp`,
-    wide: false,
-  },
-  {
-    name: "Vercel",
-    src: `${BASE}/vercel0.avif`,
-    wide: false,
-  },
-  {
-    name: "Three.js",
-    src: `${BASE}/threjs.png`,
-    wide: true,
-  },
-  {
-    name: "Tailwind CSS",
-    src: `${BASE}/68747470733a2f2f6431746c7a696664386a646f79342e636c6f756466726f6e742e6e65742f77702d636f6e74656e742f75706c6f6164732f323032322f30322f7461696c77696e646373732d65796563617463682d393630783530342e706e67.png`,
-    wide: true,
-  },
-  {
-    name: "GitHub",
-    src: `${BASE}/maxresdefault.jpg`,
-    wide: true,
-  },
-  {
-    name: "Webpay",
-    src: `${BASE}/webpay-logo-calado-5.jpg`,
-    wide: true,
-  },
+  { name: "Next.js", src: `${BASE}/next_logo_black.png` },
+  { name: "Vercel", src: `${BASE}/vercel_logo_black.png` },
+  { name: "Three.js", src: `${BASE}/threejs_logo_black.png` },
+  { name: "Tailwind CSS", src: `${BASE}/tailwind_logo_black.png` },
+  { name: "Sanity", src: `${BASE}/Sanity_logo_black.png` },
+  { name: "Webpay", src: `${BASE}/webpay_logo_black.png` },
 ] as const;
+
+/** Uniform frame: source assets share the same dimensions; `object-contain` keeps logos centered. */
+const ICON_FRAME_CLASS =
+  "relative aspect-square h-20 w-20 shrink-0 md:h-24 md:w-24";
 
 /** Positions 1+3, then 2+4 — overlapping pairs so the grid never fully empties. */
 const EXIT_GROUPS = [
@@ -164,16 +144,14 @@ export default function Stack() {
             return (
               <div
                 key={slot}
-                className={`relative shrink-0 transition-[opacity,filter] duration-600 ease-in-out ${
-                  item.wide ? "h-20 w-[280px]" : "h-20 w-20"
-                } ${phaseClass}`}
+                className={`${ICON_FRAME_CLASS} transition-[opacity,filter] duration-600 ease-in-out ${phaseClass}`}
               >
                 <Image
                   key={`${slot}-${idx}`}
                   src={item.src}
                   alt=""
                   fill
-                  sizes={item.wide ? "280px" : "80px"}
+                  sizes="(max-width: 768px) 80px, 96px"
                   className="object-contain"
                 />
               </div>
