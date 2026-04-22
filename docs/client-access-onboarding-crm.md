@@ -43,12 +43,12 @@ New migration: [`backend/migrations/002_client_onboarding.sql`](../backend/migra
 
 Conceptual tables (exact column types kept consistent with [`backend/migrations/001_bookings.sql`](../backend/migrations/001_bookings.sql) conventions — `UUID` primary keys, `TIMESTAMPTZ`, defaults via `gen_random_uuid()` / `NOW()`):
 
-| Table | Purpose | Key columns |
-|-------|---------|-------------|
-| `clients` | One row per client company/person. | `id`, `name`, `primary_email`, `created_at` |
-| `projects` | One row per engagement. The operator maintains `notion_url` here. | `id`, `client_id` FK, `slug` (unique), `name`, `notion_url`, `sanity_dataset` (nullable), `dashboard_project_key` (nullable), `created_at` |
-| `onboarding_invites` | One row each time the operator sends the email. | `id`, `project_id` FK, `token_hash` (bytea / text, **never** raw token), `sent_to_email`, `sent_by` (operator identifier), `expires_at`, `used_at` (nullable), `created_at` |
-| `onboarding_submissions` | Form submission payload. | `id`, `invite_id` FK, `admin_email`, `stakeholders` JSONB (`[{ role, email }]`), `submitted_at` |
+| Table                    | Purpose                                                           | Key columns                                                                                                                                                                 |
+| ------------------------ | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clients`                | One row per client company/person.                                | `id`, `name`, `primary_email`, `created_at`                                                                                                                                 |
+| `projects`               | One row per engagement. The operator maintains `notion_url` here. | `id`, `client_id` FK, `slug` (unique), `name`, `notion_url`, `sanity_dataset` (nullable), `dashboard_project_key` (nullable), `created_at`                                  |
+| `onboarding_invites`     | One row each time the operator sends the email.                   | `id`, `project_id` FK, `token_hash` (bytea / text, **never** raw token), `sent_to_email`, `sent_by` (operator identifier), `expires_at`, `used_at` (nullable), `created_at` |
+| `onboarding_submissions` | Form submission payload.                                          | `id`, `invite_id` FK, `admin_email`, `stakeholders` JSONB (`[{ role, email }]`), `submitted_at`                                                                             |
 
 Hashing rationale: the email link contains the raw token; the database stores only `sha256(token)` so a DB read never leaks valid links.
 
@@ -116,13 +116,13 @@ Reuse the pattern established in [`frontend/src/app/api/book-meeting/route.ts`](
 
 ### Environment variables (add to `frontend/.env.example` and annotate in [`booking-env.ts`](../frontend/src/lib/booking-env.ts) or a new `src/lib/onboarding-env.ts`)
 
-| Var | Purpose |
-|-----|---------|
-| `RESEND_ONBOARDING_TEMPLATE_ID` | Optional Resend dashboard template; if unset, render local HTML. |
-| `ONBOARDING_INVITE_TTL_DAYS` | Default 30. |
-| `ONBOARDING_PUBLIC_BASE_URL` | Falls back to `BOOKING_PUBLIC_BASE_URL` → `VERCEL_URL` → `http://localhost:3000` via [`getPublicSiteUrl`](../frontend/src/lib/public-site-url.ts). A dedicated var avoids coupling onboarding links to booking semantics. |
-| `CRM_ADMIN_PASSWORD` or `CRM_BASIC_AUTH_USER` / `CRM_BASIC_AUTH_PASS` | Operator auth for `/internal/*` (pick one strategy). |
-| `ONBOARDING_TOKEN_HASH_PEPPER` | Optional extra secret mixed into the `sha256` so a stolen DB row alone can't be brute-forced against a leaked URL format. |
+| Var                                                                   | Purpose                                                                                                                                                                                                                   |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `RESEND_ONBOARDING_TEMPLATE_ID`                                       | Optional Resend dashboard template; if unset, render local HTML.                                                                                                                                                          |
+| `ONBOARDING_INVITE_TTL_DAYS`                                          | Default 30.                                                                                                                                                                                                               |
+| `ONBOARDING_PUBLIC_BASE_URL`                                          | Falls back to `BOOKING_PUBLIC_BASE_URL` → `VERCEL_URL` → `http://localhost:3000` via [`getPublicSiteUrl`](../frontend/src/lib/public-site-url.ts). A dedicated var avoids coupling onboarding links to booking semantics. |
+| `CRM_ADMIN_PASSWORD` or `CRM_BASIC_AUTH_USER` / `CRM_BASIC_AUTH_PASS` | Operator auth for `/internal/*` (pick one strategy).                                                                                                                                                                      |
+| `ONBOARDING_TOKEN_HASH_PEPPER`                                        | Optional extra secret mixed into the `sha256` so a stolen DB row alone can't be brute-forced against a leaked URL format.                                                                                                 |
 
 Reused without change: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `DATABASE_URL`.
 
@@ -140,14 +140,14 @@ The dashboard lives at [blessedux/mentemaestra_dashboard](https://github.com/ble
 
 ## 7. Implementation phases
 
-| Phase | What lands | Notes |
-|-------|------------|-------|
-| A — Data | Migration `002_client_onboarding.sql`, seed a first project manually. | Smallest unit that unblocks everything else. |
-| B — Token + URL helper | `onboarding-token.ts` + unit coverage of hash/verify. | Pure functions, easy to test. |
-| C — Resend wiring | Variable builder, HTML template, local-render fallback. | Copy pattern from `meeting-confirmation-email.ts`. |
-| D — Public form + API | `/client-access/[token]` page and its route handlers. | Ship before the CRM UI — you can trigger sends via `psql` + `curl` while testing. |
-| E — Internal CRM UI | `/internal` list + project detail + send button. | Pick one auth strategy. |
-| F — Ops hooks | Operator notification on submit (second Resend or Slack webhook); optional dashboard webhook. | Notion/Sanity invites stay manual until their APIs are added. |
+| Phase                  | What lands                                                                                    | Notes                                                                             |
+| ---------------------- | --------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------- |
+| A — Data               | Migration `002_client_onboarding.sql`, seed a first project manually.                         | Smallest unit that unblocks everything else.                                      |
+| B — Token + URL helper | `onboarding-token.ts` + unit coverage of hash/verify.                                         | Pure functions, easy to test.                                                     |
+| C — Resend wiring      | Variable builder, HTML template, local-render fallback.                                       | Copy pattern from `meeting-confirmation-email.ts`.                                |
+| D — Public form + API  | `/client-access/[token]` page and its route handlers.                                         | Ship before the CRM UI — you can trigger sends via `psql` + `curl` while testing. |
+| E — Internal CRM UI    | `/internal` list + project detail + send button.                                              | Pick one auth strategy.                                                           |
+| F — Ops hooks          | Operator notification on submit (second Resend or Slack webhook); optional dashboard webhook. | Notion/Sanity invites stay manual until their APIs are added.                     |
 
 ---
 
