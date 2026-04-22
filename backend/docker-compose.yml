@@ -1,0 +1,18 @@
+# Local Postgres for Mentemaestra booking API (Next.js uses DATABASE_URL).
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: mentemaestra-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: mentemaestra
+      POSTGRES_PASSWORD: mentemaestra_dev
+      POSTGRES_DB: mentemaestra
+    # Host 5433 avoids clash with a local Postgres often bound to localhost:5432 (macOS/Homebrew).
+    ports:
+      - "5433:5432"
+    volumes:
+      - mentemaestra_pgdata:/var/lib/postgresql/data
+
+volumes:
+  mentemaestra_pgdata:

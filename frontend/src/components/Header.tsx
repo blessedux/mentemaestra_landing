@@ -1,0 +1,208 @@
+"use client";
+
+import Link from "next/link";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useState,
+} from "react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
+import { TextScramble } from "@/components/ui/text-scramble";
+import { useLocale } from "@/i18n/LocaleProvider";
+import type { Locale } from "@/i18n/messages";
+import { cn } from "@/lib/utils";
+
+function LangToggle({
+  locale,
+  setLocale,
+  onLightSurface = false,
+}: {
+  locale: Locale;
+  setLocale: (l: Locale) => void;
+  /** Dark controls when mobile menu (zinc panel) is open */
+  onLightSurface?: boolean;
+}) {
+  return (
+    <div
+      className="flex shrink-0 items-center gap-1"
+      role="group"
+      aria-label="Idioma / Language"
+    >
+      {(["es", "en"] as const).map((code) => {
+        const on = locale === code;
+        return (
+          <button
+            key={code}
+            type="button"
+            onClick={() => setLocale(code)}
+            className={cn(
+              "rounded px-1.5 py-1 text-sm font-medium transition-colors",
+              onLightSurface
+                ? on
+                  ? "text-zinc-950"
+                  : "text-zinc-500 hover:text-zinc-800"
+                : on
+                  ? "text-white"
+                  : "text-zinc-600 hover:text-zinc-400 dark:text-zinc-500",
+            )}
+            aria-pressed={on ? "true" : "false"}
+          >
+            {code}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Full-screen light panel: Bootzy + dark text on zinc-200 */
+const mobilePanelNavItemClass =
+  "font-hero-bootzy block w-fit rounded-md py-3 text-left text-2xl font-normal tracking-tight text-zinc-900 transition-colors hover:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-4 focus-visible:ring-offset-zinc-200 sm:py-3.5 sm:text-3xl";
+
+const navLinks = [
+  { href: "/#design", labelKey: "design" as const },
+  { href: "/#services", labelKey: "services" as const },
+  { href: "/#works", labelKey: "works" as const },
+  { href: "/#experience", labelKey: "experience" as const },
+  { href: "/#book-meeting", labelKey: "book" as const },
+  { href: "/pricing#pricing", labelKey: "pricing" as const },
+  { href: "/pricing#faq", labelKey: "faq" as const },
+];
+
+export default function Header() {
+  const { locale, setLocale, t } = useLocale();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const menuId = useId();
+
+  const closeMenu = useCallback(() => setMenuOpen(false), []);
+
+  useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMenu();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen, closeMenu]);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [menuOpen]);
+
+  const mobilePanelNavList = (
+    <>
+      {navLinks.map(({ href, labelKey }) => (
+        <Link
+          key={href}
+          href={href}
+          className={mobilePanelNavItemClass}
+          onClick={closeMenu}
+        >
+          <TextScramble
+            text={t.nav[labelKey]}
+            className="w-fit"
+            labelClassName="font-hero-bootzy text-inherit font-normal uppercase tracking-wide"
+          />
+        </Link>
+      ))}
+    </>
+  );
+
+  return (
+    <>
+      {/* Full-screen light panel: slides up from bottom (CSS-only, GPU-friendly) */}
+      <div
+        id={menuId}
+        role="dialog"
+        aria-modal="true"
+        aria-label={locale === "es" ? "Menú principal" : "Main menu"}
+        aria-hidden={!menuOpen}
+        inert={mounted && !menuOpen ? true : undefined}
+        className={cn(
+          "fixed inset-0 z-40 flex min-h-[100dvh] flex-col overflow-y-auto bg-zinc-200/65 backdrop-blur-2xl backdrop-saturate-125",
+          "transition-[transform,opacity] duration-[1040ms] ease-[cubic-bezier(0.86,0.01,0.77,0.78)]",
+          "motion-reduce:transition-opacity motion-reduce:duration-400 motion-reduce:ease-out",
+          menuOpen
+            ? "translate-y-0 opacity-100 motion-reduce:translate-y-0"
+            : "pointer-events-none translate-y-full opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-0",
+        )}
+      >
+        <nav
+          className="flex min-h-0 flex-1 flex-col justify-center px-8 pb-16 pt-24 sm:px-14 sm:pb-20 sm:pt-28"
+          aria-label="Main"
+        >
+          <div
+            className={cn(
+              "flex max-w-lg flex-col gap-1 sm:gap-2",
+              "transition-[transform,opacity] duration-[600ms] ease-out",
+              menuOpen
+                ? "translate-y-0 opacity-100 delay-200 motion-reduce:delay-0"
+                : "translate-y-6 opacity-0 motion-reduce:translate-y-0 motion-reduce:opacity-0",
+            )}
+          >
+            {mobilePanelNavList}
+          </div>
+        </nav>
+      </div>
+
+      <header className="fixed top-0 left-0 right-0 z-50 px-4 py-4 sm:px-6">
+        <div className="mx-auto flex max-w-7xl items-start justify-between gap-6 sm:gap-10">
+          <div className="relative ml-[3%] mt-[3%] flex min-w-0 flex-col items-start">
+            <button
+              type="button"
+              className={cn(
+                "mb-1 -ml-1.5 rounded-md p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+                menuOpen
+                  ? "text-zinc-900 hover:bg-black/5 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-zinc-200"
+                  : "text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:ring-white/25 focus-visible:ring-offset-transparent",
+              )}
+              aria-expanded={menuOpen ? "true" : "false"}
+              aria-controls={menuId}
+              aria-label={
+                menuOpen
+                  ? locale === "es"
+                    ? "Cerrar navegación"
+                    : "Close navigation"
+                  : locale === "es"
+                    ? "Abrir navegación"
+                    : "Open navigation"
+              }
+              onClick={() => setMenuOpen((o) => !o)}
+            >
+              {menuOpen ? (
+                <X className="h-6 w-6" strokeWidth={1.75} aria-hidden />
+              ) : (
+                <Menu className="h-6 w-6" strokeWidth={1.75} aria-hidden />
+              )}
+            </button>
+          </div>
+
+          <div className="flex shrink-0 flex-col items-end gap-3 sm:flex-row sm:items-center sm:gap-4">
+            <LangToggle
+              locale={locale}
+              setLocale={setLocale}
+              onLightSurface={menuOpen}
+            />
+            <Link
+              href="/onboarding"
+              className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-medium text-black shadow-sm transition-colors hover:bg-zinc-100 sm:px-5 sm:py-2.5"
+              onClick={closeMenu}
+            >
+              {t.nav.cta}
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </Link>
+          </div>
+        </div>
+      </header>
+    </>
+  );
+}
