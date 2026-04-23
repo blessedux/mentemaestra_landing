@@ -299,6 +299,7 @@ html {
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
   background-position: center center;
   background-size: 32px 32px;
+  -webkit-mask-image: radial-gradient(circle at center, black 35%, transparent 90%);
   mask-image: radial-gradient(circle at center, black 35%, transparent 90%);
 }
 
@@ -363,6 +364,12 @@ html {
   align-items: stretch;
 }
 
+/* Landing footer: reduce full-screen parallax footer height. */
+.mm-footer .parallax__header {
+  min-height: 80vh;
+  min-height: 80svh;
+}
+
 .parallax__visuals {
   width: 100%;
   max-width: 100vw;
@@ -407,6 +414,7 @@ html {
 
 .parallax__layer-img {
   pointer-events: none;
+  -webkit-user-select: none;
   user-select: none;
   object-fit: cover;
   object-position: center center;
@@ -434,6 +442,7 @@ html {
 /* Gradient placeholders: outer node is transformed by GSAP; inner fill is scaled. */
 .parallax__layer-parallax-node {
   pointer-events: none;
+  -webkit-user-select: none;
   user-select: none;
   position: absolute;
   top: 0;
@@ -461,20 +470,19 @@ html {
   height: 100%;
   transform: scale(1.08);
   transform-origin: center center;
+  background-repeat: no-repeat;
 }
 
 .parallax__layer-parallax-node[data-parallax-layer="1"] .parallax__layer-placeholder-fill {
-  background: radial-gradient(120% 80% at 50% 100%, #312e81 0%, #0f172a 45%, #050810 100%);
+  background: #0a0a0a;
 }
 
 .parallax__layer-parallax-node[data-parallax-layer="2"] .parallax__layer-placeholder-fill {
-  background: radial-gradient(90% 70% at 70% 85%, rgba(109, 40, 217, 0.55) 0%, transparent 55%),
-    radial-gradient(70% 50% at 20% 60%, rgba(30, 58, 138, 0.5) 0%, transparent 50%);
+  background: #0a0a0a;
 }
 
 .parallax__layer-parallax-node[data-parallax-layer="4"] .parallax__layer-placeholder-fill {
-  background: radial-gradient(100% 90% at 50% 100%, rgba(88, 28, 135, 0.35) 0%, transparent 50%),
-    linear-gradient(to top, rgba(5, 8, 16, 0.95) 0%, transparent 40%);
+  background: #0a0a0a;
 }
 
 .parallax__fade {

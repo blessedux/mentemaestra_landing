@@ -1,11 +1,15 @@
 "use client";
 
+import { useState } from "react";
+import { ChevronRight } from "lucide-react";
+
 import BookMeetingInline from "@/components/BookMeetingInline";
 import { useLocale } from "@/i18n/LocaleProvider";
 
 export default function BookMeetingSection() {
   const { t } = useLocale();
   const copy = t.book.section;
+  const [beforeBookingOpen, setBeforeBookingOpen] = useState(false);
 
   return (
     <section
@@ -30,50 +34,68 @@ export default function BookMeetingSection() {
               </p>
             </div>
 
-            <div className="mb-10 rounded-2xl border border-zinc-800/80 bg-zinc-900/30 p-6 text-left md:mb-12 md:p-8">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
-                {copy.qualificationTitle}
-              </p>
-              <div className="mt-5 grid gap-6 md:grid-cols-2 md:gap-10">
-                <div>
-                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
-                    {copy.idealForLabel}
-                  </p>
-                  <ul className="mt-3 space-y-2 text-sm leading-relaxed text-zinc-300">
-                    {copy.idealFor.map((line) => (
-                      <li key={line} className="flex gap-3">
-                        <span
-                          aria-hidden
-                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
-                        />
-                        <span>{line}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
-                    {copy.typicalLabel}
-                  </p>
-                  <ul className="mt-3 space-y-2 text-sm leading-relaxed text-zinc-300">
-                    {copy.typicalProjects.map((line) => (
-                      <li key={line} className="flex gap-3">
-                        <span
-                          aria-hidden
-                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-500"
-                        />
-                        <span>{line}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-              <p className="mt-6 border-t border-zinc-800/70 pt-4 text-xs leading-relaxed text-zinc-500">
-                <span className="font-semibold text-zinc-400">
-                  {copy.notForLabel}:{" "}
+            <div className="mb-10 rounded-2xl border border-zinc-800/80 bg-zinc-900/30 text-left md:mb-12">
+              <button
+                type="button"
+                className="flex w-full items-center justify-between gap-4 px-6 py-4 text-left md:px-8 md:py-5"
+                onClick={() => setBeforeBookingOpen((v) => !v)}
+              >
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                  {copy.qualificationTitle}
                 </span>
-                {copy.notFor}
-              </p>
+                <ChevronRight
+                  className={[
+                    "size-5 shrink-0 text-zinc-400 transition-transform duration-200",
+                    beforeBookingOpen ? "rotate-90" : "rotate-0",
+                  ].join(" ")}
+                  aria-hidden
+                />
+              </button>
+
+              {beforeBookingOpen ? (
+                <div className="px-6 pb-6 md:px-8 md:pb-8">
+                  <div className="mt-1 grid gap-6 md:grid-cols-2 md:gap-10">
+                    <div>
+                      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
+                        {copy.idealForLabel}
+                      </p>
+                      <ul className="mt-3 space-y-2 text-sm leading-relaxed text-zinc-300">
+                        {copy.idealFor.map((line) => (
+                          <li key={line} className="flex gap-3">
+                            <span
+                              aria-hidden
+                              className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                            />
+                            <span>{line}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
+                        {copy.typicalLabel}
+                      </p>
+                      <ul className="mt-3 space-y-2 text-sm leading-relaxed text-zinc-300">
+                        {copy.typicalProjects.map((line) => (
+                          <li key={line} className="flex gap-3">
+                            <span
+                              aria-hidden
+                              className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-500"
+                            />
+                            <span>{line}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  <p className="mt-6 border-t border-zinc-800/70 pt-4 text-xs leading-relaxed text-zinc-500">
+                    <span className="font-semibold text-zinc-400">
+                      {copy.notForLabel}:{" "}
+                    </span>
+                    {copy.notFor}
+                  </p>
+                </div>
+              ) : null}
             </div>
           </>
         }

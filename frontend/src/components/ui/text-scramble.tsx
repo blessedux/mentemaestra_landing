@@ -83,23 +83,24 @@ export function TextScramble({
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <span className={clsx("relative", labelClassName)}>
-        {displayText.split("").map((char, i) => (
-          <span
-            key={i}
-            className={clsx(
-              "inline-block transition-all duration-150",
-              isScrambling && char !== text[i]
-                ? "scale-110 text-primary"
-                : "text-inherit",
-            )}
-            style={{
-              transitionDelay: `${i * 10}ms`,
-            }}
-          >
-            {char}
-          </span>
-        ))}
+      <span className={clsx("relative whitespace-pre", labelClassName)}>
+        {/* Reserve final width/height so scrambling never shifts layout. */}
+        <span className="invisible">{text}</span>
+        <span className="absolute inset-0">
+          {displayText.split("").map((char, i) => (
+            <span
+              key={i}
+              className={clsx(
+                "inline-block transition-all duration-150",
+                isScrambling && char !== text[i]
+                  ? "scale-110 text-primary"
+                  : "text-inherit",
+              )}
+            >
+              {char}
+            </span>
+          ))}
+        </span>
       </span>
 
       <span className="relative mt-2 h-px w-full overflow-hidden">
