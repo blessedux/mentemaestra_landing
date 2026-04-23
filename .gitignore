@@ -5,7 +5,7 @@
 skills-lock.json
 
 # Dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -17,9 +17,9 @@ skills-lock.json
 # Testing
 /coverage
 
-# Next.js
-/.next/
-/out/
+# Next.js (app lives in frontend/)
+.next/
+out/
 
 # Production
 /build
@@ -33,9 +33,10 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Env (keep root example)
+# Env (keep committed examples)
 .env*
 !.env.example
+!frontend/.env.example
 
 # Vercel
 .vercel

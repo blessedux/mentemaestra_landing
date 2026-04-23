@@ -1,0 +1,83 @@
+"use client";
+
+import BookMeetingInline from "@/components/BookMeetingInline";
+import { useLocale } from "@/i18n/LocaleProvider";
+
+export default function BookMeetingSection() {
+  const { t } = useLocale();
+  const copy = t.book.section;
+
+  return (
+    <section
+      id="book-meeting"
+      className="relative border-t border-zinc-800/90 bg-[#0a0a0a] px-6 py-24"
+    >
+      <BookMeetingInline
+        dialogAriaLabel={copy.title}
+        intro={
+          <>
+            <div className="mb-10 text-center md:mb-12">
+              <div className="mb-4 flex justify-center">
+                <span className="text-xs uppercase tracking-[0.2em] text-accent">
+                  {copy.eyebrow}
+                </span>
+              </div>
+              <h2 className="text-3xl font-bold text-white md:text-4xl">
+                {copy.title}
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-sm text-zinc-400 md:text-base">
+                {copy.subtitle}
+              </p>
+            </div>
+
+            <div className="mb-10 rounded-2xl border border-zinc-800/80 bg-zinc-900/30 p-6 text-left md:mb-12 md:p-8">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-zinc-500">
+                {copy.qualificationTitle}
+              </p>
+              <div className="mt-5 grid gap-6 md:grid-cols-2 md:gap-10">
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
+                    {copy.idealForLabel}
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm leading-relaxed text-zinc-300">
+                    {copy.idealFor.map((line) => (
+                      <li key={line} className="flex gap-3">
+                        <span
+                          aria-hidden
+                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent"
+                        />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
+                    {copy.typicalLabel}
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm leading-relaxed text-zinc-300">
+                    {copy.typicalProjects.map((line) => (
+                      <li key={line} className="flex gap-3">
+                        <span
+                          aria-hidden
+                          className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-500"
+                        />
+                        <span>{line}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+              <p className="mt-6 border-t border-zinc-800/70 pt-4 text-xs leading-relaxed text-zinc-500">
+                <span className="font-semibold text-zinc-400">
+                  {copy.notForLabel}:{" "}
+                </span>
+                {copy.notFor}
+              </p>
+            </div>
+          </>
+        }
+      />
+    </section>
+  );
+}
