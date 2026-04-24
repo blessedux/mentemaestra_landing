@@ -389,8 +389,15 @@ export default function ProjectDetailPanel(props: Props) {
         <Field label="Correo del destinatario">
           <input
             type="email"
+            enterKeyHint="send"
             value={toEmail}
             onChange={(e) => setToEmail(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key !== "Enter" && e.key !== "NumpadEnter") return;
+              e.preventDefault();
+              if (sending) return;
+              void sendOnboarding();
+            }}
             className={inputClass}
           />
         </Field>

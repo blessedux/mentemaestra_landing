@@ -145,43 +145,14 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@keyframes hero-title-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(1.25rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .hero-bg-fade-in {
   animation: hero-bg-fade 2s ease-out forwards;
-}
-
-/* Delays + 0.55s duration → line 2 ends at 2.87s; keep in sync with `Hero.tsx` HERO_TITLE_* */
-.hero-title-line-1 {
-  opacity: 0;
-  animation: hero-title-slide-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 2s forwards;
-}
-
-.hero-title-line-2 {
-  opacity: 0;
-  animation: hero-title-slide-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) 2.32s forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-bg-fade-in {
     animation: none;
     opacity: 1;
-  }
-
-  .hero-title-line-1,
-  .hero-title-line-2 {
-    animation: none;
-    opacity: 1;
-    transform: none;
   }
 }
 
@@ -234,13 +205,27 @@ html {
   scroll-behavior: auto;
 }
 
-/* Service card hover effect */
+/* Service card hover: full-viewport-width wash (How we work / services list) */
 .service-card {
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, border-color 0.3s ease;
 }
 
-.service-card:hover {
+.service-card::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 50%;
+  z-index: -1;
+  width: 100vw;
+  transform: translateX(-50%);
   background: hsl(var(--secondary));
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.service-card:hover::before {
+  opacity: 1;
 }
 
 /* Portfolio slider */
@@ -364,10 +349,9 @@ html {
   align-items: stretch;
 }
 
-/* Landing footer: reduce full-screen parallax footer height. */
+/* Landing footer: height follows content — avoid a tall parallax shell with empty space below the links. */
 .mm-footer .parallax__header {
-  min-height: 80vh;
-  min-height: 80svh;
+  min-height: 0;
 }
 
 .parallax__visuals {

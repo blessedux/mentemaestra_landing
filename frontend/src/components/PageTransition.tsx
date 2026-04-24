@@ -17,7 +17,7 @@ import { cn } from "@/lib/utils";
 type Phase = "idle" | "out" | "loader" | "in";
 
 /** First paint: same overlay as route transitions until fonts + window load, then blur-in. */
-type InitialBootPhase = "cover" | "reveal" | "done";
+export type InitialBootPhase = "cover" | "reveal" | "done";
 
 /** `default` — dim + logo overlay. `slide` — full-screen panel slides up, then exits upward. */
 export type PageTransitionVariant = "default" | "slide";
@@ -67,6 +67,8 @@ type PageTransitionContextValue = {
   navigate: (href: string) => void;
   /** Which preloader UI is active (from `NEXT_PUBLIC_PAGE_TRANSITION_VARIANT`). */
   variant: PageTransitionVariant;
+  /** Initial load: `cover` → `reveal` (content sharpens) → `done`. Hero copy can sequence after `done`. */
+  initialBootPhase: InitialBootPhase;
 };
 
 const PageTransitionContext = createContext<PageTransitionContextValue | null>(
@@ -245,8 +247,8 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
   }, [phase, navigate, isHashOnlyOnSamePage, initialBootPhase]);
 
   const ctx = useMemo(
-    () => ({ navigate, variant }),
-    [navigate, variant],
+    () => ({ navigate, variant, initialBootPhase }),
+    [navigate, variant, initialBootPhase],
   );
 
   const t = timing(reducedMotion, variant);
@@ -348,7 +350,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
             "pointer-events-none opacity-[0.18] blur-[12px] scale-[0.991]",
           booting &&
             initialBootPhase === "cover" &&
-            "pointer-events-none scale-[0.996] blur-[22px] opacity-[0.4] saturate-[0.88]",
+            "pointer-events-none scale-[0.996] opacity-0 saturate-[0.88]",
           booting &&
             initialBootPhase === "reveal" &&
             "pointer-events-none scale-100 blur-0 opacity-100 saturate-100",
@@ -364,7 +366,12 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
 
       {variant === "default" ? (
         <div
-          className="pointer-events-none fixed inset-0 z-[200] flex items-center justify-center bg-[#0a0a0a]/88 transition-[opacity,backdrop-filter,-webkit-backdrop-filter]"
+          className={cn(
+            "pointer-events-none fixed inset-0 z-[200] flex items-center justify-center transition-[opacity,backdrop-filter,-webkit-backdrop-filter]",
+            initialBootPhase === "cover"
+              ? "bg-[#0a0a0a]"
+              : "bg-[#0a0a0a]/88",
+          )}
           style={{
             opacity: overlayOpacity,
             backdropFilter: overlayBackdropBlur,

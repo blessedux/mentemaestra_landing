@@ -167,6 +167,7 @@ export async function sendTeamMemberWelcomeEmail(
 
   return postResendEmail(resendKey, {
     from: resendFrom,
+    reply_to: supportEmail,
     to: [input.to],
     subject,
     text,

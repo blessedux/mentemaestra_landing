@@ -27,50 +27,6 @@ export type FeaturedProjectHighlight = {
  */
 export const featuredProjectHighlights: FeaturedProjectHighlight[] = [
   {
-    title: "Sozu Pay",
-    jobToBeDone: {
-      es: "Sistema de pagos complejo, traducido a una experiencia simple y confiable para merchants.",
-      en: "Complex payments stack translated into a simple, trustworthy merchant experience.",
-    },
-    outcome: {
-      es: "Checkout multi-moneda listo para onboarding sin soporte.",
-      en: "Multi-currency checkout ready for self-serve onboarding.",
-    },
-  },
-  {
-    title: "Sozu Capital",
-    jobToBeDone: {
-      es: "Plataforma de inversión que debía explicar oferta y riesgo sin jerga.",
-      en: "Investment platform that had to explain offer and risk without jargon.",
-    },
-    outcome: {
-      es: "Narrativa y UI alineadas para cerrar calls con inversionistas.",
-      en: "Narrative and UI aligned to close investor calls faster.",
-    },
-  },
-  {
-    title: "Hotumatur RapaNui Travel",
-    jobToBeDone: {
-      es: "Servicio turístico local que necesitaba sentirse premium y confiable online.",
-      en: "Local travel operator that needed to feel premium and trustworthy online.",
-    },
-    outcome: {
-      es: "Sitio que pasó de brochure a motor de reservas directas.",
-      en: "Site that went from brochure to direct-booking driver.",
-    },
-  },
-  {
-    title: "Maison Vera",
-    jobToBeDone: {
-      es: "Marca de lujo con exigencia editorial — de la identidad al sitio.",
-      en: "Luxury brand with editorial demands — from identity to site.",
-    },
-    outcome: {
-      es: "Sistema visual coherente en e-commerce, prensa y presentación.",
-      en: "Coherent visual system across e-commerce, press, and pitch.",
-    },
-  },
-  {
     title: "Consultora DejaVu",
     jobToBeDone: {
       es: "Servicio profesional con oferta amplia que confundía a los prospectos.",
@@ -79,6 +35,72 @@ export const featuredProjectHighlights: FeaturedProjectHighlight[] = [
     outcome: {
       es: "Una narrativa clara y rutas de contacto que priorizan las consultas correctas.",
       en: "One clear narrative and contact paths that prioritize the right inquiries.",
+    },
+  },
+  {
+    title: "One2b",
+    jobToBeDone: {
+      es: "Infraestructura sobre datos empresariales que debía sonar creíble para seguros y capital institucional.",
+      en: "Enterprise data infrastructure that had to read credible to insurance and institutional capital.",
+    },
+    outcome: {
+      es: "Sitio que ordena valoración, escrow y acceso a capital sin perder rigor técnico.",
+      en: "A site that surfaces valuation, escrow, and capital access without losing technical rigor.",
+    },
+  },
+  {
+    title: "Andesori Core",
+    jobToBeDone: {
+      es: "Infraestructura core en blockchain que debía explicar confianza y alcance sin buzzwords vacíos.",
+      en: "Core blockchain infrastructure that had to signal trust and scope without empty buzzwords.",
+    },
+    outcome: {
+      es: "Identidad y landing alineadas a desarrolladores y partners que evalúan el stack en segundos.",
+      en: "Brand and landing aligned to developers and partners who judge the stack in seconds.",
+    },
+  },
+  {
+    title: "Cabonegro",
+    jobToBeDone: {
+      es: "Proyecto con narrativa regional fuerte que necesitaba traducirse a una presencia digital seria.",
+      en: "A project with a strong regional story that needed a serious digital presence.",
+    },
+    outcome: {
+      es: "Experiencia lista para conversaciones con stakeholders, no solo un brochure online.",
+      en: "An experience built for stakeholder conversations, not just an online brochure.",
+    },
+  },
+  {
+    title: "Kuntur Transfer",
+    jobToBeDone: {
+      es: "Servicio de transferencias que debía transmitir rapidez, seguridad y claridad en cada paso.",
+      en: "A transfer service that had to signal speed, security, and clarity at every step.",
+    },
+    outcome: {
+      es: "Flujo de marca y producto que reduce fricción desde la primera visita hasta el envío.",
+      en: "Brand and product flow that reduces friction from first visit to send.",
+    },
+  },
+  {
+    title: "Ethereum Chile 2025",
+    jobToBeDone: {
+      es: "Hub comunitario que debía convocar builders, sponsors y agenda sin verse genérico.",
+      en: "A community hub that had to convene builders, sponsors, and programming without feeling generic.",
+    },
+    outcome: {
+      es: "Sitio de evento con jerarquía clara: qué es, cuándo es, y cómo sumarse.",
+      en: "Event site with clear hierarchy: what it is, when it is, and how to get involved.",
+    },
+  },
+  {
+    title: "Urbe Village Booking",
+    jobToBeDone: {
+      es: "Reservas de alojamiento que necesitaban confianza, disponibilidad y checkout sin fricción.",
+      en: "Accommodation booking that needed trust, availability, and low-friction checkout.",
+    },
+    outcome: {
+      es: "Experiencia de reserva pensada para conversión móvil y decisiones rápidas.",
+      en: "A booking experience tuned for mobile conversion and fast decisions.",
     },
   },
 ];
@@ -147,6 +169,20 @@ export const portfolioProjects: PortfolioProject[] = [
     title: "Consultora DejaVu",
     description:
       "Advanced facial recognition and identity verification platform with privacy protection",
+  },
+  {
+    image: img("one2b_thumbnail.webp"),
+    link: "https://one2b.io",
+    title: "One2b",
+    description:
+      "Institution-grade data valuation, escrow, and non-dilutive capital pathways for enterprise data",
+  },
+  {
+    image: img("cabonegro_thumbnail.webp"),
+    link: "https://cabonegro.cl",
+    title: "Cabonegro",
+    description:
+      "Regional initiative with brand and web presence tuned for partner and investor conversations",
   },
   {
     image: img("doberframwork_thumbnail.webp"),
@@ -227,7 +263,7 @@ export const portfolioProjects: PortfolioProject[] = [
   },
   {
     image: img("kuntur_thumbnail.webp"),
-    link: "https://transferkuntur.cl",
+    link: "https://kuntur-git-main-mentes-projects.vercel.app/",
     title: "Kuntur Transfer",
     description:
       "Aviation technology platform for flight tracking and airline management systems",

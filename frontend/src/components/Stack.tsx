@@ -17,7 +17,7 @@ const STACK_ITEMS = [
 
 /** Uniform frame: source assets share the same dimensions; `object-contain` keeps logos centered. */
 const ICON_FRAME_CLASS =
-  "relative aspect-square h-20 w-20 shrink-0 md:h-24 md:w-24";
+  "relative aspect-square h-40 w-40 shrink-0 md:h-48 md:w-48";
 
 /** Positions 1+3, then 2+4 — overlapping pairs so the grid never fully empties. */
 const EXIT_GROUPS = [
@@ -129,7 +129,7 @@ export default function Stack() {
   }, [n]);
 
   return (
-    <section className="bg-black px-6 py-24">
+    <section className="bg-[#030303] px-6 py-24">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-2 place-items-center gap-x-16 gap-y-12 md:grid-cols-4 md:gap-x-20 md:gap-y-16">
           {[0, 1, 2, 3].map((slot) => {
@@ -151,7 +151,7 @@ export default function Stack() {
                   src={item.src}
                   alt=""
                   fill
-                  sizes="(max-width: 768px) 80px, 96px"
+                  sizes="(max-width: 768px) 160px, 192px"
                   className="object-contain"
                 />
               </div>

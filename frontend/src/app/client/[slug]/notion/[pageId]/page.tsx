@@ -95,7 +95,9 @@ export default async function NotionSubPage({ params }: PageProps) {
         ? "La integración de Notion no tiene acceso a este contenido. En Notion abre la página o BD → ··· → Connections → agrega la integración MenteMaestra."
         : mode.reason === "not_found"
           ? "No encontramos el contenido vinculado. El enlace puede estar desactualizado."
-          : "No pudimos conectar con Notion en este momento. Intenta recargar en unos minutos.";
+          : mode.reason === "no_data_source"
+            ? "Esta base es una vista enlazada (linked database): la API de Notion no expone sus filas al portal. En Notion, reemplázala por la base original o por una copia completa (no enlazada) y vuelve a compartirla con la integración."
+            : "No pudimos conectar con Notion en este momento. Intenta recargar en unos minutos.";
     return (
       <Shell slug={slug} title="Contenido no disponible">
         <p className="text-sm text-zinc-400">{hint}</p>
@@ -173,7 +175,11 @@ export default async function NotionSubPage({ params }: PageProps) {
               No pudimos cargar esta base de datos.{" "}
               {rowsResult.reason === "unauthorized"
                 ? "La integración de Notion no tiene acceso. Conecta la integración en Notion → ··· → Connections."
-                : "Intenta recargar la página en unos minutos."}
+                : rowsResult.reason === "no_data_source"
+                  ? "Es una vista enlazada (linked database): Notion no expone sus filas por API. Usa la base original o una copia completa no enlazada."
+                  : rowsResult.reason === "not_found"
+                    ? "No encontramos la base o el enlace está desactualizado."
+                    : "Intenta recargar la página en unos minutos."}
             </Notice>
           ) : rowsResult.rows.length === 0 ? (
             <Notice>Esta base de datos no tiene entradas aún.</Notice>

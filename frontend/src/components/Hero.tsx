@@ -9,6 +9,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { usePageTransition } from "@/components/PageTransition";
 
 const GLSLHills = dynamic(() => import("@/components/GLSLHills"), {
   ssr: false,
@@ -34,19 +35,14 @@ const HERO_SCROLL_Y_DURATION_CTA = 1.13;
  */
 const HERO_CTA_HREF = "/onboarding";
 
-/**
- * Hero H1 entrance — must stay in sync with `globals.css` `.hero-title-line-1` /
- * `.hero-title-line-2` (animation-delay + 0.55s duration each).
- */
-const HERO_TITLE_LINE_2_DELAY_S = 2.32;
-const HERO_TITLE_LINE_ANIM_DURATION_S = 0.55;
-/** Both lines have finished: subtitle may start here; CTA after subtitle. */
-const HERO_TITLE_SEQUENCE_END_S =
-  HERO_TITLE_LINE_2_DELAY_S + HERO_TITLE_LINE_ANIM_DURATION_S;
+/** After initial boot reveal (`PageTransition` → `done`), pause before subtitle word stagger. */
+const HERO_POST_REVEAL_SUBTITLE_DELAY_S = 0.12;
 const HERO_SUBTITLE_TO_CTA_GAP_S = 0.14;
 
 export function Hero() {
   const { t } = useLocale();
+  const pageTransition = usePageTransition();
+  const bootDone = pageTransition?.initialBootPhase === "done";
   const sectionRef = useRef<HTMLElement | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const heroScrollGroupRef = useRef<HTMLDivElement>(null);
@@ -80,13 +76,13 @@ export function Hero() {
     : { duration: 0.38 as const, ease: [0.22, 1, 0.36, 1] as const };
   const subtitleWordStagger = reducedMotion ? 0 : 0.045;
 
-  const subtitleFirstWordDelay = reducedMotion ? 0 : HERO_TITLE_SEQUENCE_END_S;
+  const subtitleFirstWordDelay = reducedMotion ? 0 : HERO_POST_REVEAL_SUBTITLE_DELAY_S;
 
   const ctaFadeInDelay = useMemo(() => {
     if (reducedMotion) return 0;
     const n = subtitleWords.length;
     const subtitleEnd =
-      HERO_TITLE_SEQUENCE_END_S +
+      HERO_POST_REVEAL_SUBTITLE_DELAY_S +
       (n > 0 ? (n - 1) * subtitleWordStagger + subtitleWordBase.duration : 0);
     return subtitleEnd + HERO_SUBTITLE_TO_CTA_GAP_S;
   }, [
@@ -198,10 +194,8 @@ export function Hero() {
               className="flex w-full flex-col items-center will-change-transform"
             >
               <h1 className="mb-4 flex w-full flex-col items-center overflow-visible text-center text-5xl font-normal leading-[0.525] tracking-tight text-white md:text-7xl lg:text-8xl">
-                <span className="hero-title-line-1 block w-full text-center font-hero-bootzy">
-                  Mente
-                </span>
-                <span className="hero-title-line-2 block w-full text-center font-hero-new-icon-script">
+                <span className="block w-full text-center font-hero-bootzy">Mente</span>
+                <span className="block w-full text-center font-hero-new-icon-script">
                   Maestra
                 </span>
               </h1>
@@ -217,7 +211,11 @@ export function Hero() {
                           ? { opacity: 1, filter: "blur(0px)" }
                           : { opacity: 0, filter: "blur(10px)" }
                       }
-                      animate={{ opacity: 1, filter: "blur(0px)" }}
+                      animate={
+                        reducedMotion || bootDone
+                          ? { opacity: 1, filter: "blur(0px)" }
+                          : { opacity: 0, filter: "blur(10px)" }
+                      }
                       transition={{
                         ...subtitleWordBase,
                         delay: subtitleFirstWordDelay + i * subtitleWordStagger,
@@ -237,7 +235,9 @@ export function Hero() {
               <motion.div
                 className="flex w-full flex-col items-center"
                 initial={reducedMotion ? { opacity: 1 } : { opacity: 0 }}
-                animate={{ opacity: 1 }}
+                animate={
+                  reducedMotion || bootDone ? { opacity: 1 } : { opacity: 0 }
+                }
                 transition={{
                   duration: reducedMotion ? 0 : 0.5,
                   delay: ctaFadeInDelay,

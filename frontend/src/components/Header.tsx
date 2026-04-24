@@ -9,8 +9,9 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
+import { faWhatsapp } from "@fortawesome/free-brands-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { GrainGradient } from "@paper-design/shaders-react";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { Locale } from "@/i18n/messages";
@@ -19,12 +20,12 @@ import { cn } from "@/lib/utils";
 function LangToggle({
   locale,
   setLocale,
-  onLightSurface = false,
+  onDarkMenuSurface = false,
 }: {
   locale: Locale;
   setLocale: (l: Locale) => void;
-  /** Dark controls when mobile menu (zinc panel) is open */
-  onLightSurface?: boolean;
+  /** Light-on-dark controls when the full-screen mobile menu is open */
+  onDarkMenuSurface?: boolean;
 }) {
   return (
     <div
@@ -41,10 +42,10 @@ function LangToggle({
             onClick={() => setLocale(code)}
             className={cn(
               "rounded px-1.5 py-1 text-sm font-medium transition-colors",
-              onLightSurface
+              onDarkMenuSurface
                 ? on
-                  ? "text-zinc-950"
-                  : "text-zinc-500 hover:text-zinc-800"
+                  ? "text-white"
+                  : "text-zinc-400 hover:text-zinc-200"
                 : on
                   ? "text-white"
                   : "text-zinc-600 hover:text-zinc-400 dark:text-zinc-500",
@@ -59,9 +60,12 @@ function LangToggle({
   );
 }
 
-/** Full-screen light panel: Bootzy + dark text on zinc-200 */
+/** Full-screen glass panel: Bootzy + light text on dark frosted surface */
 const mobilePanelNavItemClass =
-  "font-hero-bootzy block w-fit rounded-md py-3 text-left text-2xl font-normal tracking-tight text-zinc-900 transition-colors hover:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400/60 focus-visible:ring-offset-4 focus-visible:ring-offset-zinc-200 sm:py-3.5 sm:text-3xl";
+  "font-hero-bootzy block w-fit rounded-md py-3 text-left text-2xl font-normal tracking-tight text-zinc-100 transition-colors hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/35 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent sm:py-3.5 sm:text-3xl";
+
+/** Chile mobile; `wa.me` expects country code without + */
+const MENU_WHATSAPP_HREF = "https://wa.me/56994621925";
 
 const navLinks = [
   { href: "/#design", labelKey: "design" as const },
@@ -71,6 +75,7 @@ const navLinks = [
   { href: "/#book-meeting", labelKey: "book" as const },
   { href: "/pricing#pricing", labelKey: "pricing" as const },
   { href: "/pricing#faq", labelKey: "faq" as const },
+  { href: "/portal-login", labelKey: "portalLogin" as const },
 ];
 
 export default function Header() {
@@ -155,7 +160,7 @@ export default function Header() {
 
   return (
     <>
-      {/* Full-screen light panel: slides up from bottom (CSS-only, GPU-friendly) */}
+      {/* Black frosted glass; heavy blur keeps the page readable only as shape */}
       <div
         id={menuId}
         role="dialog"
@@ -164,7 +169,8 @@ export default function Header() {
         aria-hidden={!menuOpen}
         inert={mounted && !menuOpen ? true : undefined}
         className={cn(
-          "fixed inset-0 z-40 flex min-h-[100dvh] flex-col overflow-y-auto bg-zinc-200/65 backdrop-blur-2xl backdrop-saturate-125",
+          "fixed inset-0 z-40 flex min-h-[100dvh] flex-col overflow-y-auto",
+          "bg-black/[0.22] backdrop-blur-[100px] backdrop-saturate-150",
           "transition-[transform,opacity] duration-[1040ms] ease-[cubic-bezier(0.86,0.01,0.77,0.78)]",
           "motion-reduce:transition-opacity motion-reduce:duration-400 motion-reduce:ease-out",
           menuOpen
@@ -172,39 +178,57 @@ export default function Header() {
             : "pointer-events-none translate-y-full opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-0",
         )}
       >
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <GrainGradient
-            style={{ height: "100%", width: "100%" }}
-            colorBack="hsl(0, 0%, 92%)"
-            softness={0.76}
-            intensity={0.22}
-            noise={0}
-            shape="corners"
-            offsetX={0}
-            offsetY={0}
-            scale={1}
-            rotation={0}
-            speed={0.95}
-            colors={["hsl(14, 100%, 57%)", "hsl(45, 100%, 51%)", "hsl(340, 82%, 52%)"]}
-          />
-          <div className="absolute inset-0 bg-zinc-200/65" />
-        </div>
         <nav
-          className="flex min-h-0 flex-1 flex-col justify-center px-8 pb-16 pt-24 sm:px-14 sm:pb-20 sm:pt-28"
+          className="relative z-10 flex min-h-0 flex-1 flex-col justify-center px-8 pb-16 pt-24 sm:px-14 sm:pb-20 sm:pt-28"
           aria-label="Main"
         >
           <div
             className={cn(
               "flex max-w-lg flex-col gap-1 sm:gap-2",
-              "transition-[transform,opacity] duration-[600ms] ease-out",
+              "transition-[transform] duration-500 ease-out motion-reduce:transition-none",
               menuOpen
-                ? "translate-y-0 opacity-100 delay-200 motion-reduce:delay-0"
-                : "translate-y-6 opacity-0 motion-reduce:translate-y-0 motion-reduce:opacity-0",
+                ? "translate-y-0 opacity-100"
+                : "pointer-events-none translate-y-6 opacity-0 motion-reduce:translate-y-0 motion-reduce:opacity-0",
             )}
           >
             {mobilePanelNavList}
           </div>
         </nav>
+
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-x-0 bottom-0 z-20 flex justify-end p-6 pb-[max(1.5rem,env(safe-area-inset-bottom))] sm:p-8",
+            "transition-opacity duration-500 ease-out motion-reduce:duration-300 motion-reduce:ease-out",
+            menuOpen ? "opacity-100" : "opacity-0",
+          )}
+          aria-hidden={!menuOpen}
+        >
+          <a
+            href={MENU_WHATSAPP_HREF}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={closeMenu}
+            tabIndex={menuOpen ? 0 : -1}
+            className={cn(
+              "inline-flex max-w-[min(20rem,calc(100vw-3rem))] flex-row-reverse items-center gap-3 rounded-full pl-1 pr-1.5 py-1.5 text-left outline-none transition-transform duration-500 ease-out motion-reduce:duration-300",
+              menuOpen
+                ? "pointer-events-auto translate-y-0"
+                : "pointer-events-none translate-y-2",
+              "focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent",
+            )}
+            aria-label={t.nav.speakToHuman}
+          >
+            <span
+              className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-gradient-to-br from-zinc-500 via-zinc-800 to-black text-zinc-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_8px_24px_rgba(0,0,0,0.45)] ring-2 ring-zinc-400/20 transition-transform hover:scale-[1.03] active:scale-[0.98]"
+              aria-hidden
+            >
+              <FontAwesomeIcon icon={faWhatsapp} className="h-7 w-7" />
+            </span>
+            <span className="select-none text-right text-sm font-medium leading-snug tracking-tight text-white/95 drop-shadow-[0_1px_8px_rgba(0,0,0,0.45)]">
+              {t.nav.speakToHuman}
+            </span>
+          </a>
+        </div>
       </div>
 
       <header className="fixed top-0 left-0 right-0 z-50 px-4 py-4 sm:px-6">
@@ -216,7 +240,7 @@ export default function Header() {
               className={cn(
                 "shrink-0 rounded-md p-1.5 transition-opacity hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
                 menuOpen
-                  ? "opacity-95 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-zinc-200"
+                  ? "opacity-95 focus-visible:ring-white/35 focus-visible:ring-offset-transparent"
                   : "opacity-90 focus-visible:ring-white/25 focus-visible:ring-offset-transparent",
               )}
               aria-label={
@@ -230,7 +254,7 @@ export default function Header() {
                 height={136}
                 className={cn(
                   "h-7 w-auto sm:h-8",
-                  menuOpen && "brightness-0",
+                  menuOpen && "brightness-0 invert",
                 )}
                 priority
               />
@@ -240,7 +264,7 @@ export default function Header() {
               className={cn(
                 "-ml-0.5 rounded-md p-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
                 menuOpen
-                  ? "text-zinc-900 hover:bg-black/5 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-zinc-200"
+                  ? "text-zinc-100 hover:bg-white/10 focus-visible:ring-white/35 focus-visible:ring-offset-transparent"
                   : "text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:ring-white/25 focus-visible:ring-offset-transparent",
               )}
               data-expanded={menuOpen ? "true" : "false"}
@@ -268,7 +292,7 @@ export default function Header() {
             <LangToggle
               locale={locale}
               setLocale={setLocale}
-              onLightSurface={menuOpen}
+              onDarkMenuSurface={menuOpen}
             />
             <div
               className={cn(

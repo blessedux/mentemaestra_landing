@@ -1,15 +1,20 @@
+import {
+  MENTEMAESTRA_STUDIO_ORIGIN,
+  rewriteLegacyMentemaestraHost,
+} from "@/lib/mentemaestra-public";
+
 /** Same as `normalizeBrowserHostInOrigin` but for a bare `protocol//host:port` origin string only. */
 export function normalizeBrowserHostForOriginOnly(origin: string): string {
   let u: URL;
   try {
-    u = new URL(origin);
+    u = new URL(rewriteLegacyMentemaestraHost(origin));
   } catch {
-    return origin;
+    return rewriteLegacyMentemaestraHost(origin);
   }
   if (u.hostname === "0.0.0.0" || u.hostname === "[::]" || u.hostname === "::") {
     u.hostname = "localhost";
   }
-  return u.origin;
+  return rewriteLegacyMentemaestraHost(u.origin);
 }
 
 /**
@@ -17,12 +22,12 @@ export function normalizeBrowserHostForOriginOnly(origin: string): string {
  * redirects behave badly compared to `localhost`. Normalize for URLs we emit.
  */
 export function normalizeBrowserHostInOrigin(input: string): string {
-  const noTrail = input.replace(/\/$/, "");
+  const noTrail = rewriteLegacyMentemaestraHost(input.replace(/\/$/, ""));
   let u: URL;
   try {
     u = new URL(noTrail.includes("://") ? noTrail : `https://${noTrail}`);
   } catch {
-    return noTrail;
+    return rewriteLegacyMentemaestraHost(noTrail);
   }
   if (u.hostname === "0.0.0.0" || u.hostname === "[::]" || u.hostname === "::") {
     u.hostname = "localhost";
@@ -30,7 +35,7 @@ export function normalizeBrowserHostInOrigin(input: string): string {
   let path = u.pathname;
   if (path.endsWith("/") && path.length > 1) path = path.slice(0, -1);
   const withPath = `${u.origin}${path === "/" ? "" : path}${u.search}`;
-  return withPath.replace(/\/$/, "");
+  return rewriteLegacyMentemaestraHost(withPath.replace(/\/$/, ""));
 }
 
 /**
@@ -62,8 +67,13 @@ export function getPublicSiteUrl(): string {
   if (raw) base = raw.replace(/\/$/, "");
   else {
     const vercel = process.env.VERCEL_URL?.trim();
-    if (vercel) base = `https://${vercel.replace(/\/$/, "")}`;
-    else base = "http://localhost:3000";
+    if (vercel) {
+      // Production: email/ICS links should use the live domain, not *.vercel.app.
+      base =
+        process.env.VERCEL_ENV === "production"
+          ? MENTEMAESTRA_STUDIO_ORIGIN
+          : `https://${vercel.replace(/\/$/, "")}`;
+    } else base = "http://localhost:3000";
   }
   return normalizeBrowserHostInOrigin(base);
 }
@@ -75,10 +85,14 @@ export function getSocialUrlsForEmail(): {
   web: string;
 } {
   const base = getPublicSiteUrl();
+  const pick = (v: string | undefined) =>
+    normalizeBrowserHostInOrigin(
+      rewriteLegacyMentemaestraHost((v?.trim() || base).replace(/\/$/, "")),
+    );
   return {
-    instagram: process.env.BOOKING_SOCIAL_INSTAGRAM_URL?.trim() || base,
-    behance: process.env.BOOKING_SOCIAL_BEHANCE_URL?.trim() || base,
-    linkedin: process.env.BOOKING_SOCIAL_LINKEDIN_URL?.trim() || base,
-    web: process.env.BOOKING_SOCIAL_WEB_URL?.trim() || base,
+    instagram: pick(process.env.BOOKING_SOCIAL_INSTAGRAM_URL),
+    behance: pick(process.env.BOOKING_SOCIAL_BEHANCE_URL),
+    linkedin: pick(process.env.BOOKING_SOCIAL_LINKEDIN_URL),
+    web: pick(process.env.BOOKING_SOCIAL_WEB_URL),
   };
 }

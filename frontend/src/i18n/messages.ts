@@ -11,8 +11,50 @@ export const messages = {
       pricing: "Precios",
       faq: "FAQ",
       cta: "Iniciar proyecto",
+      speakToHuman: "Habla con un humano ahora",
+      portalLogin: "Acceso al portal",
+    },
+    portalRecover: {
+      metaTitle: "Acceso al portal — MenteMaestra",
+      metaDescription:
+        "Recupera el enlace de tu espacio de proyecto con tu correo autorizado.",
+      title: "Acceso al portal",
+      subtitle:
+        "Si olvidaste el enlace de tu proyecto, ingresa el correo con el que te dieron acceso. Si está en la lista autorizada, te enviaremos un enlace seguro.",
+      emailLabel: "Correo con acceso al portal",
+      emailPlaceholder: "tu@empresa.com",
+      hint: "Debe ser el mismo correo que figura en la lista autorizada del proyecto. Si participas en varios proyectos, puede que recibas más de un correo.",
+      submit: "Enviar enlace mágico",
+      sending: "Enviando…",
+      success:
+        "Si tu correo está autorizado en algún proyecto, te enviamos un enlace en unos minutos. Revisa la bandeja y el spam.",
+      error: "No pudimos completar la solicitud. Inténtalo más tarde.",
+      backHome: "← Volver al inicio",
     },
     about: {
+      sectionTitle: "Nosotros",
+      introTitle: "El partner creativo para empresas en crecimiento.",
+      introTitleSecondary: "Diseño senior, sin contratar un equipo interno",
+      introDescription:
+        "Somos un estudio digital con base en Santiago, Chile. Diseñamos marcas, sitios web y experiencias digitales con enfoque premium: claridad visual, ejecución elegante y detalle estratégico para que tu negocio proyecte confianza y valor en cada punto de contacto.",
+      introDescriptionSecondary:
+        "Webs, apps, branding y contenido gráfico entregado con rapidez y alto nivel. La capacidad creativa que necesitas, sin sumar estructura, sueldos ni gestión extra.",
+      introTitleTertiaryLines: [
+        "«Las personas no compran",
+        "productos ni servicios. ",
+        "Compran historias.»",
+      ],
+      introDescriptionTertiaryLines: [
+        "Construimos marcas y webs que comunican valor con claridad,",
+        "conectan rápido y convierten visitas en oportunidades reales.",
+        "Mejor mensaje, más confianza, más ventas.",
+      ],
+      introTertiaryCta: "Hablemos de mi web",
+      captionLine: {
+        firstLine: "Deja que tus clientes cuenten tu",
+        accent: "historia",
+        after: ".",
+      },
       principleLines: [
         { top: "\u00A0", bottom: "CLARIDAD" },
         { top: "CLARIDAD", bottom: "SEÑAL" },
@@ -21,6 +63,32 @@ export const messages = {
         { top: "HISTORIA", bottom: "ACTITUD" },
         { top: "ACTITUD", bottom: "\u00A0" },
       ],
+    },
+    danielRoomEmbed: {
+      overview: {
+        title: "El estudio",
+        bodyParagraphs: [
+          "Mente Maestra es un espacio digital donde las ideas toman forma y avanzan con dirección.",
+          "Convertimos visión en marca, planes en diseño y conceptos en productos listos para lanzar.",
+          "Pensamos con claridad, ejecutamos con criterio y llevamos cada proyecto hasta que esté listo para crecer.",
+        ],
+      },
+      computer: {
+        title: "En el escritorio",
+        body: "Aquí iteramos sistemas, UI y piezas listas para producción: lo digital primero, con entregas que se sienten en el producto real.",
+      },
+      paintings: {
+        title: "En el muro",
+        body: "Dirección de arte y narrativa visual: cuidamos cada detalle para que la experiencia de marca sea coherente en cada touchpoint.",
+      },
+      couch: {
+        title: "En el sillón",
+        body: "Conversaciones donde alineamos prioridades, tiempos y criterio — el craft digital, con tu equipo en el centro.",
+      },
+      paintingsSofa: {
+        title: "Desde el sillón (muro)",
+        body: "Misma toma base que el muro — afinaremos cámara y copy cuando definamos el encuadre desde el sofá.",
+      },
     },
     processFeatures: {
       cards: {
@@ -708,8 +776,50 @@ export const messages = {
       pricing: "Pricing",
       faq: "FAQ",
       cta: "Start Project",
+      speakToHuman: "Speak to a human now",
+      portalLogin: "Portal login",
+    },
+    portalRecover: {
+      metaTitle: "Portal access — MenteMaestra",
+      metaDescription:
+        "Recover your project portal link using your authorized email address.",
+      title: "Portal access",
+      subtitle:
+        "If you forgot your project link, enter the email address you were invited with. If it is on a project allowlist, we will email you a secure sign-in link.",
+      emailLabel: "Portal access email",
+      emailPlaceholder: "you@company.com",
+      hint: "It must match the email on the project allowlist. If you are on multiple projects, you may receive more than one message.",
+      submit: "Email magic link",
+      sending: "Sending…",
+      success:
+        "If your email is authorized for any project, we sent a link within a few minutes. Check your inbox and spam.",
+      error: "We could not complete the request. Please try again later.",
+      backHome: "← Back to home",
     },
     about: {
+      sectionTitle: "About",
+      introTitle: "The creative partner for growing companies.",
+      introTitleSecondary: "Senior design, without hiring an in-house team",
+      introDescription:
+        "We’re a digital studio based in Santiago, Chile. We design brands, websites, and digital experiences with a premium focus: visual clarity, elegant execution, and strategic detail so your business projects trust and value at every touchpoint.",
+      introDescriptionSecondary:
+        "Websites, apps, branding, and graphic content delivered quickly and to a high standard. The creative capacity you need—without adding headcount, payroll, or extra management.",
+      introTitleTertiaryLines: [
+        "“People don’t buy",
+        "products or services. ",
+        "They buy stories.”",
+      ],
+      introDescriptionTertiaryLines: [
+        "We build brands and websites that communicate value clearly,",
+        "connect fast, and turn visits into real opportunities.",
+        "Better messaging, more trust, more sales.",
+      ],
+      introTertiaryCta: "Let’s talk about my website",
+      captionLine: {
+        firstLine: "Let your customers tell your",
+        accent: "story",
+        after: ".",
+      },
       principleLines: [
         { top: "\u00A0", bottom: "CLARITY" },
         { top: "CLARITY", bottom: "SIGNAL" },
@@ -718,6 +828,32 @@ export const messages = {
         { top: "STORY", bottom: "SWAG" },
         { top: "SWAG", bottom: "\u00A0" },
       ],
+    },
+    danielRoomEmbed: {
+      overview: {
+        title: "The studio",
+        bodyParagraphs: [
+          "Mente Maestra is a digital space where ideas take shape and move with direction.",
+          "We turn vision into brand, plans into design, and concepts into launch-ready product.",
+          "We think with clarity, ship with judgment, and carry every project until it’s ready to grow.",
+        ],
+      },
+      computer: {
+        title: "At the desk",
+        body: "Where we iterate systems, UI, and production-ready work — digital first, crafted to land in the real product.",
+      },
+      paintings: {
+        title: "On the wall",
+        body: "Art direction and visual narrative — every detail tuned so the brand experience holds together across touchpoints.",
+      },
+      couch: {
+        title: "On the sofa",
+        body: "Where we align on priorities, timelines, and taste — digital craft, with your team at the center.",
+      },
+      paintingsSofa: {
+        title: "From the sofa (wall)",
+        body: "Same base framing as the wall shot — we’ll tune camera and copy once the sofa view is locked in.",
+      },
     },
     processFeatures: {
       cards: {

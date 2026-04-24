@@ -4,7 +4,7 @@ import { faInstagram, faLinkedinIn, faXTwitter } from "@fortawesome/free-brands-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { GrainGradient } from "@paper-design/shaders-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ParallaxComponent } from "@/components/ui/parallax-scrolling";
 import { TextScramble } from "@/components/ui/text-scramble";
@@ -70,23 +70,17 @@ export default function Footer() {
   const [autoOffset, setAutoOffset] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    let raf: number | null = null;
+    // The drift cycle is ~2.4–3.1 s long; updating at ~12 fps (80 ms) is
+    // imperceptibly smooth while avoiding React reconciliation every display frame.
     const start = performance.now();
-
-    const tick = () => {
+    const id = setInterval(() => {
       const tms = performance.now() - start;
-      // Gentle, always-on drift for the "non-hovered" orb.
       setAutoOffset({
         x: Math.sin(tms / 2400) * 0.55,
         y: Math.cos(tms / 3100) * 0.45,
       });
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => {
-      if (raf != null) cancelAnimationFrame(raf);
-    };
+    }, 80);
+    return () => clearInterval(id);
   }, []);
 
   return (
@@ -99,8 +93,10 @@ export default function Footer() {
           className="relative mt-auto flex w-full justify-center px-5 pb-12 pt-20 sm:px-8 sm:pb-16 sm:pt-28 md:px-10"
         >
           <div className="pointer-events-none absolute inset-0 z-0">
+            {/* Stack A — bottom-faded main palette with a single drifting tri-color layer.
+                The two former single-hue accent orbs are merged into one dual-warm layer
+                at boosted intensity, saving one shader instance. */}
             <div className="absolute inset-0 [mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)] [-webkit-mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)]">
-              {/* Keep the default paper shader stable (no big palette shift on hover). */}
               <FooterPaperGradient
                 offsetX={autoOffset.x * 0.35}
                 offsetY={autoOffset.y * 0.3}
@@ -113,25 +109,13 @@ export default function Footer() {
                 softness={0.76}
                 speed={1}
               />
-
-              {/* Accent orbs (fixed position). Cursor proximity changes radius/grain/size only. */}
+              {/* Merged warm accent: formerly two separate red + amber layers */}
               <FooterPaperGradient
                 offsetX={0}
                 offsetY={0}
-                colors={["hsl(14, 100%, 57%)"]}
-                intensity={0.12}
-                softness={0.82}
-                noise={0}
-                scale={1}
-                speed={1}
-                className="opacity-35"
-              />
-              <FooterPaperGradient
-                offsetX={0}
-                offsetY={0}
-                colors={["hsl(45, 100%, 51%)"]}
-                intensity={0.12}
-                softness={0.82}
+                colors={["hsl(14, 100%, 57%)", "hsl(45, 100%, 51%)"]}
+                intensity={0.18}
+                softness={0.84}
                 noise={0}
                 scale={1}
                 speed={1}
@@ -140,6 +124,9 @@ export default function Footer() {
               <div className="absolute inset-0 bg-black/18" />
             </div>
 
+            {/* Stack B — heavy blur creates the "orb glow" at the top edge.
+                The two fixed-position accent overlays are dropped here; the blur
+                diffuses the single tri-color pass into the same effect. */}
             <div className="absolute inset-0 blur-2xl opacity-55 [mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)]">
               <FooterPaperGradient
                 offsetX={autoOffset.x * 0.18}
@@ -149,32 +136,9 @@ export default function Footer() {
                   "hsl(45, 100%, 51%)",
                   "hsl(340, 82%, 52%)",
                 ]}
-                intensity={0.24}
+                intensity={0.28}
                 softness={0.78}
                 speed={0.9}
-              />
-
-              <FooterPaperGradient
-                offsetX={0}
-                offsetY={0}
-                colors={["hsl(14, 100%, 57%)"]}
-                intensity={0.08}
-                softness={0.86}
-                noise={0}
-                scale={1}
-                speed={0.9}
-                className="opacity-40"
-              />
-              <FooterPaperGradient
-                offsetX={0}
-                offsetY={0}
-                colors={["hsl(45, 100%, 51%)"]}
-                intensity={0.08}
-                softness={0.86}
-                noise={0}
-                scale={1}
-                speed={0.9}
-                className="opacity-40"
               />
             </div>
 

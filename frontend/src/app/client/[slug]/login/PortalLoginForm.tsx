@@ -6,6 +6,14 @@ type Props = {
   slug: string;
 };
 
+function submitOwningFormOnEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+  if (e.key !== "Enter" && e.key !== "NumpadEnter") return;
+  const form = e.currentTarget.form;
+  if (!form) return;
+  e.preventDefault();
+  form.requestSubmit();
+}
+
 export default function PortalLoginForm({ slug }: Props) {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -65,9 +73,11 @@ export default function PortalLoginForm({ slug }: Props) {
           name="email"
           type="email"
           autoComplete="email"
+          enterKeyHint="send"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          onKeyDown={submitOwningFormOnEnter}
           placeholder="tu@empresa.com"
           className="w-full rounded-lg border border-zinc-700 bg-zinc-900/80 px-3 py-2.5 text-sm text-zinc-100 outline-none ring-0 transition placeholder:text-zinc-600 focus:border-[#c9a07a]/50"
         />

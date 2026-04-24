@@ -32,7 +32,7 @@ export default function Services() {
             <Link
               key={offer.id}
               href={offer.href}
-              className="service-card group grid cursor-pointer grid-cols-[auto_1fr_auto] items-start gap-6 border-b border-zinc-800 py-10 md:gap-10 md:py-12"
+              className="service-card group relative isolate grid cursor-pointer grid-cols-[auto_1fr_auto] items-start gap-6 border-b border-zinc-800 py-10 md:gap-10 md:py-12"
             >
               <span className="mt-2 tabular-nums text-xs uppercase tracking-[0.2em] text-zinc-500 md:text-sm">
                 {String(index + 1).padStart(2, "0")}

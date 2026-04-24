@@ -18,7 +18,8 @@ import "server-only";
  */
 
 const NOTION_API_BASE = "https://api.notion.com/v1";
-const NOTION_API_VERSION = "2022-06-28";
+/** Notion 2025-09-03: databases expose `data_sources[]`; rows are queried via `data_sources/{id}/query`. */
+const NOTION_API_VERSION = "2025-09-03";
 
 // ---------------------------------------------------------------------------
 // Config
@@ -51,11 +52,24 @@ export function parseNotionId(url: string | null): string | null {
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
   if (DASHED_UUID.test(trimmed)) return trimmed.toLowerCase();
 
-  const clean = trimmed.split("#")[0];
-  const lastPath = clean.split("?")[0].split("/").filter(Boolean).pop() ?? "";
-
   const HEX32 = /([0-9a-fA-F]{32})/;
-  const m = lastPath.match(HEX32) ?? clean.match(HEX32);
+
+  // Prefer extracting from the pathname, not the query string.
+  // This avoids mistakenly treating a database VIEW id (`?v=<32hex>`) as the
+  // page/database id — which renders as an "empty page" in the portal.
+  try {
+    const u = new URL(trimmed);
+    const lastPath =
+      u.pathname.split("/").filter(Boolean).pop() ?? "";
+    const m = lastPath.match(HEX32);
+    if (m) return toDashedUuid(m[1]);
+  } catch {
+    // Not a URL — fall through.
+  }
+
+  // Fallback: accept raw 32-hex ids (or any string containing one).
+  const clean = trimmed.split("#")[0].split("?")[0];
+  const m = clean.match(HEX32);
   return m ? toDashedUuid(m[1]) : null;
 }
 
@@ -78,6 +92,11 @@ type NotionFetchError =
   | "not_found"
   | "rate_limited"
   | "unknown";
+
+/** Database exists in Notion but has no API-accessible data source (e.g. linked-database copy). */
+export type NoDataSourceReason = "no_data_source";
+
+export type NotionContentModeErrorReason = NotionFetchError | NoDataSourceReason;
 
 type NotionFetchResult<T> =
   | { ok: true; data: T }
@@ -133,7 +152,7 @@ async function notionFetch<T = unknown>(
 export type NotionContentMode =
   | { mode: "database"; id: string }
   | { mode: "page"; id: string }
-  | { mode: "error"; reason: NotionFetchError };
+  | { mode: "error"; reason: NotionContentModeErrorReason };
 
 /**
  * Given a URL stored in `projects.notion_url`, determine whether it resolves
@@ -149,13 +168,18 @@ export async function resolveNotionContentMode(
   if (!id) return { mode: "error", reason: "not_found" };
   if (!getNotionApiKey()) return { mode: "error", reason: "unauthorized" };
 
-  const result = await notionFetch<{ object: string }>(
+  const result = await notionFetch<{ object: string; data_sources?: { id: string }[] }>(
     `/databases/${encodeURIComponent(id)}`,
     { method: "GET" },
   );
 
   if (result.ok) {
-    // Notion returned a database object.
+    const sources = Array.isArray(result.data.data_sources)
+      ? result.data.data_sources
+      : [];
+    if (sources.length === 0) {
+      return { mode: "error", reason: "no_data_source" };
+    }
     return { mode: "database", id };
   }
 
@@ -186,9 +210,11 @@ export type ProjectRow = {
   icon: string | null;
 };
 
+export type QueryFailureReason = NotionFetchError | NoDataSourceReason;
+
 export type QueryResult =
   | { ok: true; rows: ProjectRow[] }
-  | { ok: false; reason: NotionFetchError };
+  | { ok: false; reason: QueryFailureReason };
 
 function getPlainText(rich: any): string {
   if (!Array.isArray(rich)) return "";
@@ -263,11 +289,58 @@ function mapPageToRow(page: any): ProjectRow {
   };
 }
 
+type PrimaryDataSourceBundle = {
+  database: unknown;
+  dataSourceId: string;
+  dataSource: unknown;
+};
+
+async function fetchPrimaryDataSource(
+  databaseId: string,
+): Promise<
+  | ({ ok: true } & PrimaryDataSourceBundle)
+  | { ok: false; reason: QueryFailureReason }
+> {
+  const dbRes = await notionFetch<any>(
+    `/databases/${encodeURIComponent(databaseId)}`,
+    { method: "GET" },
+  );
+  if (!dbRes.ok) return { ok: false, reason: dbRes.reason };
+
+  const sources = Array.isArray(dbRes.data?.data_sources)
+    ? dbRes.data.data_sources
+    : [];
+  if (sources.length === 0) {
+    return { ok: false, reason: "no_data_source" };
+  }
+
+  const dataSourceId = String(sources[0]?.id ?? "").trim();
+  if (!dataSourceId) {
+    return { ok: false, reason: "no_data_source" };
+  }
+
+  const dsRes = await notionFetch<any>(
+    `/data_sources/${encodeURIComponent(dataSourceId)}`,
+    { method: "GET" },
+  );
+  if (!dsRes.ok) return { ok: false, reason: dsRes.reason };
+
+  return {
+    ok: true,
+    database: dbRes.data,
+    dataSourceId,
+    dataSource: dsRes.data,
+  };
+}
+
 export async function queryProjectDatabase(
   databaseId: string,
 ): Promise<QueryResult> {
+  const chain = await fetchPrimaryDataSource(databaseId);
+  if (!chain.ok) return { ok: false, reason: chain.reason };
+
   const result = await notionFetch<{ results?: unknown[] }>(
-    `/databases/${encodeURIComponent(databaseId)}/query`,
+    `/data_sources/${encodeURIComponent(chain.dataSourceId)}/query`,
     {
       method: "POST",
       body: JSON.stringify({ page_size: 50 }),
@@ -425,6 +498,12 @@ function extractTitleFromObject(obj: unknown): string | null {
     return t.length > 0 ? t : null;
   }
 
+  // Data source (2025-09-03+) — schema + `title` rich_text[]
+  if (o.object === "data_source" && Array.isArray(o.title)) {
+    const t = getPlainText(o.title);
+    return t.length > 0 ? t : null;
+  }
+
   // Page object — find the property with type "title"
   if (o.object === "page" && o.properties) {
     const prop = pickFirstProperty(o.properties as Record<string, any>, (p) => p?.type === "title");
@@ -435,6 +514,19 @@ function extractTitleFromObject(obj: unknown): string | null {
   }
 
   return null;
+}
+
+function pageMetaFromDatabasePair(
+  database: unknown,
+  dataSource: unknown,
+): PageMeta {
+  return {
+    icon: extractIconFromObject(database),
+    coverUrl: extractCoverUrl(database),
+    title:
+      extractTitleFromObject(dataSource) ?? extractTitleFromObject(database),
+    boardColumns: extractBoardColumns(dataSource),
+  };
 }
 
 /**
@@ -459,14 +551,9 @@ export async function getPageMeta(id: string): Promise<PageMeta> {
       boardColumns: isDb ? extractBoardColumns(pageResult.data) : null,
     };
   }
-  const dbResult = await notionFetch<unknown>(`/databases/${encodeURIComponent(id)}`);
-  if (dbResult.ok) {
-    return {
-      icon: extractIconFromObject(dbResult.data),
-      coverUrl: extractCoverUrl(dbResult.data),
-      title: extractTitleFromObject(dbResult.data),
-      boardColumns: extractBoardColumns(dbResult.data),
-    };
+  const chain = await fetchPrimaryDataSource(id);
+  if (chain.ok) {
+    return pageMetaFromDatabasePair(chain.database, chain.dataSource);
   }
   return { icon: null, coverUrl: null, title: null, boardColumns: null };
 }
@@ -478,14 +565,9 @@ export async function getPageMeta(id: string): Promise<PageMeta> {
  * are never missed.
  */
 export async function getDatabaseMeta(id: string): Promise<PageMeta> {
-  const result = await notionFetch<unknown>(`/databases/${encodeURIComponent(id)}`);
-  if (result.ok) {
-    return {
-      icon: extractIconFromObject(result.data),
-      coverUrl: extractCoverUrl(result.data),
-      title: extractTitleFromObject(result.data),
-      boardColumns: extractBoardColumns(result.data),
-    };
+  const chain = await fetchPrimaryDataSource(id);
+  if (chain.ok) {
+    return pageMetaFromDatabasePair(chain.database, chain.dataSource);
   }
   return { icon: null, coverUrl: null, title: null, boardColumns: null };
 }
@@ -701,12 +783,25 @@ async function mapBlock(raw: any, depth: number): Promise<NotionBlock> {
       };
 
     case "child_database": {
-      const dbMeta = await notionFetch<unknown>(`/databases/${encodeURIComponent(id)}`);
-      const dbData = dbMeta.ok ? dbMeta.data : null;
+      const chain = await fetchPrimaryDataSource(id);
+      const dbData = chain.ok ? chain.database : null;
+      const dsData = chain.ok ? chain.dataSource : null;
       const dbIcon = dbData ? extractIconFromObject(dbData) : null;
       const iconStr = dbIcon?.type === "emoji" ? dbIcon.value : dbIcon?.type === "url" ? dbIcon.value : null;
-      const columns = dbData ? extractBoardColumns(dbData) : null;
-      return { type: "child_database", id, title: String(body.title ?? ""), icon: iconStr, columns };
+      const columns = dsData ? extractBoardColumns(dsData) : null;
+      const rawBlockTitle = String(body.title ?? "").trim();
+      const blockTitleNorm =
+        /^untitled$/i.test(rawBlockTitle) || rawBlockTitle === "Sin título"
+          ? ""
+          : rawBlockTitle;
+      const remoteTitle = chain.ok
+        ? extractTitleFromObject(dsData) ?? extractTitleFromObject(dbData)
+        : null;
+      const title =
+        (remoteTitle && remoteTitle.trim()) ||
+        blockTitleNorm ||
+        "Base de datos";
+      return { type: "child_database", id, title, icon: iconStr, columns };
     }
     case "child_page": {
       const pgMeta = await notionFetch<unknown>(`/pages/${encodeURIComponent(id)}`);

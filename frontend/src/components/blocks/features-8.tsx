@@ -54,10 +54,10 @@ export function Features() {
   }));
 
   return (
-    <section className="border-y border-border/60 bg-background py-16 md:py-24">
+    <section className="border-y border-border/60 bg-[#080708] pt-20 pb-16 md:pt-28 md:pb-24">
       <div className="mx-auto max-w-3xl px-6 lg:max-w-5xl">
         <div className="relative">
-          <div className="group/features-grid relative isolate z-10 grid grid-cols-6 gap-3">
+          <div className="group/features-grid relative isolate z-10 mt-8 grid grid-cols-6 gap-3 md:mt-10">
             <FeatureCardMotion
               className="relative col-span-full lg:col-span-2"
               delay={0}
