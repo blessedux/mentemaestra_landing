@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { Fragment } from "react";
 
 import { MagicText } from "@/components/ui/magic-text";
@@ -43,11 +44,15 @@ export default function Welcome() {
                 {t.welcome.label}
               </span>
             </div>
-            {/* Keep layout so the right-side text stays put on lg. */}
-            <div
-              aria-hidden
-              className="relative aspect-[4000/2667] w-full max-w-xl"
-            />
+            <div className="relative aspect-[4000/2667] w-full max-w-xl overflow-hidden rounded-xl">
+              <Image
+                src="/pexels-pixabay-273230.webp"
+                alt="Espacio de trabajo creativo"
+                fill
+                className="object-cover"
+                sizes="(max-width: 1024px) 100vw, 42rem"
+              />
+            </div>
           </div>
 
           <div>

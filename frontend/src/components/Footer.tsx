@@ -2,12 +2,10 @@
 
 import { faInstagram, faLinkedinIn, faXTwitter } from "@fortawesome/free-brands-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { GrainGradient } from "@paper-design/shaders-react";
+import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 import { useLocale } from "@/i18n/LocaleProvider";
 import { ParallaxComponent } from "@/components/ui/parallax-scrolling";
-import { TextScramble } from "@/components/ui/text-scramble";
 
 /** Replace with real profile URLs when ready. */
 const FOOTER_SOCIAL_HREFS = {
@@ -23,168 +21,18 @@ const subheadingClass = "text-xs font-medium uppercase tracking-[0.2em] text-whi
 
 const footerSocialIconStyle = { color: "rgb(255, 255, 255)" } as const;
 
-function FooterPaperGradient({
-  offsetX,
-  offsetY,
-  colors,
-  intensity = 0.45,
-  softness = 0.76,
-  noise = 0,
-  scale = 1,
-  speed = 1,
-  className,
-}: {
-  offsetX: number;
-  offsetY: number;
-  colors: string[];
-  intensity?: number;
-  softness?: number;
-  noise?: number;
-  scale?: number;
-  speed?: number;
-  className?: string;
-}) {
-  return (
-    <div className={["absolute inset-0", className].filter(Boolean).join(" ")}>
-      <GrainGradient
-        style={{ height: "100%", width: "100%" }}
-        colorBack="hsl(0, 0%, 0%)"
-        softness={softness}
-        intensity={intensity}
-        noise={noise}
-        shape="corners"
-        offsetX={offsetX}
-        offsetY={offsetY}
-        scale={scale}
-        rotation={0}
-        speed={speed}
-        colors={colors}
-      />
-    </div>
-  );
-}
-
 export default function Footer() {
   const { t } = useLocale();
 
-  const [autoOffset, setAutoOffset] = useState({ x: 0, y: 0 });
-
-  useEffect(() => {
-    let raf: number | null = null;
-    const start = performance.now();
-
-    const tick = () => {
-      const tms = performance.now() - start;
-      // Gentle, always-on drift for the "non-hovered" orb.
-      setAutoOffset({
-        x: Math.sin(tms / 2400) * 0.55,
-        y: Math.cos(tms / 3100) * 0.45,
-      });
-      raf = requestAnimationFrame(tick);
-    };
-
-    raf = requestAnimationFrame(tick);
-    return () => {
-      if (raf != null) cancelAnimationFrame(raf);
-    };
-  }, []);
-
   return (
-    <footer
-      id="contact"
-      className="mm-footer relative overflow-hidden bg-[#0a0a0a]"
-    >
+    <footer id="contact" className="bg-[#0a0a0a]">
       <ParallaxComponent>
-        <div
-          className="relative mt-auto flex w-full justify-center px-5 pb-12 pt-20 sm:px-8 sm:pb-16 sm:pt-28 md:px-10"
-        >
-          <div className="pointer-events-none absolute inset-0 z-0">
-            <div className="absolute inset-0 [mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)] [-webkit-mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)]">
-              {/* Keep the default paper shader stable (no big palette shift on hover). */}
-              <FooterPaperGradient
-                offsetX={autoOffset.x * 0.35}
-                offsetY={autoOffset.y * 0.3}
-                colors={[
-                  "hsl(14, 100%, 57%)",
-                  "hsl(45, 100%, 51%)",
-                  "hsl(340, 82%, 52%)",
-                ]}
-                intensity={0.45}
-                softness={0.76}
-                speed={1}
-              />
-
-              {/* Accent orbs (fixed position). Cursor proximity changes radius/grain/size only. */}
-              <FooterPaperGradient
-                offsetX={0}
-                offsetY={0}
-                colors={["hsl(14, 100%, 57%)"]}
-                intensity={0.12}
-                softness={0.82}
-                noise={0}
-                scale={1}
-                speed={1}
-                className="opacity-35"
-              />
-              <FooterPaperGradient
-                offsetX={0}
-                offsetY={0}
-                colors={["hsl(45, 100%, 51%)"]}
-                intensity={0.12}
-                softness={0.82}
-                noise={0}
-                scale={1}
-                speed={1}
-                className="opacity-35"
-              />
-              <div className="absolute inset-0 bg-black/18" />
-            </div>
-
-            <div className="absolute inset-0 blur-2xl opacity-55 [mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)]">
-              <FooterPaperGradient
-                offsetX={autoOffset.x * 0.18}
-                offsetY={autoOffset.y * 0.14}
-                colors={[
-                  "hsl(14, 100%, 57%)",
-                  "hsl(45, 100%, 51%)",
-                  "hsl(340, 82%, 52%)",
-                ]}
-                intensity={0.24}
-                softness={0.78}
-                speed={0.9}
-              />
-
-              <FooterPaperGradient
-                offsetX={0}
-                offsetY={0}
-                colors={["hsl(14, 100%, 57%)"]}
-                intensity={0.08}
-                softness={0.86}
-                noise={0}
-                scale={1}
-                speed={0.9}
-                className="opacity-40"
-              />
-              <FooterPaperGradient
-                offsetX={0}
-                offsetY={0}
-                colors={["hsl(45, 100%, 51%)"]}
-                intensity={0.08}
-                softness={0.86}
-                noise={0}
-                scale={1}
-                speed={0.9}
-                className="opacity-40"
-              />
-            </div>
-
-            <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#0a0a0a]/85 to-transparent" />
-          </div>
-          <div className="relative z-10 w-full max-w-7xl text-white">
+        <div className="mt-auto flex w-full justify-center px-5 pb-12 pt-20 sm:px-8 sm:pb-16 sm:pt-28 md:px-10">
+          <div className="w-full max-w-7xl text-white">
             <div className="grid grid-cols-1 gap-12 sm:gap-14 lg:grid-cols-12 lg:gap-8 lg:gap-y-16">
-              <div className="flex flex-col gap-5 lg:col-span-5">
+              <div className="flex flex-col gap-5 lg:col-span-4">
                 {/* Same multi-font logotype as `PortalFooter` / hero (bootzy + script + descriptor). */}
-                <h2 className="m-0 inline-block text-[clamp(2.25rem,6vw,3.75rem)] font-normal leading-[0.78] tracking-tight text-white">
+                <h2 className="m-0 text-[clamp(2.25rem,6vw,3.75rem)] font-normal leading-[0.52] tracking-tight text-white">
                   <Link
                     href="/"
                     className="block text-inherit no-underline transition hover:opacity-90"
@@ -193,178 +41,139 @@ export default function Footer() {
                     <span className="block font-hero-bootzy">{t.footer.titleLine1}</span>
                     <span className="block font-hero-new-icon-script">{t.footer.titleLine2}</span>
                   </Link>
-                  <span className="mt-3 block w-full font-hero-bootzy text-[0.6rem] font-semibold tracking-[0.34em] text-zinc-400 uppercase">
+                  <span className="mt-2 block w-full font-hero-bootzy text-[0.42rem] tracking-[0.38em] text-zinc-600 uppercase">
                     {t.footer.designStudioLabel}
                   </span>
                 </h2>
                 <p className="max-w-sm text-sm leading-relaxed text-white/70">{t.footer.tagline}</p>
               </div>
 
-              <div className="flex flex-col gap-10 lg:col-span-7 lg:flex-row lg:items-stretch lg:justify-end lg:gap-14">
-                <div className="flex flex-col gap-10 lg:w-[22rem] lg:min-h-full">
-                  <div className="flex flex-col gap-6 lg:items-start">
-                    <p className={`${subheadingClass} mb-1`}>{t.footer.socialTitle}</p>
-                    <ul className="flex flex-wrap items-center gap-4">
-                      <li>
-                        <a
-                          href={FOOTER_SOCIAL_HREFS.instagram}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex text-white transition-opacity hover:opacity-80"
-                          aria-label="Instagram"
-                        >
-                          <FontAwesomeIcon
-                            icon={faInstagram}
-                            style={footerSocialIconStyle}
-                            className="h-5 w-5"
-                          />
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href={FOOTER_SOCIAL_HREFS.x}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex text-white transition-opacity hover:opacity-80"
-                          aria-label="X"
-                        >
-                          <FontAwesomeIcon
-                            icon={faXTwitter}
-                            style={footerSocialIconStyle}
-                            className="h-5 w-5"
-                          />
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          href={FOOTER_SOCIAL_HREFS.linkedin}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex text-white transition-opacity hover:opacity-80"
-                          aria-label="LinkedIn"
-                        >
-                          <FontAwesomeIcon
-                            icon={faLinkedinIn}
-                            style={footerSocialIconStyle}
-                            className="h-5 w-5"
-                          />
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
+              <nav className="flex flex-col gap-4 lg:col-span-2" aria-label={t.footer.menuTitle}>
+                <p className={subheadingClass}>{t.footer.menuTitle}</p>
+                <ul className="flex flex-col gap-1">
+                  <li>
+                    <Link href="/#design" className={menuLinkClass}>
+                      {t.nav.design}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/#services" className={menuLinkClass}>
+                      {t.nav.services}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/#works" className={menuLinkClass}>
+                      {t.nav.works}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/#experience" className={menuLinkClass}>
+                      {t.nav.experience}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/#book-meeting" className={menuLinkClass}>
+                      {t.nav.book}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/pricing#pricing" className={menuLinkClass}>
+                      {t.nav.pricing}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/pricing#faq" className={menuLinkClass}>
+                      {t.nav.faq}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link href="/onboarding" className={menuLinkClass}>
+                      {t.nav.cta}
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
 
-                  <div className="mt-auto flex flex-col gap-4">
-                    <p className={subheadingClass}>{t.footer.newsletterTitle}</p>
-                    <form
-                      className="flex flex-col gap-3"
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                      }}
-                    >
-                      <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                        <label className="sr-only" htmlFor="footer-newsletter-email">
-                          {t.footer.emailLabel}
-                        </label>
-                        <input
-                          id="footer-newsletter-email"
-                          name="email"
-                          type="email"
-                          autoComplete="email"
-                          placeholder={t.footer.emailPlaceholder}
-                          className="min-h-11 w-full min-w-0 flex-1 rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-2.5 text-sm text-white outline-none ring-white/30 placeholder:text-white/40 focus:border-white/30 focus:ring-2"
-                        />
-                        <button
-                          type="submit"
-                          className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-white px-6 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
-                        >
-                          {t.footer.subscribe}
-                        </button>
-                      </div>
-                      <p className="text-xs leading-relaxed text-white/45">{t.footer.newsletterHint}</p>
-                    </form>
-                  </div>
-                </div>
-
-                <nav
-                  className="flex flex-col gap-4 lg:items-end lg:text-right"
-                  aria-label={t.footer.menuTitle}
+              <div className="flex flex-col gap-4 lg:col-span-3">
+                <p className={subheadingClass}>{t.footer.newsletterTitle}</p>
+                <form
+                  className="flex flex-col gap-3"
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                  }}
                 >
-                  <p className={subheadingClass}>{t.footer.menuTitle}</p>
-                  <ul className="grid grid-flow-row grid-cols-2 gap-x-10 gap-y-1 lg:justify-items-end">
-                    <li>
-                      <Link href="/#design" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.design}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/#services" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.services}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/#works" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.works}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/#experience" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.experience}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/#book-meeting" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.book}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/pricing#pricing" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.pricing}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/pricing#faq" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.faq}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                    <li>
-                      <Link href="/onboarding" className={menuLinkClass}>
-                        <TextScramble
-                          text={t.nav.cta}
-                          className="w-fit"
-                          labelClassName="text-sm font-medium text-inherit"
-                        />
-                      </Link>
-                    </li>
-                  </ul>
-                </nav>
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                    <label className="sr-only" htmlFor="footer-newsletter-email">
+                      {t.footer.emailLabel}
+                    </label>
+                    <input
+                      id="footer-newsletter-email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      placeholder={t.footer.emailPlaceholder}
+                      className="min-h-11 w-full min-w-0 flex-1 rounded-2xl border border-white/15 bg-white/[0.07] px-4 py-2.5 text-sm text-white outline-none ring-white/30 placeholder:text-white/40 focus:border-white/30 focus:ring-2"
+                    />
+                    <button
+                      type="submit"
+                      className="inline-flex h-11 shrink-0 items-center justify-center rounded-full bg-white px-6 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
+                    >
+                      {t.footer.subscribe}
+                    </button>
+                  </div>
+                  <p className="text-xs leading-relaxed text-white/45">{t.footer.newsletterHint}</p>
+                </form>
+              </div>
+
+              <div className="flex flex-col gap-6 lg:col-span-3 lg:items-end lg:text-right">
+                <p className={`${subheadingClass} mb-4`}>{t.footer.socialTitle}</p>
+                <ul className="flex flex-wrap items-center gap-4 lg:justify-end">
+                  <li>
+                    <a
+                      href={FOOTER_SOCIAL_HREFS.instagram}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex text-white transition-opacity hover:opacity-80"
+                      aria-label="Instagram"
+                    >
+                      <FontAwesomeIcon
+                        icon={faInstagram}
+                        style={footerSocialIconStyle}
+                        className="h-5 w-5"
+                      />
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={FOOTER_SOCIAL_HREFS.x}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex text-white transition-opacity hover:opacity-80"
+                      aria-label="X"
+                    >
+                      <FontAwesomeIcon
+                        icon={faXTwitter}
+                        style={footerSocialIconStyle}
+                        className="h-5 w-5"
+                      />
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href={FOOTER_SOCIAL_HREFS.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex text-white transition-opacity hover:opacity-80"
+                      aria-label="LinkedIn"
+                    >
+                      <FontAwesomeIcon
+                        icon={faLinkedinIn}
+                        style={footerSocialIconStyle}
+                        className="h-5 w-5"
+                      />
+                    </a>
+                  </li>
+                </ul>
               </div>
             </div>
 
@@ -396,6 +205,22 @@ export default function Footer() {
           </div>
         </div>
       </ParallaxComponent>
+      <div className="flex justify-center border-t border-zinc-800 bg-[#0a0a0a] px-6 py-10">
+        <Link
+          href="/"
+          aria-label="MenteMaestra home"
+          className="opacity-90 transition-opacity hover:opacity-100"
+        >
+          <Image
+            src="/MM_logo_NB-01.svg"
+            alt="MenteMaestra"
+            width={140}
+            height={136}
+            className="h-16 w-auto"
+            priority={false}
+          />
+        </Link>
+      </div>
     </footer>
   );
 }

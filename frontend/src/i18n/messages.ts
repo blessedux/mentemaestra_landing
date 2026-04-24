@@ -12,55 +12,6 @@ export const messages = {
       faq: "FAQ",
       cta: "Iniciar proyecto",
     },
-    about: {
-      principleLines: [
-        { top: "\u00A0", bottom: "CLARIDAD" },
-        { top: "CLARIDAD", bottom: "SEÑAL" },
-        { top: "SEÑAL", bottom: "PRUEBA" },
-        { top: "PRUEBA", bottom: "HISTORIA" },
-        { top: "HISTORIA", bottom: "ACTITUD" },
-        { top: "ACTITUD", bottom: "\u00A0" },
-      ],
-    },
-    processFeatures: {
-      cards: {
-        backlog: {
-          kicker: "Backlog y trabajo creativo",
-          title: "Delega tus tareas acumuladas de diseño en un partner on-demand.",
-          description:
-            "Nos encargamos de organizar, ejecutar y dar salida a las necesidades creativas de tu marca, mientras tú te enfocas en operar y hacer crecer el negocio. Priorizamos lo que realmente genera impacto, para que el diseño avance con claridad y velocidad.",
-        },
-        tickets: {
-          kicker: "Tickets y delivery del equipo",
-          title:
-            "Un solo lugar para monitorear qué está live, bloqueado o aun está en proceso.",
-          description:
-            "Seguimos tickets con dueños y fechas claras, mantenemos proyectos como equipo y matamos el loop infinito de “¿en qué va esto?”.",
-        },
-      },
-      bottomCard: {
-        lead:
-          "De la idea al lanzamiento, sin fricción. Descubrimiento, ejecución, revisiones y entrega en un sistema diseñado para mantener backlog, producción y stakeholders alineados en cada etapa.",
-        steps: {
-          diagnostico: {
-            title: "Diagnóstico",
-            description: "Entiende objetivos, contexto y cuellos de botella.",
-          },
-          produccion: {
-            title: "Producción",
-            description: "Ejecución, sistema de diseño, activos y entrega.",
-          },
-          alineacion: {
-            title: "Alineación",
-            description: "Revisiones, stakeholders e iteraciones.",
-          },
-          lanzamiento: {
-            title: "Lanzamiento",
-            description: "Entrega y salida a producción.",
-          },
-        },
-      },
-    },
     onboarding: {
       stepLabel: "Onboarding",
       stepOf: "Paso {n} de {total}",
@@ -152,12 +103,12 @@ export const messages = {
     hero: {
       /** Hero CTA copy; cycles on hover-out without a click (parallel to `en`). */
       ctaRotate: [
-        "Comencemos",
-        "Elevar marca",
-        "Crecer y escalar",
-        "Construye tu sitio",
-        "Conversa con nosotros",
-        "Demosle",
+        "Armémoslo",
+        "A lanzar",
+        "A cocinar",
+        "Dale",
+        "Cerramos",
+        "Ejecutemos",
       ],
       subtitle:
         "Branding y diseño estratégico para negocios en expansión",
@@ -181,27 +132,27 @@ export const messages = {
       customizable: {
         title: "Personalizable",
         body:
-          "Tu marca, contenido y flujos. Definidos de punta a punta sin plantillas genéricas que te frenen.",
+          "Tu marca, contenido y flujos — definidos de punta a punta sin plantillas genéricas que te frenen.",
       },
       secure: {
-        title: "Seguridad a cargo nuestro",
+        title: "Seguro por defecto",
         body:
-          "Seguimos buenas prácticas, mantenemos el código al día para evitar brechas y hacks, rotamos llaves con frecuencia y nos hacemos responsables de tu seguridad para que tú te enfoques en tu negocio.",
+          "Buenas prácticas y valores seguros para que tu sitio, tus datos y tus visitantes estén protegidos sin dramas extra.",
       },
       seo: {
         title: "Optimizado para SEO",
         body:
-          "Integramos la conversación de SEO desde el inicio. Estructura, metadatos y rendimiento. Para que tus clientes te encuentren de verdad.",
+          "Integramos la conversación de SEO desde el inicio — estructura, metadatos y rendimiento — para que tus clientes te encuentren de verdad.",
       },
       growth: {
         title: "Crecimiento sostenido",
         body:
-          "Un socio de diseño que atiende tus pedidos casi en tiempo real. Para que el impulso no se detenga después del lanzamiento.",
+          "Un socio de diseño que atiende tus pedidos casi en tiempo real — para que el impulso no se detenga después del lanzamiento.",
       },
       assets: {
         title: "Activos digitales, juntos",
         body:
-          "Una forma simple de gestionar tus activos digitales con tu equipo. Contexto compartido, aprobaciones y una sola fuente de verdad.",
+          "Una forma simple de gestionar tus activos digitales con tu equipo — contexto compartido, aprobaciones y una sola fuente de verdad.",
       },
       teamAvatars: [
         { name: "Dirección creativa" },
@@ -709,54 +660,6 @@ export const messages = {
       faq: "FAQ",
       cta: "Start Project",
     },
-    about: {
-      principleLines: [
-        { top: "\u00A0", bottom: "CLARITY" },
-        { top: "CLARITY", bottom: "SIGNAL" },
-        { top: "SIGNAL", bottom: "PROOF" },
-        { top: "PROOF", bottom: "STORY" },
-        { top: "STORY", bottom: "SWAG" },
-        { top: "SWAG", bottom: "\u00A0" },
-      ],
-    },
-    processFeatures: {
-      cards: {
-        backlog: {
-          kicker: "Backlog & creative work",
-          title: "Hand off your design backlog to an on-demand partner.",
-          description:
-            "We organize, execute, and ship the creative needs of your brand while you focus on operating and growing the business. We prioritize what actually creates impact, so design moves forward with clarity and speed.",
-        },
-        tickets: {
-          kicker: "Tickets & team delivery",
-          title: "A single place to monitor what’s live, blocked, or still in progress.",
-          description:
-            "Track tickets with clear owners and dates, run projects as a team, and kill the endless “where is this?” loop.",
-        },
-      },
-      bottomCard: {
-        lead:
-          "From idea to launch, frictionless. Discovery, execution, reviews, and delivery in a system designed to keep backlog, production, and stakeholders aligned at every stage.",
-        steps: {
-          diagnostico: {
-            title: "Diagnóstico",
-            description: "Understand goals, context, bottlenecks.",
-          },
-          produccion: {
-            title: "Producción",
-            description: "Execution, design systems, assets, delivery.",
-          },
-          alineacion: {
-            title: "Alineación",
-            description: "Reviews, stakeholders, iterations.",
-          },
-          lanzamiento: {
-            title: "Lanzamiento",
-            description: "Entrega / Go Live.",
-          },
-        },
-      },
-    },
     onboarding: {
       stepLabel: "Onboarding",
       stepOf: "Step {n} of {total}",
@@ -849,10 +752,10 @@ export const messages = {
       /** Hero CTA copy; cycles on hover-out without a click (parallel to `es`). */
       ctaRotate: [
         "Let's build",
-        "Let's ship it",
+        "Let's ship",
         "Let's cook",
-        "Let's do this",
-        "Lock in, baby",
+        "Let's go",
+        "Lock it in",
         "Run it",
       ],
       subtitle:
@@ -877,27 +780,27 @@ export const messages = {
       customizable: {
         title: "Customizable",
         body:
-          "Your brand, content, and flows. Shaped end to end without generic templates holding you back.",
+          "Your brand, content, and flows—shaped end to end without generic templates holding you back.",
       },
       secure: {
-        title: "Security, handled",
+        title: "Secure by default",
         body:
-          "We follow best practices, keep code updates current to stay ahead of breaches and hacks, rotate keys often, and take responsibility for your safety so you can focus on your business.",
+          "Sensible hardening and safe defaults so your site, data, and visitors stay protected without extra drama.",
       },
       seo: {
         title: "SEO optimized",
         body:
-          "We build in the SEO conversation early. Structure, metadata, and performance. So your clients can actually find you.",
+          "We build in the SEO conversation early—structure, metadata, and performance—so your clients can actually find you.",
       },
       growth: {
         title: "Sustained growth",
         body:
-          "A design partner who takes care of your requests in near real time. So momentum does not stop after launch.",
+          "A design partner who takes care of your requests in near real time—so momentum does not stop after launch.",
       },
       assets: {
         title: "Digital assets, together",
         body:
-          "An easy way to manage your digital assets with your team. Shared context, approvals, and a single source of truth.",
+          "An easy way to manage your digital assets with your team—shared context, approvals, and a single source of truth.",
       },
       teamAvatars: [
         { name: "Creative lead" },

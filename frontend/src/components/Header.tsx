@@ -10,7 +10,6 @@ import {
   useState,
 } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
-import { GrainGradient } from "@paper-design/shaders-react";
 import { TextScramble } from "@/components/ui/text-scramble";
 import { useLocale } from "@/i18n/LocaleProvider";
 import type { Locale } from "@/i18n/messages";
@@ -49,7 +48,7 @@ function LangToggle({
                   ? "text-white"
                   : "text-zinc-600 hover:text-zinc-400 dark:text-zinc-500",
             )}
-            data-active={on ? "true" : "false"}
+            aria-pressed={on ? "true" : "false"}
           >
             {code}
           </button>
@@ -117,20 +116,10 @@ export default function Header() {
 
   useEffect(() => {
     if (!menuOpen) return;
-    const prevOverflow = document.body.style.overflow;
-    const prevPaddingRight = document.body.style.paddingRight;
-
-    // Prevent horizontal "jump" when locking scroll (scrollbar disappears).
-    const scrollbarWidth =
-      window.innerWidth - document.documentElement.clientWidth;
-    if (scrollbarWidth > 0) {
-      document.body.style.paddingRight = `${scrollbarWidth}px`;
-    }
-
+    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = prevOverflow;
-      document.body.style.paddingRight = prevPaddingRight;
+      document.body.style.overflow = prev;
     };
   }, [menuOpen]);
 
@@ -172,23 +161,6 @@ export default function Header() {
             : "pointer-events-none translate-y-full opacity-100 motion-reduce:translate-y-0 motion-reduce:opacity-0",
         )}
       >
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <GrainGradient
-            style={{ height: "100%", width: "100%" }}
-            colorBack="hsl(0, 0%, 92%)"
-            softness={0.76}
-            intensity={0.22}
-            noise={0}
-            shape="corners"
-            offsetX={0}
-            offsetY={0}
-            scale={1}
-            rotation={0}
-            speed={0.95}
-            colors={["hsl(14, 100%, 57%)", "hsl(45, 100%, 51%)", "hsl(340, 82%, 52%)"]}
-          />
-          <div className="absolute inset-0 bg-zinc-200/65" />
-        </div>
         <nav
           className="flex min-h-0 flex-1 flex-col justify-center px-8 pb-16 pt-24 sm:px-14 sm:pb-20 sm:pt-28"
           aria-label="Main"
@@ -243,7 +215,7 @@ export default function Header() {
                   ? "text-zinc-900 hover:bg-black/5 focus-visible:ring-zinc-500/40 focus-visible:ring-offset-zinc-200"
                   : "text-zinc-300 hover:bg-white/10 hover:text-white focus-visible:ring-white/25 focus-visible:ring-offset-transparent",
               )}
-              data-expanded={menuOpen ? "true" : "false"}
+              aria-expanded={menuOpen ? "true" : "false"}
               aria-controls={menuId}
               aria-label={
                 menuOpen
