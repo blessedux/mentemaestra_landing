@@ -53,6 +53,18 @@ export default async function NotionRowList({
         </EmptyState>
       );
     }
+    if (result.reason === "no_data_source") {
+      return (
+        <EmptyState>
+          Esta base aparece en Notion como una{" "}
+          <span className="text-zinc-300">vista enlazada</span> (linked
+          database). La API de Notion no puede leer esas copias: hay que usar la
+          base de datos original en el portal, o duplicar la base como copia
+          completa (no enlazada) y conectarla a la integración. Pídele a tu
+          operador que lo ajuste en Notion.
+        </EmptyState>
+      );
+    }
     return (
       <EmptyState>
         No pudimos conectar con Notion en este momento. Intenta recargar la

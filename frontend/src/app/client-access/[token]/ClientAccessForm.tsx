@@ -17,6 +17,14 @@ function EmptyRow(): Stakeholder {
   return { email: "", accesses: [...DEFAULT_ACCESSES] };
 }
 
+function submitOwningFormOnEnter(e: React.KeyboardEvent<HTMLInputElement>) {
+  if (e.key !== "Enter" && e.key !== "NumpadEnter") return;
+  const form = e.currentTarget.form;
+  if (!form) return;
+  e.preventDefault();
+  form.requestSubmit();
+}
+
 export default function ClientAccessForm({
   token,
   defaultAdminEmail,
@@ -117,8 +125,10 @@ export default function ClientAccessForm({
           type="email"
           required
           autoComplete="email"
+          enterKeyHint="send"
           value={adminEmail}
           onChange={(e) => setAdminEmail(e.target.value)}
+          onKeyDown={submitOwningFormOnEnter}
           className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-[#c9a07a] focus:ring-1 focus:ring-[#c9a07a]"
         />
       </label>
@@ -149,9 +159,11 @@ export default function ClientAccessForm({
               <div className="flex gap-2">
                 <input
                   type="email"
+                  enterKeyHint="send"
                   placeholder="persona@empresa.com"
                   value={s.email}
                   onChange={(e) => updateEmail(i, e.target.value)}
+                  onKeyDown={submitOwningFormOnEnter}
                   className="flex-1 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm text-zinc-100 outline-none transition focus:border-[#c9a07a] focus:ring-1 focus:ring-[#c9a07a]"
                 />
                 {stakeholders.length > 1 ? (

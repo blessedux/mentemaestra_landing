@@ -32,7 +32,7 @@ export default function FeaturedWorks() {
   );
 
   return (
-    <section id="works" className="px-6 py-24">
+    <section id="works" className="relative px-6 py-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 grid gap-8 lg:grid-cols-2">
           <div className="flex flex-col gap-4">
@@ -98,6 +98,10 @@ export default function FeaturedWorks() {
           </div>
         ) : null}
       </div>
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[25%] bg-gradient-to-t from-[#030303] to-transparent"
+        aria-hidden
+      />
     </section>
   );
 }

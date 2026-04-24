@@ -102,7 +102,7 @@ export function ParallaxComponent({ children }: ParallaxComponentProps) {
           <div className="parallax__fade" aria-hidden="true" />
         </div>
         {children ? (
-          <div className="relative z-[35] flex w-full flex-1 flex-col">{children}</div>
+          <div className="relative z-[35] flex w-full flex-col">{children}</div>
         ) : null}
       </section>
     </div>

@@ -40,6 +40,28 @@ function LenisGsapAndHashBridge() {
   React.useEffect(() => {
     if (!lenis) return;
     gsap.registerPlugin(ScrollTrigger);
+
+    /** Lenis drives scroll; native `documentElement.scrollTop` stays ~0, so ScrollTrigger must read Lenis. */
+    const scroller = document.documentElement;
+    ScrollTrigger.scrollerProxy(scroller, {
+      scrollTop(value) {
+        if (arguments.length) {
+          lenis.scrollTo(Number(value), { immediate: true });
+        }
+        return lenis.scroll;
+      },
+      getBoundingClientRect() {
+        return {
+          top: 0,
+          left: 0,
+          width: window.innerWidth,
+          height: window.innerHeight,
+        };
+      },
+    });
+
+    ScrollTrigger.defaults({ scroller: scroller });
+
     const onLenisScroll = () => {
       ScrollTrigger.update();
     };
@@ -49,10 +71,15 @@ function LenisGsapAndHashBridge() {
     };
     gsap.ticker.add(tickerCb);
     gsap.ticker.lagSmoothing(0);
+    ScrollTrigger.refresh();
+
     return () => {
       lenis.off("scroll", onLenisScroll);
       gsap.ticker.remove(tickerCb);
       gsap.ticker.lagSmoothing(500, 33);
+      ScrollTrigger.defaults({ scroller: window });
+      ScrollTrigger.scrollerProxy(scroller);
+      ScrollTrigger.refresh();
     };
   }, [lenis]);
 

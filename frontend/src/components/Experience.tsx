@@ -23,7 +23,7 @@ const Brain3dExperience = dynamic(
         aria-hidden
       />
     ),
-  },
+  }
 );
 
 /** Same scroll window as `MagicText` (Welcome highlighted words). */
@@ -123,7 +123,7 @@ export default function Experience() {
     <section
       ref={sectionRef}
       id="experience"
-      className="relative px-6 py-24"
+      className="relative bg-[#030303] px-6 py-24"
     >
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-12 lg:grid-cols-2">
@@ -135,10 +135,7 @@ export default function Experience() {
               >
                 {brainShouldLoad ? (
                   <Brain3dExperience
-                    className="min-h-0 bg-[#0a0a0a]"
-                    particleStride={3}
-                    particlesOnly
-                    enableOrbitZoom={false}
+                    className="min-h-0 bg-[#030303]"
                     thoughts={t.experience.brainThoughts}
                     thoughtsOverlayClassName="top-11 justify-center pt-1 md:top-12 md:pt-0"
                   />

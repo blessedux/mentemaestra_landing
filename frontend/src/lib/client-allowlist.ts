@@ -91,3 +91,39 @@ export async function isEmailAllowedForProject(
   }
   return { allowed: true, projectId: project.id, project };
 }
+
+/**
+ * Projects whose latest onboarding submission lists this email as admin or
+ * stakeholder (same roster as {@link getAllowlistForProject}).
+ */
+export async function listPortalProjectsForEmail(
+  sql: ReturnType<typeof postgres>,
+  email: string,
+): Promise<{ slug: string; name: string }[]> {
+  const norm = normalize(email);
+  if (!norm.includes("@")) return [];
+
+  const rows = await sql<{ slug: string; name: string }[]>`
+    WITH latest AS (
+      SELECT DISTINCT ON (i.project_id)
+        p.slug,
+        p.name,
+        LOWER(TRIM(s.admin_email)) AS admin_norm,
+        s.stakeholders
+      FROM onboarding_submissions s
+      JOIN onboarding_invites i ON i.id = s.invite_id
+      JOIN projects p ON p.id = i.project_id
+      ORDER BY i.project_id, s.submitted_at DESC
+    )
+    SELECT slug, name
+    FROM latest
+    WHERE admin_norm = ${norm}
+       OR EXISTS (
+         SELECT 1
+         FROM jsonb_array_elements(COALESCE(stakeholders, '[]'::jsonb)) AS elem
+         WHERE elem ? 'email'
+           AND LOWER(TRIM(elem->>'email')) = ${norm}
+       )
+  `;
+  return rows;
+}

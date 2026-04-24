@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getBookingTimezone } from "@/lib/booking-env";
+import { MENTEMAESTRA_STUDIO_HOSTNAME } from "@/lib/mentemaestra-public";
 import { getBookingById } from "@/lib/bookings-store";
 import { getDb } from "@/lib/db";
 import { buildExploratoryIcs } from "@/lib/ics";
@@ -51,7 +52,7 @@ export async function GET(req: Request) {
     row.company?.trim() ? `Company: ${row.company}` : "",
     row.message?.trim() ? `Notes: ${row.message}` : "",
     "",
-    "Booked via mentemaestra.studio — add to your calendar from this invite.",
+    `Booked via ${MENTEMAESTRA_STUDIO_HOSTNAME} — add to your calendar from this invite.`,
   ].filter(Boolean);
 
   let icsBody: string;

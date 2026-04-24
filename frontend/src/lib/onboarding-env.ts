@@ -7,13 +7,16 @@
  * • `ONBOARDING_TOKEN_HASH_PEPPER` — optional secret mixed into `sha256` so a stolen DB row
  *   alone can't be brute-forced against a leaked URL format.
  * • `ONBOARDING_PUBLIC_BASE_URL` — origin used in invite URLs; falls back to
- *   `BOOKING_PUBLIC_BASE_URL` → `VERCEL_URL` → `http://localhost:3000`.
+ *   `getPublicSiteUrl()` (booking URL / Vercel / localhost). Legacy `mentemaestra.space` is rewritten to `.studio`.
  * • `RESEND_ONBOARDING_TEMPLATE_ID` — optional Resend template id. If unset the
  *   app renders `src/lib/email-templates/client-onboarding-es.html` locally.
+ * • `ONBOARDING_SUPPORT_EMAIL` — support address in portal / CRM / team-welcome emails.
+ *   Defaults to `soporte@mentemaestra.studio` (never `BOOKING_ORGANIZER_EMAIL`).
  *
  * Reused unchanged: `RESEND_API_KEY`, `RESEND_FROM_EMAIL`, `DATABASE_URL`.
  */
 
+import { rewriteLegacyMentemaestraHost } from "@/lib/mentemaestra-public";
 import { getPublicSiteUrl, normalizeBrowserHostInOrigin } from "@/lib/public-site-url";
 
 export const DEFAULT_ONBOARDING_INVITE_TTL_DAYS = 30;
@@ -53,10 +56,16 @@ export function getOnboardingResendTemplateId(): string | null {
   return v && v.length > 0 ? v : null;
 }
 
+/** Shown in portal / CRM / team-welcome emails — not the booking calendar inbox. */
+export const DEFAULT_ONBOARDING_SUPPORT_EMAIL = "soporte@mentemaestra.studio";
+
+/**
+ * Contact address for client portal, onboarding, and team welcome footers.
+ * Uses `ONBOARDING_SUPPORT_EMAIL` only; never `BOOKING_ORGANIZER_EMAIL` (often a personal Gmail).
+ */
 export function getOnboardingSupportEmail(): string {
-  return (
+  return rewriteLegacyMentemaestraHost(
     process.env.ONBOARDING_SUPPORT_EMAIL?.trim() ||
-    process.env.BOOKING_ORGANIZER_EMAIL?.trim() ||
-    "hola@mentemaestra.studio"
+      DEFAULT_ONBOARDING_SUPPORT_EMAIL,
   );
 }

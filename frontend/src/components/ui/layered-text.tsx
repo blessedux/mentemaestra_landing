@@ -30,6 +30,8 @@ export interface LayeredTextProps {
    */
   hoverTrigger?: "full" | "leading";
   className?: string;
+  /** Outlines root, hover strip, list, each line and text row for layout debugging. */
+  debugOutline?: boolean;
 }
 
 export function LayeredText({
@@ -41,6 +43,7 @@ export function LayeredText({
   contentAlign = "center",
   hoverTrigger = "full",
   className,
+  debugOutline,
 }: LayeredTextProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoverStripRef = useRef<HTMLDivElement>(null);
@@ -103,11 +106,13 @@ export function LayeredText({
     <div
       ref={containerRef}
       className={cn(
-        "relative py-24 font-sans font-black uppercase tracking-[-2px] text-black antialiased dark:text-white",
+        "relative py-24 font-sans font-black uppercase tracking-[-2px] text-white antialiased",
         hoverTrigger === "full" && "cursor-pointer",
         contentAlign === "start"
           ? "mx-0 mr-auto w-full max-w-none"
           : "mx-auto",
+        debugOutline &&
+          "outline outline-2 outline-offset-2 outline-orange-400/90",
         className,
       )}
       style={containerStyle}
@@ -115,7 +120,11 @@ export function LayeredText({
       {hoverTrigger === "leading" ? (
         <div
           ref={hoverStripRef}
-          className="pointer-events-auto absolute left-0 top-0 z-10 h-full w-24 cursor-pointer md:w-32"
+          className={cn(
+            "pointer-events-auto absolute left-0 top-0 z-10 h-full w-24 cursor-pointer md:w-32",
+            debugOutline &&
+              "outline outline-1 outline-dashed outline-yellow-300/80",
+          )}
           aria-hidden
         />
       ) : null}
@@ -123,6 +132,8 @@ export function LayeredText({
         className={cn(
           "relative z-0 m-0 flex list-none flex-col p-0",
           contentAlign === "start" ? "items-start" : "items-center",
+          debugOutline &&
+            "outline outline-1 outline-offset-1 outline-cyan-400/70",
         )}
       >
         {lines.map((line, index) => {
@@ -146,17 +157,29 @@ export function LayeredText({
           return (
             <li
               key={`${line.top}-${line.bottom}-${index}`}
-              className="relative overflow-hidden"
+              className={cn(
+                "relative overflow-hidden",
+                debugOutline &&
+                  "outline outline-1 outline-fuchsia-400/60",
+              )}
               style={liStyle}
             >
               <p
-                className="m-0 whitespace-nowrap px-[15px] align-top leading-[55px] md:leading-[30px]"
+                className={cn(
+                  "m-0 whitespace-nowrap px-[15px] align-top leading-[55px] md:leading-[30px]",
+                  debugOutline &&
+                    "outline outline-1 outline-dotted outline-lime-400/50",
+                )}
                 style={pStyle}
               >
                 {line.top}
               </p>
               <p
-                className="m-0 whitespace-nowrap px-[15px] align-top leading-[55px] md:leading-[30px]"
+                className={cn(
+                  "m-0 whitespace-nowrap px-[15px] align-top leading-[55px] md:leading-[30px]",
+                  debugOutline &&
+                    "outline outline-1 outline-dotted outline-teal-400/50",
+                )}
                 style={pStyle}
               >
                 {line.bottom}

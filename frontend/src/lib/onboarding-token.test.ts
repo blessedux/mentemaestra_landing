@@ -104,6 +104,7 @@ describe("buildInviteUrl", () => {
   it("falls back to BOOKING_PUBLIC_BASE_URL then to localhost", () => {
     delete process.env.ONBOARDING_PUBLIC_BASE_URL;
     delete process.env.VERCEL_URL;
+    delete process.env.VERCEL_ENV;
     process.env.BOOKING_PUBLIC_BASE_URL = "https://book.example";
     expect(buildInviteUrl("abc")).toBe(
       "https://book.example/client-access/abc",
@@ -112,6 +113,16 @@ describe("buildInviteUrl", () => {
     delete process.env.BOOKING_PUBLIC_BASE_URL;
     expect(buildInviteUrl("abc")).toBe(
       "http://localhost:3000/client-access/abc",
+    );
+  });
+
+  it("rewrites legacy mentemaestra.space in BOOKING_PUBLIC_BASE_URL", () => {
+    delete process.env.ONBOARDING_PUBLIC_BASE_URL;
+    delete process.env.VERCEL_URL;
+    delete process.env.VERCEL_ENV;
+    process.env.BOOKING_PUBLIC_BASE_URL = "https://www.mentemaestra.space";
+    expect(buildInviteUrl("tok")).toBe(
+      "https://www.mentemaestra.studio/client-access/tok",
     );
   });
 });

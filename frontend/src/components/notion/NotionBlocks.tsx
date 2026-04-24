@@ -562,6 +562,17 @@ async function Block({ block, slug }: BlockProps) {
 
       // If we couldn't fetch the rows, fall back to a simple link card
       if (!rowsResult.ok || rowsResult.rows.length === 0) {
+        if (!rowsResult.ok && rowsResult.reason === "no_data_source") {
+          return (
+            <div className="my-2 rounded-lg border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-400">
+              <span className="font-medium text-zinc-200">{block.title}</span>
+              {": "}
+              Esta base es una vista enlazada en Notion; la API no permite leerla
+              en el portal. Pide a tu operador que use la base original o una
+              copia completa (no enlazada).
+            </div>
+          );
+        }
         return (
           <a
             href={`/client/${encodeURIComponent(slug)}/notion/${encodeURIComponent(id)}`}
@@ -672,6 +683,17 @@ async function Block({ block, slug }: BlockProps) {
 
         // Fallback link card when rows unavailable
         if (!rowsResult.ok || rowsResult.rows.length === 0) {
+          if (!rowsResult.ok && rowsResult.reason === "no_data_source") {
+            return (
+              <div className="my-2 rounded-lg border border-zinc-800 bg-zinc-900/40 px-4 py-3 text-sm text-zinc-400">
+                <span className="font-medium text-zinc-200">{dbTitle}</span>
+                {": "}
+                Esta base es una vista enlazada en Notion; la API no permite leerla
+                en el portal. Pide a tu operador que use la base original o una
+                copia completa (no enlazada).
+              </div>
+            );
+          }
           return (
             <a
               href={`/client/${encodeURIComponent(slug)}/notion/${encodeURIComponent(block.targetId)}`}

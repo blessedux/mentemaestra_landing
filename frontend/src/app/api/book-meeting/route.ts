@@ -25,6 +25,10 @@ import {
   formatBookingSlotSpanish,
   renderMeetingConfirmationEmailEs,
 } from "@/lib/meeting-confirmation-email";
+import {
+  MENTEMAESTRA_STUDIO_HOSTNAME,
+  rewriteLegacyMentemaestraHost,
+} from "@/lib/mentemaestra-public";
 import { getPublicSiteUrl, getSocialUrlsForEmail } from "@/lib/public-site-url";
 
 export const dynamic = "force-dynamic";
@@ -151,8 +155,10 @@ export async function POST(req: Request) {
 
   const tz = getBookingTimezone();
   const organizerEmail = process.env.BOOKING_ORGANIZER_EMAIL?.trim();
-  const uidHost =
-    process.env.BOOKING_ICS_UID_HOST?.trim() || "bookings.mentemaestra.studio";
+  const uidHost = rewriteLegacyMentemaestraHost(
+    process.env.BOOKING_ICS_UID_HOST?.trim() ||
+      `bookings.${MENTEMAESTRA_STUDIO_HOSTNAME}`,
+  );
 
   const sql = getDb();
 
@@ -199,7 +205,7 @@ export async function POST(req: Request) {
         body.company?.trim() ? `Empresa: ${body.company.trim()}` : "",
         body.message?.trim() ? `Notas: ${body.message.trim()}` : "",
         "",
-        "Reserva vía mentemaestra.studio",
+        `Reserva vía ${MENTEMAESTRA_STUDIO_HOSTNAME}`,
       ]
         .filter(Boolean)
         .join("\n"),
@@ -223,7 +229,7 @@ export async function POST(req: Request) {
       body.company?.trim() ? `Company: ${body.company.trim()}` : "",
       body.message?.trim() ? `Notes: ${body.message.trim()}` : "",
       "",
-      "Booked via mentemaestra.studio — add to your calendar from this invite.",
+      `Booked via ${MENTEMAESTRA_STUDIO_HOSTNAME} — add to your calendar from this invite.`,
     ].filter(Boolean);
     icsBody = buildExploratoryIcs({
       uid: persistedIcsUid,

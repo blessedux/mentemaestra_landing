@@ -137,6 +137,20 @@ export default async function ClientDashboardPage({ params }: PageProps) {
               supportEmail={supportEmail}
             />
           </section>
+        ) : notionMode.mode === "error" &&
+          notionMode.reason === "no_data_source" ? (
+          <section className="mb-8 rounded-xl border border-zinc-800 bg-zinc-950/60 p-5">
+            <h2 className="mb-3 text-xs uppercase tracking-[0.14em] text-zinc-500">
+              Espacio de trabajo
+            </h2>
+            <div className="rounded-lg border border-zinc-800 bg-zinc-900/40 p-4 text-sm text-zinc-400">
+              El enlace de Notion apunta a una base en formato{" "}
+              <span className="text-zinc-300">vista enlazada</span>, que la API
+              de Notion no puede leer. Pídele a tu operador que use la base
+              original o una copia completa (no enlazada) y que la conecte a la
+              integración.
+            </div>
+          </section>
         ) : (
           // No URL configured or error resolving mode — pass null so
           // NotionRowList shows its friendly "not configured" empty state

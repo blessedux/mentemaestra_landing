@@ -1,8 +1,8 @@
 import Header from "@/components/Header";
 import HomeScrollToSection from "@/components/HomeScrollToSection";
 import About from "@/components/About";
+import { DanielRoomEmbed } from "@/components/DanielRoomEmbed";
 import { Hero } from "@/components/Hero";
-import Welcome from "@/components/Welcome";
 import { Features } from "@/components/blocks/features-8";
 import { ProcessFeatures } from "@/components/ui/process-features";
 import Services from "@/components/Services";
@@ -20,7 +20,12 @@ export default function Home() {
       <Header />
       <Hero />
       <About />
-      <Welcome />
+      <section
+        className="relative w-full bg-[#080708]"
+        aria-label="Daniel home office"
+      >
+        <DanielRoomEmbed extendSceneBottomVh={20} />
+      </section>
       <Features />
       <ProcessFeatures />
       <Services />

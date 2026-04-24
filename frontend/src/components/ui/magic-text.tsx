@@ -3,6 +3,8 @@
 import * as React from "react";
 import { motion, useScroll, useTransform, type MotionValue } from "motion/react";
 
+import { cn } from "@/lib/utils";
+
 export interface MagicTextProps {
   text: string;
   className?: string;
@@ -12,6 +14,8 @@ export interface MagicTextProps {
   highlightedWords?: string[];
   highlightedInactiveClassName?: string;
   highlightedActiveClassName?: string;
+  /** When true, outlines each word shell and the root `<p>` for layout debugging. */
+  debugOutline?: boolean;
 }
 
 interface WordProps {
@@ -24,6 +28,7 @@ interface WordProps {
   isHighlighted?: boolean;
   highlightedInactiveClassName?: string;
   highlightedActiveClassName?: string;
+  debugOutline?: boolean;
 }
 
 const Word: React.FC<WordProps> = ({
@@ -36,6 +41,7 @@ const Word: React.FC<WordProps> = ({
   isHighlighted,
   highlightedInactiveClassName,
   highlightedActiveClassName,
+  debugOutline,
 }) => {
   const opacity = useTransform(progress, range, [0, 1]);
   const baseClassName =
@@ -48,9 +54,33 @@ const Word: React.FC<WordProps> = ({
       : activeClassName;
 
   return (
-    <span className={wordClassName}>
-      <span className={baseClassName}>{children}</span>
-      <motion.span style={{ opacity }} className={revealClassName}>
+    <span
+      className={cn(
+        wordClassName,
+        "relative bg-transparent",
+        debugOutline &&
+          "z-[2] ring-2 ring-pink-500 ring-offset-2 ring-offset-transparent",
+      )}
+    >
+      <span
+        className={cn(
+          baseClassName,
+          /* Do not add `relative` here: callers use `absolute inset-0` for this layer;
+           * tailwind-merge would drop `absolute` in favor of `relative` and both word copies stack in flow. */
+          "z-0",
+          debugOutline && "ring-1 ring-zinc-500/50",
+        )}
+      >
+        {children}
+      </span>
+      <motion.span
+        style={{ opacity }}
+        className={cn(
+          revealClassName,
+          "relative z-[1]",
+          debugOutline && "ring-1 ring-emerald-400/40",
+        )}
+      >
         {children}
       </motion.span>
     </span>
@@ -66,6 +96,7 @@ export const MagicText: React.FC<MagicTextProps> = ({
   highlightedWords = [],
   highlightedInactiveClassName,
   highlightedActiveClassName,
+  debugOutline,
 }) => {
   const container = React.useRef<HTMLParagraphElement>(null);
   const { scrollYProgress } = useScroll({
@@ -79,7 +110,13 @@ export const MagicText: React.FC<MagicTextProps> = ({
   );
 
   return (
-    <p ref={container} className={className}>
+    <p
+      ref={container}
+      className={cn(
+        className,
+        debugOutline && "outline outline-2 outline-offset-2 outline-violet-400/80",
+      )}
+    >
       {words.map((word, index) => {
         const start = index / words.length;
         const end = start + 1 / words.length;
@@ -99,6 +136,7 @@ export const MagicText: React.FC<MagicTextProps> = ({
             isHighlighted={isHighlighted}
             highlightedInactiveClassName={highlightedInactiveClassName}
             highlightedActiveClassName={highlightedActiveClassName}
+            debugOutline={debugOutline}
           >
             {word}
           </Word>

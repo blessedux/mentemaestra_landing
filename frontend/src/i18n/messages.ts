@@ -11,6 +11,123 @@ export const messages = {
       pricing: "Precios",
       faq: "FAQ",
       cta: "Iniciar proyecto",
+      speakToHuman: "Habla con un humano ahora",
+      portalLogin: "Acceso al portal",
+    },
+    portalRecover: {
+      metaTitle: "Acceso al portal — MenteMaestra",
+      metaDescription:
+        "Recupera el enlace de tu espacio de proyecto con tu correo autorizado.",
+      title: "Acceso al portal",
+      subtitle:
+        "Si olvidaste el enlace de tu proyecto, ingresa el correo con el que te dieron acceso. Si está en la lista autorizada, te enviaremos un enlace seguro.",
+      emailLabel: "Correo con acceso al portal",
+      emailPlaceholder: "tu@empresa.com",
+      hint: "Debe ser el mismo correo que figura en la lista autorizada del proyecto. Si participas en varios proyectos, puede que recibas más de un correo.",
+      submit: "Enviar enlace mágico",
+      sending: "Enviando…",
+      success:
+        "Si tu correo está autorizado en algún proyecto, te enviamos un enlace en unos minutos. Revisa la bandeja y el spam.",
+      error: "No pudimos completar la solicitud. Inténtalo más tarde.",
+      backHome: "← Volver al inicio",
+    },
+    about: {
+      sectionTitle: "Nosotros",
+      introTitle: "El partner creativo para empresas en crecimiento.",
+      introTitleSecondary: "Diseño senior, sin contratar un equipo interno",
+      introDescription:
+        "Somos un estudio digital con base en Santiago, Chile. Diseñamos marcas, sitios web y experiencias digitales con enfoque premium: claridad visual, ejecución elegante y detalle estratégico para que tu negocio proyecte confianza y valor en cada punto de contacto.",
+      introDescriptionSecondary:
+        "Webs, apps, branding y contenido gráfico entregado con rapidez y alto nivel. La capacidad creativa que necesitas, sin sumar estructura, sueldos ni gestión extra.",
+      introTitleTertiaryLines: [
+        "«Las personas no compran",
+        "productos ni servicios. ",
+        "Compran historias.»",
+      ],
+      introDescriptionTertiaryLines: [
+        "Construimos marcas y webs que comunican valor con claridad,",
+        "conectan rápido y convierten visitas en oportunidades reales.",
+        "Mejor mensaje, más confianza, más ventas.",
+      ],
+      introTertiaryCta: "Hablemos de mi web",
+      captionLine: {
+        firstLine: "Deja que tus clientes cuenten tu",
+        accent: "historia",
+        after: ".",
+      },
+      principleLines: [
+        { top: "\u00A0", bottom: "CLARIDAD" },
+        { top: "CLARIDAD", bottom: "SEÑAL" },
+        { top: "SEÑAL", bottom: "PRUEBA" },
+        { top: "PRUEBA", bottom: "HISTORIA" },
+        { top: "HISTORIA", bottom: "ACTITUD" },
+        { top: "ACTITUD", bottom: "\u00A0" },
+      ],
+    },
+    danielRoomEmbed: {
+      overview: {
+        title: "El estudio",
+        bodyParagraphs: [
+          "Mente Maestra es un espacio digital donde las ideas toman forma y avanzan con dirección.",
+          "Convertimos visión en marca, planes en diseño y conceptos en productos listos para lanzar.",
+          "Pensamos con claridad, ejecutamos con criterio y llevamos cada proyecto hasta que esté listo para crecer.",
+        ],
+      },
+      computer: {
+        title: "En el escritorio",
+        body: "Aquí iteramos sistemas, UI y piezas listas para producción: lo digital primero, con entregas que se sienten en el producto real.",
+      },
+      paintings: {
+        title: "En el muro",
+        body: "Dirección de arte y narrativa visual: cuidamos cada detalle para que la experiencia de marca sea coherente en cada touchpoint.",
+      },
+      couch: {
+        title: "En el sillón",
+        body: "Conversaciones donde alineamos prioridades, tiempos y criterio — el craft digital, con tu equipo en el centro.",
+      },
+      paintingsSofa: {
+        title: "Desde el sillón (muro)",
+        body: "Misma toma base que el muro — afinaremos cámara y copy cuando definamos el encuadre desde el sofá.",
+      },
+    },
+    processFeatures: {
+      cards: {
+        backlog: {
+          kicker: "Backlog y trabajo creativo",
+          title: "Delega tus tareas acumuladas de diseño en un partner on-demand.",
+          description:
+            "Nos encargamos de organizar, ejecutar y dar salida a las necesidades creativas de tu marca, mientras tú te enfocas en operar y hacer crecer el negocio. Priorizamos lo que realmente genera impacto, para que el diseño avance con claridad y velocidad.",
+        },
+        tickets: {
+          kicker: "Tickets y delivery del equipo",
+          title:
+            "Un solo lugar para monitorear qué está live, bloqueado o aun está en proceso.",
+          description:
+            "Seguimos tickets con dueños y fechas claras, mantenemos proyectos como equipo y matamos el loop infinito de “¿en qué va esto?”.",
+        },
+      },
+      bottomCard: {
+        lead:
+          "De la idea al lanzamiento, sin fricción. Descubrimiento, ejecución, revisiones y entrega en un sistema diseñado para mantener backlog, producción y stakeholders alineados en cada etapa.",
+        steps: {
+          diagnostico: {
+            title: "Diagnóstico",
+            description: "Entiende objetivos, contexto y cuellos de botella.",
+          },
+          produccion: {
+            title: "Producción",
+            description: "Ejecución, sistema de diseño, activos y entrega.",
+          },
+          alineacion: {
+            title: "Alineación",
+            description: "Revisiones, stakeholders e iteraciones.",
+          },
+          lanzamiento: {
+            title: "Lanzamiento",
+            description: "Entrega y salida a producción.",
+          },
+        },
+      },
     },
     onboarding: {
       stepLabel: "Onboarding",
@@ -103,12 +220,12 @@ export const messages = {
     hero: {
       /** Hero CTA copy; cycles on hover-out without a click (parallel to `en`). */
       ctaRotate: [
-        "Armémoslo",
-        "A lanzar",
-        "A cocinar",
-        "Dale",
-        "Cerramos",
-        "Ejecutemos",
+        "Comencemos",
+        "Elevar marca",
+        "Crecer y escalar",
+        "Construye tu sitio",
+        "Conversa con nosotros",
+        "Demosle",
       ],
       subtitle:
         "Branding y diseño estratégico para negocios en expansión",
@@ -132,27 +249,27 @@ export const messages = {
       customizable: {
         title: "Personalizable",
         body:
-          "Tu marca, contenido y flujos — definidos de punta a punta sin plantillas genéricas que te frenen.",
+          "Tu marca, contenido y flujos. Definidos de punta a punta sin plantillas genéricas que te frenen.",
       },
       secure: {
-        title: "Seguro por defecto",
+        title: "Seguridad a cargo nuestro",
         body:
-          "Buenas prácticas y valores seguros para que tu sitio, tus datos y tus visitantes estén protegidos sin dramas extra.",
+          "Seguimos buenas prácticas, mantenemos el código al día para evitar brechas y hacks, rotamos llaves con frecuencia y nos hacemos responsables de tu seguridad para que tú te enfoques en tu negocio.",
       },
       seo: {
         title: "Optimizado para SEO",
         body:
-          "Integramos la conversación de SEO desde el inicio — estructura, metadatos y rendimiento — para que tus clientes te encuentren de verdad.",
+          "Integramos la conversación de SEO desde el inicio. Estructura, metadatos y rendimiento. Para que tus clientes te encuentren de verdad.",
       },
       growth: {
         title: "Crecimiento sostenido",
         body:
-          "Un socio de diseño que atiende tus pedidos casi en tiempo real — para que el impulso no se detenga después del lanzamiento.",
+          "Un socio de diseño que atiende tus pedidos casi en tiempo real. Para que el impulso no se detenga después del lanzamiento.",
       },
       assets: {
         title: "Activos digitales, juntos",
         body:
-          "Una forma simple de gestionar tus activos digitales con tu equipo — contexto compartido, aprobaciones y una sola fuente de verdad.",
+          "Una forma simple de gestionar tus activos digitales con tu equipo. Contexto compartido, aprobaciones y una sola fuente de verdad.",
       },
       teamAvatars: [
         { name: "Dirección creativa" },
@@ -659,6 +776,122 @@ export const messages = {
       pricing: "Pricing",
       faq: "FAQ",
       cta: "Start Project",
+      speakToHuman: "Speak to a human now",
+      portalLogin: "Portal login",
+    },
+    portalRecover: {
+      metaTitle: "Portal access — MenteMaestra",
+      metaDescription:
+        "Recover your project portal link using your authorized email address.",
+      title: "Portal access",
+      subtitle:
+        "If you forgot your project link, enter the email address you were invited with. If it is on a project allowlist, we will email you a secure sign-in link.",
+      emailLabel: "Portal access email",
+      emailPlaceholder: "you@company.com",
+      hint: "It must match the email on the project allowlist. If you are on multiple projects, you may receive more than one message.",
+      submit: "Email magic link",
+      sending: "Sending…",
+      success:
+        "If your email is authorized for any project, we sent a link within a few minutes. Check your inbox and spam.",
+      error: "We could not complete the request. Please try again later.",
+      backHome: "← Back to home",
+    },
+    about: {
+      sectionTitle: "About",
+      introTitle: "The creative partner for growing companies.",
+      introTitleSecondary: "Senior design, without hiring an in-house team",
+      introDescription:
+        "We’re a digital studio based in Santiago, Chile. We design brands, websites, and digital experiences with a premium focus: visual clarity, elegant execution, and strategic detail so your business projects trust and value at every touchpoint.",
+      introDescriptionSecondary:
+        "Websites, apps, branding, and graphic content delivered quickly and to a high standard. The creative capacity you need—without adding headcount, payroll, or extra management.",
+      introTitleTertiaryLines: [
+        "“People don’t buy",
+        "products or services. ",
+        "They buy stories.”",
+      ],
+      introDescriptionTertiaryLines: [
+        "We build brands and websites that communicate value clearly,",
+        "connect fast, and turn visits into real opportunities.",
+        "Better messaging, more trust, more sales.",
+      ],
+      introTertiaryCta: "Let’s talk about my website",
+      captionLine: {
+        firstLine: "Let your customers tell your",
+        accent: "story",
+        after: ".",
+      },
+      principleLines: [
+        { top: "\u00A0", bottom: "CLARITY" },
+        { top: "CLARITY", bottom: "SIGNAL" },
+        { top: "SIGNAL", bottom: "PROOF" },
+        { top: "PROOF", bottom: "STORY" },
+        { top: "STORY", bottom: "SWAG" },
+        { top: "SWAG", bottom: "\u00A0" },
+      ],
+    },
+    danielRoomEmbed: {
+      overview: {
+        title: "The studio",
+        bodyParagraphs: [
+          "Mente Maestra is a digital space where ideas take shape and move with direction.",
+          "We turn vision into brand, plans into design, and concepts into launch-ready product.",
+          "We think with clarity, ship with judgment, and carry every project until it’s ready to grow.",
+        ],
+      },
+      computer: {
+        title: "At the desk",
+        body: "Where we iterate systems, UI, and production-ready work — digital first, crafted to land in the real product.",
+      },
+      paintings: {
+        title: "On the wall",
+        body: "Art direction and visual narrative — every detail tuned so the brand experience holds together across touchpoints.",
+      },
+      couch: {
+        title: "On the sofa",
+        body: "Where we align on priorities, timelines, and taste — digital craft, with your team at the center.",
+      },
+      paintingsSofa: {
+        title: "From the sofa (wall)",
+        body: "Same base framing as the wall shot — we’ll tune camera and copy once the sofa view is locked in.",
+      },
+    },
+    processFeatures: {
+      cards: {
+        backlog: {
+          kicker: "Backlog & creative work",
+          title: "Hand off your design backlog to an on-demand partner.",
+          description:
+            "We organize, execute, and ship the creative needs of your brand while you focus on operating and growing the business. We prioritize what actually creates impact, so design moves forward with clarity and speed.",
+        },
+        tickets: {
+          kicker: "Tickets & team delivery",
+          title: "A single place to monitor what’s live, blocked, or still in progress.",
+          description:
+            "Track tickets with clear owners and dates, run projects as a team, and kill the endless “where is this?” loop.",
+        },
+      },
+      bottomCard: {
+        lead:
+          "From idea to launch, frictionless. Discovery, execution, reviews, and delivery in a system designed to keep backlog, production, and stakeholders aligned at every stage.",
+        steps: {
+          diagnostico: {
+            title: "Diagnóstico",
+            description: "Understand goals, context, bottlenecks.",
+          },
+          produccion: {
+            title: "Producción",
+            description: "Execution, design systems, assets, delivery.",
+          },
+          alineacion: {
+            title: "Alineación",
+            description: "Reviews, stakeholders, iterations.",
+          },
+          lanzamiento: {
+            title: "Lanzamiento",
+            description: "Entrega / Go Live.",
+          },
+        },
+      },
     },
     onboarding: {
       stepLabel: "Onboarding",
@@ -752,10 +985,10 @@ export const messages = {
       /** Hero CTA copy; cycles on hover-out without a click (parallel to `es`). */
       ctaRotate: [
         "Let's build",
-        "Let's ship",
+        "Let's ship it",
         "Let's cook",
-        "Let's go",
-        "Lock it in",
+        "Let's do this",
+        "Lock in, baby",
         "Run it",
       ],
       subtitle:
@@ -780,27 +1013,27 @@ export const messages = {
       customizable: {
         title: "Customizable",
         body:
-          "Your brand, content, and flows—shaped end to end without generic templates holding you back.",
+          "Your brand, content, and flows. Shaped end to end without generic templates holding you back.",
       },
       secure: {
-        title: "Secure by default",
+        title: "Security, handled",
         body:
-          "Sensible hardening and safe defaults so your site, data, and visitors stay protected without extra drama.",
+          "We follow best practices, keep code updates current to stay ahead of breaches and hacks, rotate keys often, and take responsibility for your safety so you can focus on your business.",
       },
       seo: {
         title: "SEO optimized",
         body:
-          "We build in the SEO conversation early—structure, metadata, and performance—so your clients can actually find you.",
+          "We build in the SEO conversation early. Structure, metadata, and performance. So your clients can actually find you.",
       },
       growth: {
         title: "Sustained growth",
         body:
-          "A design partner who takes care of your requests in near real time—so momentum does not stop after launch.",
+          "A design partner who takes care of your requests in near real time. So momentum does not stop after launch.",
       },
       assets: {
         title: "Digital assets, together",
         body:
-          "An easy way to manage your digital assets with your team—shared context, approvals, and a single source of truth.",
+          "An easy way to manage your digital assets with your team. Shared context, approvals, and a single source of truth.",
       },
       teamAvatars: [
         { name: "Creative lead" },
