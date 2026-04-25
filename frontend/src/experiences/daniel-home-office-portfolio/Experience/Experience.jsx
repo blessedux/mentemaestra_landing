@@ -237,10 +237,15 @@ const Experience = ({ embedded = false }) => {
   const minZoom = embedded ? 22 : 38;
   const maxZoom = embedded ? 130 : 220;
 
+  // Cap DPR when embedded so mobile GPUs are not overloaded.
+  // Non-embedded (full-screen test route) keeps the default R3F behavior.
+  const embeddedDpr = isMobile ? [1, 1.25] : [1, 1.75];
+
   return (
     <>
       <Canvas
         style={canvasStyle}
+        {...(embedded ? { dpr: embeddedDpr } : {})}
         {...embeddedGlProps}
         onPointerMissed={() => pointerMissedResetRef.current?.()}
       >

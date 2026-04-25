@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useEffect, type CSSProperties } from "react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
 
 import { useResponsiveStore } from "@/experiences/daniel-home-office-portfolio/stores/useResponsiveStore";
 import { useLocale } from "@/i18n/LocaleProvider";
@@ -34,7 +34,7 @@ export type DanielRoomEmbedProps = {
 };
 
 /**
- * Daniel’s home-office WebGL room in a bounded box (for the marketing Welcome / design band).
+ * Daniel's home-office WebGL room in a bounded box (for the marketing Welcome / design band).
  */
 const EMBED_BASE_MIN_HEIGHT = "min(525px, 65vh)";
 const EMBED_SHELL_BG = "bg-[#080708]";
@@ -46,14 +46,43 @@ export function DanielRoomEmbed({
 }: DanielRoomEmbedProps) {
   const { t } = useLocale();
   const copy = t.danielRoomEmbed.overview;
+  const shellRef = useRef<HTMLDivElement>(null);
+
+  // Mount the heavy R3F canvas only when the section is close to the viewport.
+  const [mountWebGL, setMountWebGL] = useState(false);
 
   const updateDimensions = useResponsiveStore((s) => s.updateDimensions);
 
+  // Trigger mount when the embed shell nears the viewport (above or below).
+  useEffect(() => {
+    const root = shellRef.current;
+    if (!root) return undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setMountWebGL(true);
+      },
+      { root: null, rootMargin: "20% 0px 20% 0px", threshold: 0 },
+    );
+    io.observe(root);
+    return () => io.disconnect();
+  }, []);
+
+  // Debounced resize so rapid orientation changes don't thrash the store.
   useEffect(() => {
     updateDimensions();
-    const onResize = () => updateDimensions();
+    let debounceTimer = 0;
+    const onResize = () => {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = window.setTimeout(() => {
+        debounceTimer = 0;
+        updateDimensions();
+      }, 120);
+    };
     window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    return () => {
+      window.removeEventListener("resize", onResize);
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
   }, [updateDimensions]);
 
   const extendBottom =
@@ -67,6 +96,7 @@ export function DanielRoomEmbed({
 
   return (
     <div
+      ref={shellRef}
       style={shellStyle}
       className={cn(
         "relative isolate h-full w-full overflow-visible",
@@ -94,7 +124,14 @@ export function DanielRoomEmbed({
           ))}
         </div>
       </div>
-      <Experience embedded />
+      {mountWebGL ? (
+        <Experience embedded />
+      ) : (
+        <div
+          className="flex h-full min-h-[240px] w-full items-center justify-center bg-[#080708] text-sm text-white/60"
+          aria-hidden
+        />
+      )}
     </div>
   );
 }
