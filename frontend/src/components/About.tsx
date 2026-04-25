@@ -199,53 +199,20 @@ export default function About() {
       gsap.registerPlugin(ScrollTrigger);
 
       if (narrow) {
-        gsap.set(slide, { clearProps: "transform", scale: 1, y: 0, transformOrigin: "center bottom" });
-        gsap.set(stage, { "--about-mobile-vh": 45 });
-        gsap.set(fadeRoot, {
-          "--about-fade-left": ABOUT_FADE_LEFT_END_PCT,
-          "--about-fade-top": ABOUT_FADE_TOP_END_PCT,
-          "--about-blur-boost": 1,
-        });
-        gsap.set(introTop, { opacity: 0, y: 12 });
-        gsap.set(introSecond, { opacity: 0, y: 12 });
-        gsap.set(introThird, { opacity: 0, y: 36 });
-
-        ctx = gsap.context(() => {
-          const tl = gsap.timeline({
-            scrollTrigger: {
-              ...scrollTriggerBase,
-              pinReparent: false,
-              pinType: "fixed",
-            },
-          });
-
-          tl.fromTo(
-            stage,
-            { "--about-mobile-vh": 45 },
-            { "--about-mobile-vh": 80, ease: "none", duration: 1, immediateRender: false },
-            0,
-          );
-
-          tl.fromTo(
-            introTop,
-            { opacity: 0, y: 12 },
-            { opacity: 1, y: 0, ease: "power2.out", duration: 0.16, immediateRender: false },
-            0,
-          );
-          tl.to(introTop, { opacity: 0, y: -6, ease: "power2.in", duration: 0.12 }, 0.26);
-          tl.fromTo(
-            introSecond,
-            { opacity: 0, y: 12 },
-            { opacity: 1, y: 0, ease: "power2.out", duration: 0.18, immediateRender: false },
-            0.22,
-          );
-          tl.fromTo(
-            introThird,
-            { opacity: 0, y: 36 },
-            { opacity: 1, y: 0, ease: "power2.out", duration: 0.22, immediateRender: false },
-            0.42,
-          );
-        }, stage);
+        /**
+         * Mobile: no ScrollTrigger pin, no scrub, no fixed video.
+         * The pin creates a scroll barrier that prevents fast swipes from
+         * passing through the section; removing it eliminates the crash and
+         * allows a single swipe to travel from hero to About text naturally.
+         * CSS flex-order puts text above video; blocks are in normal flow so
+         * they never overlap. The video is `relative` (not `fixed`) so it
+         * unsticks when the section scrolls out of view.
+         */
+        gsap.set(slide, { clearProps: "all" });
+        gsap.set([introTop, introSecond, introThird], { clearProps: "all" });
+        fadeRoot.style.setProperty("--about-fade-left", String(ABOUT_FADE_LEFT_END_PCT));
+        fadeRoot.style.setProperty("--about-fade-top", String(ABOUT_FADE_TOP_END_PCT));
+        fadeRoot.style.setProperty("--about-blur-boost", "1");
         return;
       }
 
@@ -496,14 +463,14 @@ export default function About() {
     >
       <div
         ref={stageRef}
-        className="relative z-10 flex min-h-svh w-full flex-col pb-0 max-[980px]:box-border max-[980px]:[--about-mobile-vh:45] max-[980px]:pb-[min(calc(var(--about-mobile-vh)*1vh+1.25rem),calc(82vh+env(safe-area-inset-bottom,0px)))]"
+        className="relative z-10 flex min-h-svh w-full flex-col pb-0 max-[980px]:box-border max-[980px]:[--about-mobile-vh:45] max-[980px]:min-h-0 max-[980px]:pb-8"
       >
         {/* Video sits under copy; intro is absolute so it can sit on top as the reel moves. */}
-        <div className="relative z-10 flex min-h-0 flex-1 flex-col items-end justify-center pb-0 pt-0 max-[980px]:min-h-0 max-[980px]:flex-none max-[980px]:items-stretch">
+        <div className="relative z-10 flex min-h-0 flex-1 flex-col items-end justify-center pb-0 pt-0 max-[980px]:order-2 max-[980px]:min-h-0 max-[980px]:flex-none max-[980px]:items-stretch">
           {/* Transform this wrapper so the clip rect moves with the video (no inner crop). */}
           <div
             ref={videoSlideRef}
-            className="relative ml-auto mr-6 mt-0 w-[80vw] max-w-none origin-right will-change-transform md:mr-10 lg:mr-12 max-[980px]:fixed max-[980px]:bottom-[max(0.5rem,env(safe-area-inset-bottom))] max-[980px]:left-1/2 max-[980px]:right-auto max-[980px]:top-auto max-[980px]:z-20 max-[980px]:mx-0 max-[980px]:ml-0 max-[980px]:mr-0 max-[980px]:h-[calc(var(--about-mobile-vh)*1vh)] max-[980px]:w-[90vw] max-[980px]:max-w-none max-[980px]:-translate-x-1/2 max-[980px]:will-change-[height,transform]"
+            className="relative ml-auto mr-6 mt-0 w-[80vw] max-w-none origin-right will-change-transform md:mr-10 lg:mr-12 max-[980px]:relative max-[980px]:ml-0 max-[980px]:mr-0 max-[980px]:mt-4 max-[980px]:h-[55vh] max-[980px]:w-full max-[980px]:max-w-none max-[980px]:translate-x-0"
           >
             <div
               ref={fadeRootRef}
@@ -556,10 +523,10 @@ export default function About() {
           </div>
         </div>
 
-        <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-stretch">
+        <div className="pointer-events-none absolute inset-0 z-30 flex flex-col items-stretch max-[980px]:relative max-[980px]:order-1 max-[980px]:inset-auto max-[980px]:pt-6">
           <div
             ref={introThirdRef}
-            className="absolute bottom-[max(0px,calc(clamp(11rem,32vh,20rem)-10vh))] right-0 z-[31] px-6 motion-reduce:opacity-100 md:px-10 [will-change:opacity,transform] max-[980px]:left-0 max-[980px]:right-0 max-[980px]:top-auto max-[980px]:bottom-[max(calc(6.5rem_+_10dvh),calc(env(safe-area-inset-bottom)_+_5.25rem_+_10dvh))] max-[980px]:pb-2 max-[980px]:px-4 max-[980px]:md:px-4 motion-reduce:max-[980px]:relative motion-reduce:max-[980px]:top-auto motion-reduce:max-[980px]:bottom-auto motion-reduce:max-[980px]:mt-10"
+            className="absolute bottom-[max(0px,calc(clamp(11rem,32vh,20rem)-10vh))] right-0 z-[31] px-6 motion-reduce:opacity-100 md:px-10 [will-change:opacity,transform] max-[980px]:relative max-[980px]:order-last max-[980px]:left-auto max-[980px]:right-auto max-[980px]:bottom-auto max-[980px]:top-auto max-[980px]:mt-8 max-[980px]:px-4 max-[980px]:pb-2 max-[980px]:md:px-4"
           >
             <div className="pointer-events-auto ml-auto mr-4 flex w-full max-w-xl flex-col items-end text-right md:mr-8 max-[980px]:ml-0 max-[980px]:mr-0 max-[980px]:max-w-none max-[980px]:items-start max-[980px]:text-left">
               <h3
@@ -593,10 +560,10 @@ export default function About() {
             </div>
           </div>
           <div className="px-6 pt-6 md:px-10 md:pt-10 max-[980px]:px-4 max-[980px]:pt-6 max-[980px]:md:px-4 max-[980px]:md:pt-6">
-            <div className="relative ml-4 max-w-xl text-left md:ml-8 max-[980px]:ml-0 max-[980px]:max-w-none max-[980px]:min-h-[min(38vh,260px)] motion-reduce:max-[980px]:min-h-0">
+              <div className="relative ml-4 max-w-xl text-left md:ml-8 max-[980px]:ml-0 max-[980px]:max-w-none">
               <div
                 ref={introTopRef}
-                className="motion-reduce:opacity-100 [will-change:opacity,transform] max-[980px]:absolute max-[980px]:left-0 max-[980px]:right-0 max-[980px]:top-0 motion-reduce:max-[980px]:relative motion-reduce:max-[980px]:top-auto"
+                className="motion-reduce:opacity-100 [will-change:opacity,transform]"
               >
                 <div className="mb-5 flex items-center gap-3">
                   <span
@@ -616,7 +583,7 @@ export default function About() {
               </div>
               <div
                 ref={introSecondRef}
-                className="motion-reduce:opacity-100 [will-change:opacity,transform] max-[980px]:absolute max-[980px]:left-0 max-[980px]:right-0 max-[980px]:top-0 motion-reduce:max-[980px]:relative motion-reduce:max-[980px]:top-auto"
+                className="motion-reduce:opacity-100 [will-change:opacity,transform] max-[980px]:mt-6"
               >
                 <h3 className="font-syne mt-10 max-w-lg text-pretty text-2xl font-semibold leading-snug tracking-tight text-white drop-shadow-[0_2px_20px_rgba(0,0,0,0.9)] md:mt-12 md:text-[1.65rem] max-[980px]:mt-0">
                   {t.about.introTitleSecondary}

@@ -67,7 +67,7 @@ export default function FeaturedWorks() {
           </div>
         ) : null}
 
-        <ul className="relative z-20 mt-12 mb-4 divide-y divide-zinc-800/80 border-y border-zinc-800/80 md:mb-12 lg:mt-14">
+        <ul className="relative z-20 mt-12 mb-4 divide-y divide-zinc-800/80 border-y border-zinc-800/80 md:mb-12 lg:mt-6">
           {featuredProjectHighlights.map((h) => {
             const project = projectsByTitle.get(h.title);
             if (!project) return null;
