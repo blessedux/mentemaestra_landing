@@ -159,7 +159,7 @@ export function Hero() {
       id="hero"
       ref={sectionRef}
       className={cn(
-        "relative isolate flex min-h-svh w-full flex-col overflow-hidden bg-[#0a0a0a]",
+        "relative isolate flex min-h-svh w-full flex-col overflow-clip bg-[#0a0a0a]",
         "px-4 pb-16 pt-28 md:px-6 lg:min-h-[120vh]",
       )}
     >

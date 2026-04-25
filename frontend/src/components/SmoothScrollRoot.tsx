@@ -41,31 +41,58 @@ function LenisGsapAndHashBridge() {
     if (!lenis) return;
     gsap.registerPlugin(ScrollTrigger);
 
-    /** Lenis drives scroll; native `documentElement.scrollTop` stays ~0, so ScrollTrigger must read Lenis. */
+    /**
+     * On touch/coarse-pointer devices (phones, tablets) iOS Safari throttles
+     * requestAnimationFrame during scroll gestures. GSAP drives Lenis via rAF,
+     * so `lenis.scroll` can be stale when ScrollTrigger reads it through the
+     * proxy — ScrollTrigger sees position=0 while window.scrollY is already
+     * hundreds of pixels ahead, locking scrub animations on the hero section.
+     *
+     * Fix: skip the proxy on touch devices so ScrollTrigger reads window.scrollY
+     * directly. A passive window scroll listener keeps ScrollTrigger updated on
+     * every native scroll tick instead of relying on Lenis's RAF cadence.
+     */
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
     const scroller = document.documentElement;
-    ScrollTrigger.scrollerProxy(scroller, {
-      scrollTop(value) {
-        if (arguments.length) {
-          lenis.scrollTo(Number(value), { immediate: true });
-        }
-        return lenis.scroll;
-      },
-      getBoundingClientRect() {
-        return {
-          top: 0,
-          left: 0,
-          width: window.innerWidth,
-          height: window.innerHeight,
-        };
-      },
-    });
 
-    ScrollTrigger.defaults({ scroller: scroller });
+    if (!isCoarsePointer) {
+      // Desktop: Lenis smooths wheel scroll; proxy needed so ScrollTrigger reads
+      // lenis.scroll (native documentElement.scrollTop stays ~0 while Lenis runs).
+      ScrollTrigger.scrollerProxy(scroller, {
+        scrollTop(value) {
+          if (arguments.length) {
+            lenis.scrollTo(Number(value), { immediate: true });
+          }
+          return lenis.scroll;
+        },
+        getBoundingClientRect() {
+          return {
+            top: 0,
+            left: 0,
+            width: window.innerWidth,
+            height: window.innerHeight,
+          };
+        },
+      });
+      ScrollTrigger.defaults({ scroller: scroller });
+    }
 
+    // Lenis internal scroll event → keep ScrollTrigger in sync on desktop.
     const onLenisScroll = () => {
       ScrollTrigger.update();
     };
     lenis.on("scroll", onLenisScroll);
+
+    // On mobile, native scroll events fire synchronously with window.scrollY,
+    // bypassing any rAF lag. This guarantees ScrollTrigger always reads the
+    // current position, even when GSAP ticker is throttled by iOS.
+    const onNativeScroll = isCoarsePointer
+      ? () => ScrollTrigger.update()
+      : null;
+    if (onNativeScroll) {
+      window.addEventListener("scroll", onNativeScroll, { passive: true });
+    }
+
     const tickerCb = (time: number) => {
       lenis.raf(time * 1000);
     };
@@ -75,10 +102,15 @@ function LenisGsapAndHashBridge() {
 
     return () => {
       lenis.off("scroll", onLenisScroll);
+      if (onNativeScroll) {
+        window.removeEventListener("scroll", onNativeScroll);
+      }
       gsap.ticker.remove(tickerCb);
       gsap.ticker.lagSmoothing(500, 33);
-      ScrollTrigger.defaults({ scroller: window });
-      ScrollTrigger.scrollerProxy(scroller);
+      if (!isCoarsePointer) {
+        ScrollTrigger.defaults({ scroller: window });
+        ScrollTrigger.scrollerProxy(scroller);
+      }
       ScrollTrigger.refresh();
     };
   }, [lenis]);

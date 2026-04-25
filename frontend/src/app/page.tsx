@@ -44,7 +44,7 @@ const Footer = dynamic(() => import("@/components/Footer"), {
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-x-hidden bg-[#0a0a0a] text-white">
+    <main className="min-h-screen overflow-x-clip bg-[#0a0a0a] text-white">
       <HomeScrollToSection />
       <Header />
       <Hero />
