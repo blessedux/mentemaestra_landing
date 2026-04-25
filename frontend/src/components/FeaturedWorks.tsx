@@ -32,9 +32,12 @@ export default function FeaturedWorks() {
   );
 
   return (
-    <section id="works" className="relative px-6 py-24">
-      <div className="mx-auto max-w-7xl">
-        <div className="mb-12 grid gap-8 lg:grid-cols-2">
+    <section
+      id="works"
+      className="relative z-[2] overflow-visible pt-24 pb-8 md:py-24"
+    >
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="relative z-40 mb-12 grid gap-8 lg:grid-cols-2">
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
               <div className="h-2 w-2 rounded-full bg-white" />
@@ -58,7 +61,13 @@ export default function FeaturedWorks() {
           />
         </div>
 
-        <ul className="mb-12 divide-y divide-zinc-800/80 border-y border-zinc-800/80">
+        {marqueeCards.length > 0 ? (
+          <div className="relative z-10 -mt-20 left-1/2 w-screen max-w-[100vw] -translate-x-1/2 md:-mt-28 lg:-mt-40">
+            <ThreeDMarquee cards={marqueeCards} className="rounded-none" />
+          </div>
+        ) : null}
+
+        <ul className="relative z-20 mt-12 mb-4 divide-y divide-zinc-800/80 border-y border-zinc-800/80 md:mb-12 lg:mt-14">
           {featuredProjectHighlights.map((h) => {
             const project = projectsByTitle.get(h.title);
             if (!project) return null;
@@ -91,15 +100,9 @@ export default function FeaturedWorks() {
             );
           })}
         </ul>
-
-        {marqueeCards.length > 0 ? (
-          <div className="-mx-2 sm:mx-0">
-            <ThreeDMarquee cards={marqueeCards} />
-          </div>
-        ) : null}
       </div>
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-[25%] bg-gradient-to-t from-[#030303] to-transparent"
+        className="pointer-events-none absolute inset-x-0 bottom-0 z-30 h-[25%] bg-gradient-to-t from-[#030303] to-transparent"
         aria-hidden
       />
     </section>

@@ -26,8 +26,8 @@ function FeatureCardMotion({
     <motion.div
       className={cn(
         "rounded-lg transition-[transform,opacity,filter,box-shadow] duration-300 will-change-transform",
-        "group-hover/features-grid:blur-[2px] group-hover/features-grid:opacity-[0.55]",
-        "hover:z-[2] hover:!blur-none hover:!opacity-100 hover:shadow-md hover:ring-1 hover:ring-border/70 dark:hover:shadow-black/30",
+        "md:group-hover/features-grid:blur-[2px] md:group-hover/features-grid:opacity-[0.55]",
+        "md:hover:z-[2] md:hover:!blur-none md:hover:!opacity-100 md:hover:shadow-md md:hover:ring-1 md:hover:ring-border/70 md:dark:hover:shadow-black/30",
         className,
       )}
       initial={{ opacity: 0, y: 22 }}
@@ -54,10 +54,10 @@ export function Features() {
   }));
 
   return (
-    <section className="border-y border-border/60 bg-[#080708] pt-20 pb-16 md:pt-28 md:pb-24">
+    <section className="bg-[#080708] pb-16 pt-8 md:border-y md:border-border/60 md:pt-28 md:pb-24">
       <div className="mx-auto max-w-3xl px-6 lg:max-w-5xl">
         <div className="relative">
-          <div className="group/features-grid relative isolate z-10 mt-8 grid grid-cols-6 gap-3 md:mt-10">
+          <div className="group/features-grid relative isolate z-10 mt-3 grid grid-cols-6 gap-3 md:mt-10">
             <FeatureCardMotion
               className="relative col-span-full lg:col-span-2"
               delay={0}

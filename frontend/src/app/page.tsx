@@ -21,7 +21,7 @@ export default function Home() {
       <Hero />
       <About />
       <section
-        className="relative w-full bg-[#080708]"
+        className="relative w-full overflow-x-hidden bg-[#080708]"
         aria-label="Daniel home office"
       >
         <DanielRoomEmbed extendSceneBottomVh={20} />

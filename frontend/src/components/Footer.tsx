@@ -9,11 +9,10 @@ import { useLocale } from "@/i18n/LocaleProvider";
 import { ParallaxComponent } from "@/components/ui/parallax-scrolling";
 import { TextScramble } from "@/components/ui/text-scramble";
 
-/** Replace with real profile URLs when ready. */
 const FOOTER_SOCIAL_HREFS = {
-  instagram: "https://www.instagram.com/",
-  x: "https://x.com/",
-  linkedin: "https://www.linkedin.com/",
+  instagram: "https://instagram.com/mentemaestra.studio",
+  x: "https://x.com/blessed_ux",
+  linkedin: "https://www.linkedin.com/in/mentemaestradesignstudio/",
 } as const;
 
 const menuLinkClass =

@@ -12,6 +12,11 @@ import {
 
 import { useLocale } from "@/i18n/LocaleProvider";
 import { portfolioProjects } from "@/data/portfolio-projects";
+import BrainThoughtsCycle from "@/components/BrainThoughtsCycle";
+
+/** Looped brain strip for viewports ≤980px (lighter than WebGL). */
+const BRAIN_MOBILE_VIDEO_SRC =
+  "https://ik.imagekit.io/3bfeucft4/brain_rotating.mp4";
 
 const Brain3dExperience = dynamic(
   () => import("@/components/Brain3dExperience"),
@@ -126,6 +131,18 @@ export default function Experience() {
     return () => mq.removeEventListener("change", update);
   }, []);
 
+  /** Up to 980px: show looping video instead of WebGL brain. */
+  const [brainUseVideoFallback, setBrainUseVideoFallback] = React.useState(false);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 980px)");
+    const sync = (e: MediaQueryListEvent | MediaQueryList) => {
+      setBrainUseVideoFallback(e.matches);
+    };
+    sync(mq);
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
+
   const stat1Range: [number, number] = [0, 1 / 3];
   const stat2Range: [number, number] = [1 / 3, 2 / 3];
   const stat3Range: [number, number] = [2 / 3, 1];
@@ -151,12 +168,32 @@ export default function Experience() {
                 className="relative h-[220px] shrink-0 border-b border-zinc-800/90 sm:h-[260px] md:h-[300px]"
               >
                 {brainShouldLoad ? (
-                  <Brain3dExperience
-                    className="min-h-0 bg-[#030303]"
-                    thoughts={t.experience.brainThoughts}
-                    thoughtsOverlayClassName="top-11 justify-center pt-1 md:top-12 md:pt-0"
-                    particleStride={particleStride}
-                  />
+                  brainUseVideoFallback ? (
+                    <div className="relative h-full min-h-0 w-full overflow-hidden bg-[#030303]">
+                      <video
+                        className="absolute inset-0 h-full w-full object-cover object-center"
+                        src={BRAIN_MOBILE_VIDEO_SRC}
+                        muted
+                        playsInline
+                        autoPlay
+                        loop
+                        preload="metadata"
+                        aria-hidden
+                      />
+                      <BrainThoughtsCycle
+                        thoughts={t.experience.brainThoughts}
+                        align="bottom"
+                        className="justify-center px-4 pb-1"
+                      />
+                    </div>
+                  ) : (
+                    <Brain3dExperience
+                      className="min-h-0 bg-[#030303]"
+                      thoughts={t.experience.brainThoughts}
+                      thoughtsOverlayClassName="top-11 justify-center pt-1 md:top-12 md:pt-0"
+                      particleStride={particleStride}
+                    />
+                  )
                 ) : (
                   <div
                     className="h-full min-h-[200px] animate-pulse bg-zinc-950/50"

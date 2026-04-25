@@ -14,6 +14,8 @@ export type ThreeDMarqueeCard = {
   image: string;
   title: string;
   href: string;
+  /** Stable key when the same image/title is repeated for density */
+  id?: string;
 };
 
 export interface ThreeDMarqueeProps {
@@ -25,7 +27,7 @@ export interface ThreeDMarqueeProps {
   className?: string;
 }
 
-const MARQUEE_DURATION_S = [48, 52, 50] as const;
+const MARQUEE_DURATION_S = [40, 44, 42] as const;
 
 const defaultImages = [
   "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=800&q=80&auto=format&fit=crop",
@@ -79,7 +81,7 @@ function ThreeDMarquee({
       const href = card.href.trim();
       const img = (
         <img
-          className="pointer-events-none aspect-[4/3] h-full w-full rounded-lg bg-neutral-100 object-cover select-none dark:bg-neutral-900"
+          className="pointer-events-none aspect-[2/3] h-full w-full rounded-lg bg-neutral-100 object-cover select-none dark:bg-neutral-900"
           src={card.image}
           draggable={false}
           alt={card.title}
@@ -94,7 +96,7 @@ function ThreeDMarquee({
       return (
         <div
           className="relative w-full shrink-0 [transform:translateZ(0.1px)]"
-          key={`${colIndex}-${duplicateKey}-${imageIndex}-${card.image}`}
+          key={`${colIndex}-${duplicateKey}-${imageIndex}-${card.id ?? `${card.image}-${card.title}`}`}
         >
           {href ? (
             <a
@@ -116,15 +118,15 @@ function ThreeDMarquee({
   return (
     <div
       className={cn(
-        "mx-auto block h-140 w-full overflow-hidden rounded-md max-xl:h-120 max-sm:h-100",
+        "block h-140 w-full max-w-none overflow-visible max-xl:h-120 max-sm:h-100",
         className,
       )}
     >
-      <div className="flex size-full min-h-0 items-center justify-center">
-        <div className="aspect-square size-180 min-h-0 shrink-0 scale-135 max-xl:size-full max-xl:scale-110 max-sm:scale-130">
+      <div className="flex size-full min-h-0 items-center justify-center px-0 max-sm:justify-end">
+        <div className="aspect-square size-full min-h-0 w-full max-w-none shrink-0 scale-[1.28] max-xl:scale-110 max-sm:scale-[1.22] max-sm:translate-x-[10%] max-sm:origin-[80%_50%]">
           <div
             style={{ transform: "rotateX(45deg) rotateY(0deg) rotateZ(45deg)" }}
-            className="relative top-0 right-[-55%] grid size-full min-h-0 origin-top-left grid-cols-3 gap-5 [transform-style:preserve-3d] max-xl:-top-30 max-xl:right-[-45%] max-sm:top-0 max-sm:gap-2"
+            className="relative top-0 right-[-50%] grid size-full min-h-0 origin-top-left grid-cols-3 gap-4 [transform-style:preserve-3d] max-xl:-top-28 max-xl:right-[-42%] max-xl:gap-4 max-sm:top-0 max-sm:right-[-22%] max-sm:gap-2.5"
           >
             {chunks.map((subarray, colIndex) => {
               const duration = MARQUEE_DURATION_S[colIndex % MARQUEE_DURATION_S.length];
@@ -135,7 +137,7 @@ function ThreeDMarquee({
                   className="three-d-marquee-column relative h-full min-h-0 w-full overflow-hidden"
                 >
                   <div
-                    className="three-d-marquee-track flex w-full flex-col items-start gap-6 max-sm:gap-3"
+                    className="three-d-marquee-track flex w-full flex-col items-start gap-12 max-sm:gap-6"
                     style={{
                       animation: `${downward ? "marquee-3d-y-down" : "marquee-3d-y-up"} ${duration}s linear infinite`,
                       willChange: "transform",

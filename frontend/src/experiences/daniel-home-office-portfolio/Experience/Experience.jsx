@@ -24,10 +24,52 @@ const EMBEDDED_CANVAS_OVERSCAN = 0.18;
 const TOUCH_TWO_INACTIVE = 4;
 
 /**
+ * Narrow embedded landing: map one-finger drag on the canvas to `pointerRef` (same parallax as hover).
+ * OrbitControls stay disabled so pan/zoom never steal the gesture.
+ */
+function EmbeddedPointerRefTouchSync({ pointerRef, enabled }) {
+  const gl = useThree((s) => s.gl);
+  const invalidate = useThree((s) => s.invalidate);
+
+  React.useEffect(() => {
+    if (!enabled) return undefined;
+    const el = gl.domElement;
+    const apply = (clientX, clientY) => {
+      pointerRef.current.x = (clientX / window.innerWidth) * 2 - 1;
+      pointerRef.current.y = -(clientY / window.innerHeight) * 2 + 1;
+      invalidate();
+    };
+    const onTouchStart = (e) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      apply(t.clientX, t.clientY);
+    };
+    const onTouchMove = (e) => {
+      if (e.touches.length !== 1) return;
+      const t = e.touches[0];
+      apply(t.clientX, t.clientY);
+    };
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+    };
+  }, [enabled, gl, pointerRef, invalidate]);
+  return null;
+}
+
+/**
  * Pan with drag. Fullscreen: wheel + pinch zoom via OrbitControls. Embedded: page can scroll with wheel;
  * zoom = two-finger pinch or pinch-to-zoom (ctrl/meta + wheel) so the landing keeps native scroll.
  */
-function PortfolioControlsSetup({ controlsRef, embedded, minZoom, maxZoom }) {
+function PortfolioControlsSetup({
+  controlsRef,
+  embedded,
+  embedTouchOrbitOnly,
+  minZoom,
+  maxZoom,
+}) {
   const gl = useThree((s) => s.gl);
   const camera = useThree((s) => s.camera);
   const invalidate = useThree((s) => s.invalidate);
@@ -48,6 +90,10 @@ function PortfolioControlsSetup({ controlsRef, embedded, minZoom, maxZoom }) {
     const el = gl.domElement;
 
     if (!embedded) {
+      return undefined;
+    }
+
+    if (embedTouchOrbitOnly) {
       return undefined;
     }
 
@@ -122,7 +168,16 @@ function PortfolioControlsSetup({ controlsRef, embedded, minZoom, maxZoom }) {
       el.removeEventListener("pointerup", onPointerUpOrCancel);
       el.removeEventListener("pointercancel", onPointerUpOrCancel);
     };
-  }, [controlsRef, gl, camera, embedded, invalidate, minZoom, maxZoom]);
+  }, [
+    controlsRef,
+    gl,
+    camera,
+    embedded,
+    embedTouchOrbitOnly,
+    invalidate,
+    minZoom,
+    maxZoom,
+  ]);
 
   return null;
 }
@@ -139,7 +194,8 @@ const Experience = ({ embedded = false }) => {
 
   const { isExperienceReady } = useExperienceStore();
 
-  const { isMobile } = useResponsiveStore();
+  const { isMobile, isNarrowViewport } = useResponsiveStore();
+  const embedTouchOrbitOnly = Boolean(embedded && isNarrowViewport);
 
   const cameraPosition = [
     -5.091815760151335 * 1.5,
@@ -266,6 +322,7 @@ const Experience = ({ embedded = false }) => {
           <OrbitControls
             ref={orbitControlsRef}
             makeDefault
+            enabled={!embedTouchOrbitOnly}
             enableDamping
             dampingFactor={0.07}
             minPolarAngle={0.28}
@@ -274,14 +331,19 @@ const Experience = ({ embedded = false }) => {
             maxZoom={maxZoom}
             zoomSpeed={0.7}
             panSpeed={0.88}
-            enablePan
+            enablePan={!embedTouchOrbitOnly}
             enableRotate={false}
             enableZoom={!embedded}
             screenSpacePanning
           />
+          <EmbeddedPointerRefTouchSync
+            pointerRef={pointerRef}
+            enabled={embedTouchOrbitOnly}
+          />
           <PortfolioControlsSetup
             controlsRef={orbitControlsRef}
             embedded={embedded}
+            embedTouchOrbitOnly={embedTouchOrbitOnly}
             minZoom={minZoom}
             maxZoom={maxZoom}
           />

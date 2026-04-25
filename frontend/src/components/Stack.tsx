@@ -129,7 +129,7 @@ export default function Stack() {
   }, [n]);
 
   return (
-    <section className="bg-[#030303] px-6 py-24">
+    <section className="bg-[#030303] px-6 pt-8 pb-24 md:py-24">
       <div className="mx-auto max-w-7xl">
         <div className="grid grid-cols-2 place-items-center gap-x-16 gap-y-12 md:grid-cols-4 md:gap-x-20 md:gap-y-16">
           {[0, 1, 2, 3].map((slot) => {
