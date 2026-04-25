@@ -461,9 +461,79 @@ export default function About() {
       style={{ background: ABOUT_SECTION_BG_GRADIENT }}
       aria-label="About"
     >
+      {/* ── Mobile layout ─────────────────────────────────────────────────────
+          Simple static stack: no GSAP, no ScrollTrigger, no fixed/pinned
+          elements. Shown only on ≤980 px viewports.
+          Order: Block 1 → Video → Block 2 → Block 3 + CTA
+      ───────────────────────────────────────────────────────────────────── */}
+      <div className="min-[981px]:hidden px-4 pb-8 pt-8">
+        {/* Block 1 */}
+        <div>
+          <div className="mb-5 flex items-center gap-3">
+            <span className="h-2 w-2 shrink-0 rounded-full bg-white" aria-hidden />
+            <span className="text-[11px] font-medium uppercase tracking-[0.22em] text-zinc-400">
+              {t.about.sectionTitle}
+            </span>
+          </div>
+          <h2 className="font-syne text-3xl font-semibold leading-[1.12] tracking-tight text-white">
+            {t.about.introTitle}
+          </h2>
+          <p className="mt-3 max-w-lg text-pretty text-sm leading-relaxed text-zinc-300">
+            {t.about.introDescription}
+          </p>
+        </div>
+
+        {/* Video */}
+        <div className="mt-6 h-[55vh] w-full overflow-hidden rounded-2xl bg-[#0a0a0a]">
+          <video
+            className="h-full w-full object-contain"
+            muted
+            playsInline
+            autoPlay
+            loop
+            preload="metadata"
+            src="https://ik.imagekit.io/3bfeucft4/landing_demo.m4v/ik-video.mp4?updatedAt=1776957050492"
+          />
+        </div>
+
+        {/* Block 2 */}
+        <div className="mt-8">
+          <h3 className="font-syne text-2xl font-semibold leading-snug tracking-tight text-white">
+            {t.about.introTitleSecondary}
+          </h3>
+          <p className="mt-3 text-pretty text-sm leading-relaxed text-zinc-300">
+            {t.about.introDescriptionSecondary}
+          </p>
+        </div>
+
+        {/* Block 3 + CTA */}
+        <div className="mt-8">
+          <h3 className="font-syne text-2xl font-semibold leading-snug tracking-tight text-white">
+            {t.about.introTitleTertiaryLines.map((line, i) => (
+              <span key={i} className="block">{line}</span>
+            ))}
+          </h3>
+          <p className="mt-3 text-pretty text-sm leading-relaxed text-white">
+            {t.about.introDescriptionTertiaryLines.map((line, i) => (
+              <span key={i} className="block">{line}</span>
+            ))}
+          </p>
+          <Link
+            href="/#book-meeting"
+            className="mt-5 inline-flex items-center justify-center rounded-full bg-white/90 px-5 py-2.5 text-sm font-medium text-black shadow-md backdrop-blur-sm transition-colors hover:bg-white"
+          >
+            {t.about.introTertiaryCta}
+          </Link>
+        </div>
+      </div>
+
+      {/* ── Desktop layout ────────────────────────────────────────────────────
+          Complex GSAP scroll-scrub with pinned stage and animated video slide.
+          Hidden on mobile — the simple layout above takes over instead.
+      ───────────────────────────────────────────────────────────────────── */}
       <div
         ref={stageRef}
-        className="relative z-10 flex min-h-svh w-full flex-col pb-0 max-[980px]:box-border max-[980px]:[--about-mobile-vh:45] max-[980px]:min-h-0 max-[980px]:pb-8"
+        className="relative z-10 flex min-h-svh w-full flex-col pb-0 max-[980px]:hidden"
       >
         {/* Video sits under copy; intro is absolute so it can sit on top as the reel moves. */}
         <div className="relative z-10 flex min-h-0 flex-1 flex-col items-end justify-center pb-0 pt-0 max-[980px]:order-2 max-[980px]:min-h-0 max-[980px]:flex-none max-[980px]:items-stretch">

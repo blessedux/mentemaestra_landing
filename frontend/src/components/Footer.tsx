@@ -92,10 +92,38 @@ export default function Footer() {
           className="relative mt-auto flex w-full justify-center px-5 pb-12 pt-20 sm:px-8 sm:pb-16 sm:pt-28 md:px-10"
         >
           <div className="pointer-events-none absolute inset-0 z-0">
-            {/* Stack A — bottom-faded main palette with a single drifting tri-color layer.
-                The two former single-hue accent orbs are merged into one dual-warm layer
-                at boosted intensity, saving one shader instance. */}
-            <div className="absolute inset-0 [mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)] [-webkit-mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)]">
+            {/* ── Mobile gradient (CSS-only, no WebGL) ───────────────────────
+                iOS caps concurrent WebGL contexts at ~4. With GLSLHills
+                disabled on mobile we still avoid exhausting the limit by
+                replacing these three GrainGradient instances with pure-CSS
+                radial gradients that approximate the warm orb effect.
+            ─────────────────────────────────────────────────────────────── */}
+            <div
+              className="absolute inset-0 min-[981px]:hidden"
+              style={{
+                maskImage:
+                  "linear-gradient(to top, black 0%, black 55%, transparent 86%)",
+                WebkitMaskImage:
+                  "linear-gradient(to top, black 0%, black 55%, transparent 86%)",
+                background:
+                  "radial-gradient(ellipse 110% 65% at 50% 115%, hsl(14 100% 57% / 0.55) 0%, hsl(340 82% 52% / 0.38) 35%, transparent 62%), radial-gradient(ellipse 80% 50% at 22% 112%, hsl(45 100% 51% / 0.42) 0%, transparent 52%)",
+              }}
+            />
+            <div
+              className="absolute inset-0 blur-2xl opacity-50 min-[981px]:hidden"
+              style={{
+                maskImage:
+                  "linear-gradient(to bottom, black 0%, black 35%, transparent 72%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, black 0%, black 35%, transparent 72%)",
+                background:
+                  "radial-gradient(ellipse 100% 80% at 50% 0%, hsl(14 100% 57% / 0.5) 0%, hsl(340 82% 52% / 0.32) 42%, transparent 68%)",
+              }}
+            />
+
+            {/* ── Desktop WebGL gradient (hidden on mobile) ─────────────── */}
+            {/* Stack A — bottom-faded main palette with a single drifting tri-color layer. */}
+            <div className="absolute inset-0 max-[980px]:hidden [mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)] [-webkit-mask-image:linear-gradient(to_top,black_0%,black_55%,transparent_86%)]">
               <FooterPaperGradient
                 offsetX={autoOffset.x * 0.35}
                 offsetY={autoOffset.y * 0.3}
@@ -108,7 +136,7 @@ export default function Footer() {
                 softness={0.76}
                 speed={1}
               />
-              {/* Merged warm accent: formerly two separate red + amber layers */}
+              {/* Merged warm accent */}
               <FooterPaperGradient
                 offsetX={0}
                 offsetY={0}
@@ -123,10 +151,8 @@ export default function Footer() {
               <div className="absolute inset-0 bg-black/18" />
             </div>
 
-            {/* Stack B — heavy blur creates the "orb glow" at the top edge.
-                The two fixed-position accent overlays are dropped here; the blur
-                diffuses the single tri-color pass into the same effect. */}
-            <div className="absolute inset-0 blur-2xl opacity-55 [mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)]">
+            {/* Stack B — heavy blur creates the "orb glow" at the top edge. */}
+            <div className="absolute inset-0 max-[980px]:hidden blur-2xl opacity-55 [mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)] [-webkit-mask-image:linear-gradient(to_bottom,black_0%,black_35%,transparent_72%)]">
               <FooterPaperGradient
                 offsetX={autoOffset.x * 0.18}
                 offsetY={autoOffset.y * 0.14}

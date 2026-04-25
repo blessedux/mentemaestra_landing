@@ -58,6 +58,21 @@ export default function GLSLHills({
     const container = containerRef.current;
     if (!canvas || !container) return;
 
+    /**
+     * On mobile (narrow) viewports, skip WebGL entirely.
+     *
+     * Three reasons:
+     * 1. iOS Safari throttles rAF during touch gestures — the renderer queues
+     *    up frames that block touchstart processing, making the hero section
+     *    feel unresponsive until the GPU drains.
+     * 2. iOS has a hard limit of ~4 concurrent WebGL contexts. GLSLHills + the
+     *    three GrainGradient instances in the footer saturate that limit;
+     *    disabling here frees contexts for the footer gradient.
+     * 3. Continuous rendering on battery-constrained devices causes GPU crashes
+     *    when the user swipes quickly (context loss under memory pressure).
+     */
+    if (window.matchMedia("(max-width: 767px)").matches) return;
+
     class Plane {
       uniforms: { time: { type: "f"; value: number } };
       mesh: ThreeMesh;
