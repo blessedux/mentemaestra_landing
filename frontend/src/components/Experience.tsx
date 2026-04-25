@@ -107,7 +107,24 @@ export default function Experience() {
 
   const stat1InView = useInView(stat1BlockRef, { amount: 0.35, once: false });
   const stat2InView = useInView(stat2BlockRef, { amount: 0.35, once: false });
-  const brainShouldLoad = useInView(brainStripRef, { amount: 0.08, once: true });
+  // rootMargin pre-loads the brain slightly before it's visible, but not at page open.
+  const brainShouldLoad = useInView(brainStripRef, {
+    amount: 0,
+    once: true,
+    margin: "0px 0px 25% 0px",
+  });
+
+  // Lower particle count on small viewports to ease GPU/CPU pressure.
+  const [particleStride, setParticleStride] = React.useState(3);
+  React.useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    const update = (e: MediaQueryListEvent | MediaQueryList) => {
+      setParticleStride(e.matches ? 5 : 3);
+    };
+    update(mq);
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
 
   const stat1Range: [number, number] = [0, 1 / 3];
   const stat2Range: [number, number] = [1 / 3, 2 / 3];
@@ -138,6 +155,7 @@ export default function Experience() {
                     className="min-h-0 bg-[#030303]"
                     thoughts={t.experience.brainThoughts}
                     thoughtsOverlayClassName="top-11 justify-center pt-1 md:top-12 md:pt-0"
+                    particleStride={particleStride}
                   />
                 ) : (
                   <div
