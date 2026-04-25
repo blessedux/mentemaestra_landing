@@ -27,8 +27,8 @@ export default function HomeMobileSnap() {
 
     const HEADER_OFFSET_PX = 80;
     let snapping = false;
-    let lastTouchEndAt = 0;
     let rafId: number | null = null;
+    let touchStartY: number | null = null;
 
     const getTop = (id: string) => {
       const el = document.getElementById(id);
@@ -75,6 +75,8 @@ export default function HomeMobileSnap() {
       if (rafId != null) cancelAnimationFrame(rafId);
       let stableFrames = 0;
       let prevY = window.scrollY;
+      const startedAt = performance.now();
+      const MAX_WAIT_MS = 650;
 
       const tick = () => {
         // If another gesture starts, don't fight it.
@@ -91,9 +93,9 @@ export default function HomeMobileSnap() {
         if (dy < 0.5) stableFrames += 1;
         else stableFrames = 0;
 
-        // Wait a few frames after touchend so iOS momentum finishes.
-        const sinceTouchEnd = performance.now() - lastTouchEndAt;
-        if (stableFrames >= 6 && sinceTouchEnd > 80) {
+        // If momentum never fully settles (quick flick), still resolve after a cap.
+        const elapsed = performance.now() - startedAt;
+        if ((stableFrames >= 6 && elapsed > 80) || elapsed > MAX_WAIT_MS) {
           decideAndSnap(directionDown);
           rafId = null;
           return;
@@ -106,13 +108,31 @@ export default function HomeMobileSnap() {
     };
 
     let lastScrollY = window.scrollY;
-    const onTouchEnd = () => {
-      // Determine gesture direction from last observed scroll delta.
+    const onTouchStart = (e: TouchEvent) => {
+      if (e.touches.length !== 1) return;
+      touchStartY = e.touches[0]?.clientY ?? null;
+    };
+
+    const onTouchEnd = (e: TouchEvent) => {
+      // Prefer actual finger swipe direction (reliable even on fast flicks).
+      const endY = e.changedTouches?.[0]?.clientY;
+      if (typeof endY === "number" && typeof touchStartY === "number") {
+        const deltaY = endY - touchStartY;
+        const SWIPE_THRESHOLD_PX = 22;
+        if (Math.abs(deltaY) >= SWIPE_THRESHOLD_PX) {
+          const directionDown = deltaY < 0;
+          startSettleMonitor(directionDown);
+          touchStartY = null;
+          return;
+        }
+      }
+
+      // Fallback: determine direction from last observed scroll delta.
       const y = window.scrollY;
       const directionDown = y > lastScrollY;
       lastScrollY = y;
-      lastTouchEndAt = performance.now();
       startSettleMonitor(directionDown);
+      touchStartY = null;
     };
 
     const onScroll = () => {
@@ -120,10 +140,12 @@ export default function HomeMobileSnap() {
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("touchstart", onTouchStart, { passive: true });
     window.addEventListener("touchend", onTouchEnd, { passive: true });
 
     return () => {
       window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
       if (rafId != null) cancelAnimationFrame(rafId);
       if (prev === undefined) delete root.dataset.homeSnap;

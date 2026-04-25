@@ -266,7 +266,9 @@ const Experience = ({ embedded = false }) => {
         height: `${canvasSizePct}%`,
         transform: `translateX(${embeddedCanvasShiftXPct}%)`,
         zIndex: 0,
-        touchAction: "none",
+        // Embedded on mobile should never trap page scrolling.
+        // Allow vertical pan while still letting pointer events hit the canvas.
+        touchAction: embedTouchOrbitOnly ? "pan-y" : "none",
       }
     : {
         position: "fixed",

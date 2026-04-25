@@ -61,12 +61,12 @@ export default function Home() {
         <DanielRoomEmbed extendSceneBottomVh={20} />
       </section>
       <Features />
-      <ProcessFeatures />
       <Services />
       <FeaturedWorks />
       <Stack />
       <Experience />
       <Testimonials />
+      <ProcessFeatures />
       <BookMeetingSection />
       <Footer />
     </main>

@@ -169,7 +169,7 @@ export default function Experience() {
               >
                 {brainShouldLoad ? (
                   brainUseVideoFallback ? (
-                    <div className="relative h-full min-h-0 w-full overflow-hidden bg-[#030303]">
+                    <div className="relative h-full min-h-0 w-full overflow-hidden bg-zinc-900/60">
                       <video
                         className="absolute inset-0 h-full w-full object-contain object-center"
                         src={BRAIN_MOBILE_VIDEO_SRC}
