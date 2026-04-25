@@ -9,9 +9,12 @@ const ROTATE_MS = 4200;
 export default function BrainThoughtsCycle({
   thoughts,
   className,
+  /** `bottom` places copy on the lower edge (e.g. mobile video strip). */
+  align = "top",
 }: {
   thoughts: ReadonlyArray<string>;
   className?: string;
+  align?: "top" | "bottom";
 }) {
   const [idx, setIdx] = React.useState(0);
   const thoughtsKey = thoughts.join("\0");
@@ -33,7 +36,10 @@ export default function BrainThoughtsCycle({
   return (
     <div
       className={cn(
-        "pointer-events-none absolute inset-x-0 top-0 z-10 flex justify-center px-3 pt-3 md:px-4 md:pt-4",
+        "pointer-events-none absolute inset-x-0 z-10 flex justify-center px-3 md:px-4",
+        align === "bottom"
+          ? "bottom-0 items-end pb-3 pt-0"
+          : "top-0 items-start pt-3 md:pt-4",
         className
       )}
     >

@@ -51,9 +51,12 @@ export const messages = {
       ],
       introTertiaryCta: "Hablemos de mi web",
       captionLine: {
-        firstLine: "Deja que tus clientes cuenten tu",
+        line1: "Deja que, tus",
+        line2: "clientes, cuenten",
+        line3Before: "tu, ",
         accent: "historia",
-        after: ".",
+        line3After: "",
+        line4: "",
       },
       principleLines: [
         { top: "\u00A0", bottom: "CLARIDAD" },
@@ -816,9 +819,12 @@ export const messages = {
       ],
       introTertiaryCta: "Let’s talk about my website",
       captionLine: {
-        firstLine: "Let your customers tell your",
+        line1: "Let your,",
+        line2: "customers tell",
+        line3Before: "your, ",
         accent: "story",
-        after: ".",
+        line3After: "",
+        line4: "",
       },
       principleLines: [
         { top: "\u00A0", bottom: "CLARITY" },
