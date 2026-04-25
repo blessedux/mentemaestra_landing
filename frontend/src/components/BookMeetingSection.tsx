@@ -59,8 +59,15 @@ export default function BookMeetingSection() {
                     ? "grid transition-[grid-template-rows] duration-300 ease-out [grid-template-rows:1fr]"
                     : "grid transition-[grid-template-rows] duration-300 ease-out [grid-template-rows:0fr]"
                 }
+                aria-hidden={beforeBookingOpen ? "false" : "true"}
               >
-                <div className="min-h-0 overflow-hidden px-6 pb-6 md:px-8 md:pb-8">
+                <div
+                  className={
+                    beforeBookingOpen
+                      ? "min-h-0 overflow-hidden px-6 pb-6 md:px-8 md:pb-8"
+                      : "min-h-0 overflow-hidden px-0 pb-0"
+                  }
+                >
                   <div className="grid gap-6 md:grid-cols-2 md:gap-10">
                     <div>
                       <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-accent">

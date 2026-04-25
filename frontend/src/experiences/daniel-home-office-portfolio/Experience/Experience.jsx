@@ -269,6 +269,8 @@ const Experience = ({ embedded = false }) => {
         // Embedded on mobile should never trap page scrolling.
         // Allow vertical pan while still letting pointer events hit the canvas.
         touchAction: embedTouchOrbitOnly ? "pan-y" : "none",
+        // On narrow mobile embeds, make the canvas render-only so scrolling always wins.
+        pointerEvents: embedTouchOrbitOnly ? "none" : "auto",
       }
     : {
         position: "fixed",

@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { motion } from "motion/react";
+import React from "react";
 import {
   useEffect,
   useLayoutEffect,
@@ -14,6 +15,30 @@ import { useResponsiveStore } from "@/experiences/daniel-home-office-portfolio/s
 import { useLocale } from "@/i18n/LocaleProvider";
 import { usePageTransition } from "@/components/PageTransition";
 import { cn } from "@/lib/utils";
+
+class DanielRoomEmbedErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: Error | null }
+> {
+  state: { error: Error | null } = { error: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error) {
+    // Surface in console for local debugging (no on-screen UI).
+    console.error("[DanielRoomEmbed] Experience crashed:", error);
+  }
+
+  render() {
+    const error = this.state.error;
+    if (error) {
+      return null;
+    }
+    return this.props.children;
+  }
+}
 
 // Dynamic import governs actual React mounting (canvas creation).
 // A separate bare import() call below prefetches the chunk during boot
@@ -129,6 +154,13 @@ export function DanielRoomEmbed({
     };
   }, []);
 
+  // Fail-safe: if IO never fires (Safari quirks, layout changes), still mount the canvas.
+  useEffect(() => {
+    if (mountWebGL) return undefined;
+    const id = window.setTimeout(() => setMountWebGL(true), 1800);
+    return () => window.clearTimeout(id);
+  }, [mountWebGL]);
+
   useLayoutEffect(() => {
     updateDimensions();
   }, [updateDimensions]);
@@ -176,7 +208,9 @@ export function DanielRoomEmbed({
       {/* Scene: fills shell on desktop; top band on mobile (split with copy below). */}
       <div className="absolute inset-0 max-[980px]:static max-[980px]:order-1 max-[980px]:h-[min(56dvh,520px)] max-[980px]:min-h-[280px] max-[980px]:shrink-0 max-[980px]:grow-0 max-[980px]:overflow-visible">
         {mountWebGL ? (
-          <Experience embedded />
+          <DanielRoomEmbedErrorBoundary>
+            <Experience embedded />
+          </DanielRoomEmbedErrorBoundary>
         ) : (
           <div className="absolute inset-0 bg-[#080708] max-[980px]:static max-[980px]:h-full" aria-hidden />
         )}

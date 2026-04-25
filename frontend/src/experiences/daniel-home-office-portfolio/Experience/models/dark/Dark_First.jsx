@@ -1,5 +1,6 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { useVideoTexture } from "@react-three/drei";
+import * as THREE from "three";
 import { useGLTFWithKTX2 } from "../../utils/useGLTFWithKTX2";
 import { convertMaterialsToBasic } from "../../utils/convertToBasic";
 
@@ -12,6 +13,7 @@ export default function Model(props) {
   const macScreenRef = useRef();
   const computerScreenRef = useRef();
 
+  // Match the known-good behavior from commit 033b898.
   const videoTexture = useVideoTexture("/videos/devwork.mp4", {
     crossOrigin: "anonymous",
     muted: true,
@@ -19,6 +21,13 @@ export default function Model(props) {
     playsInline: true,
     start: true,
   });
+
+  useEffect(() => {
+    // GLTF UVs expect textures not flipped vertically.
+    videoTexture.flipY = false;
+    videoTexture.colorSpace = THREE.SRGBColorSpace;
+    videoTexture.needsUpdate = true;
+  }, [videoTexture]);
 
   return (
     <group {...props} dispose={null}>
@@ -30,8 +39,9 @@ export default function Model(props) {
       >
         <meshBasicMaterial
           map={videoTexture}
-          color="#8a8a8a"
+          color="#ffffff"
           toneMapped={false}
+          side={THREE.DoubleSide}
         />
       </mesh>
       <mesh
@@ -42,8 +52,9 @@ export default function Model(props) {
       >
         <meshBasicMaterial
           map={videoTexture}
-          color="#8a8a8a"
+          color="#ffffff"
           toneMapped={false}
+          side={THREE.DoubleSide}
         />
       </mesh>
       <mesh
