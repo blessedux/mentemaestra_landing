@@ -110,11 +110,6 @@ export function DanielRoomEmbed({
   const [textVisible, setTextVisible] = useState(false);
 
   const updateDimensions = useResponsiveStore((s) => s.updateDimensions);
-  const isNarrowViewport = useResponsiveStore((s) => s.isNarrowViewport);
-
-  const isCoarsePointer =
-    typeof window !== "undefined" &&
-    window.matchMedia?.("(pointer: coarse)")?.matches;
 
   // Prefetch the Experience chunk once the page boot cover lifts —
   // no canvas, no WebGL; just downloads and caches the JS module.
@@ -212,16 +207,7 @@ export function DanielRoomEmbed({
     >
       {/* Scene: fills shell on desktop; top band on mobile (split with copy below). */}
       <div className="absolute inset-0 max-[980px]:static max-[980px]:order-1 max-[980px]:h-[min(56dvh,520px)] max-[980px]:min-h-[280px] max-[980px]:shrink-0 max-[980px]:grow-0 max-[980px]:overflow-visible">
-        {isCoarsePointer && isNarrowViewport ? (
-          <video
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            src="/videos/devwork.mp4"
-            muted
-            playsInline
-            autoPlay
-            loop
-          />
-        ) : mountWebGL ? (
+        {mountWebGL ? (
           <DanielRoomEmbedErrorBoundary>
             <Experience embedded />
           </DanielRoomEmbedErrorBoundary>

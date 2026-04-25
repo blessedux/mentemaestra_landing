@@ -243,7 +243,8 @@ const Experience = ({ embedded = false }) => {
     };
 
     window.addEventListener("pointermove", onPointerMove);
-    window.addEventListener("touchmove", onTouchMove);
+    // Passive so mobile scrolling is never blocked by this listener.
+    window.addEventListener("touchmove", onTouchMove, { passive: true });
 
     return () => {
       window.removeEventListener("pointermove", onPointerMove);
@@ -266,11 +267,10 @@ const Experience = ({ embedded = false }) => {
         height: `${canvasSizePct}%`,
         transform: `translateX(${embeddedCanvasShiftXPct}%)`,
         zIndex: 0,
-        // Embedded on mobile should never trap page scrolling.
-        // Allow vertical pan while still letting pointer events hit the canvas.
-        touchAction: embedTouchOrbitOnly ? "pan-y" : "none",
-        // On narrow mobile embeds, make the canvas render-only so scrolling always wins.
-        pointerEvents: embedTouchOrbitOnly ? "none" : "auto",
+        // Embedded on landing should never trap page scrolling.
+        // Make it render-only; scroll/gestures always go to the page.
+        touchAction: "pan-y",
+        pointerEvents: "none",
       }
     : {
         position: "fixed",
