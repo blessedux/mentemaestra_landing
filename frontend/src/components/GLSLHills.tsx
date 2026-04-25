@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, type RefObject } from "react";
 import * as THREE from "three";
-import { useLenis } from "lenis/react";
 
 import { cn } from "@/lib/utils";
 
@@ -22,14 +21,14 @@ export type GLSLHillsProps = {
   hoverTiltRoll?: number;
   /** Pointer smoothing; higher = snappier. Default 9 */
   hoverTiltSmoothing?: number;
-  /** Extra "look down" from page scroll, in radians, at full scroll (see `scrollTiltDistance`). Default ~18° */
+  /** Extra “look down” from page scroll, in radians, at full scroll (see `scrollTiltDistance`). Default ~18° */
   scrollTiltMax?: number;
   /** `window.scrollY` over this many px → full extra pitch. Default one viewport height */
   scrollTiltDistance?: number;
   /** Scroll pitch smoothing; higher = snappier. Default 8 */
   scrollTiltSmoothing?: number;
   /**
-   * When set (e.g. a hero `<section>` ref), pointer tilt uses this element's bounds and
+   * When set (e.g. a hero `<section>` ref), pointer tilt uses this element’s bounds and
    * listeners so the WebGL wrapper can use `pointer-events-none` and copy stays clickable.
    */
   interactionRootRef?: RefObject<HTMLElement | null>;
@@ -53,16 +52,6 @@ export default function GLSLHills({
 }: GLSLHillsProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Lenis gives us the real scroll position that matches the scrollerProxy used
-  // by GSAP/ScrollTrigger — avoids reading stale window.scrollY under smooth-scroll.
-  const lenis = useLenis();
-  // Keep a ref so the inner effect closure always reads the latest value without
-  // needing to re-run the heavy Three.js setup.
-  const lenisRef = useRef(lenis);
-  useEffect(() => {
-    lenisRef.current = lenis;
-  }, [lenis]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -242,25 +231,12 @@ export default function GLSLHills({
     let scrollTargetPitch = 0;
     let scrollSmoothedPitch = 0;
 
-    // Read from Lenis when available so the scroll signal matches the GSAP
-    // scrollerProxy; otherwise fall back to window.scrollY.
-    const onScroll = ({ scroll }: { scroll: number }) => {
-      scrollTargetPitch = Math.min(1, Math.max(0, scroll / Math.max(scrollDistance, 1)));
-    };
-    const onScrollNative = () => {
+    const onScroll = () => {
       const y = typeof window !== "undefined" ? window.scrollY : 0;
       scrollTargetPitch = Math.min(1, Math.max(0, y / Math.max(scrollDistance, 1)));
     };
-
-    const activeLenis = lenisRef.current;
-    if (activeLenis) {
-      activeLenis.on("scroll", onScroll);
-      // Set initial value from current Lenis position.
-      onScroll({ scroll: activeLenis.scroll });
-    } else {
-      window.addEventListener("scroll", onScrollNative, { passive: true });
-      onScrollNative();
-    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
 
     const pointerRoot = () => interactionRootRef?.current ?? container;
 
@@ -280,13 +256,10 @@ export default function GLSLHills({
 
     let raf = 0;
     let disposed = false;
-    let visible = true; // tracks IntersectionObserver state
 
     const applySize = (w: number, h: number) => {
       if (w <= 0 || h <= 0) return;
-      // Cap DPR lower on narrow/mobile viewports to ease GPU pressure.
-      const dprCap = w < 768 ? 1.25 : 2;
-      const pr = Math.min(window.devicePixelRatio || 1, dprCap);
+      const pr = Math.min(window.devicePixelRatio || 1, 2);
       renderer.setPixelRatio(pr);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -320,41 +293,11 @@ export default function GLSLHills({
       renderer.render(scene, camera);
     };
 
-    const scheduleLoop = () => {
-      if (disposed || !visible || document.hidden) return;
+    const renderLoop = () => {
+      if (disposed) return;
       renderFrame();
-      raf = requestAnimationFrame(scheduleLoop);
+      raf = requestAnimationFrame(renderLoop);
     };
-
-    const pauseLoop = () => {
-      cancelAnimationFrame(raf);
-      raf = 0;
-    };
-
-    const resumeLoop = () => {
-      if (disposed || raf !== 0) return;
-      // Re-measure size in case orientation changed while paused.
-      resizeFromContainer();
-      scheduleLoop();
-    };
-
-    // Pause when hero scrolls off-screen; resume when it re-enters.
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        visible = entry.isIntersecting;
-        if (visible) resumeLoop();
-        else pauseLoop();
-      },
-      { root: null, rootMargin: "80px", threshold: 0 },
-    );
-    io.observe(container);
-
-    // Pause when the tab is backgrounded.
-    const onVisibilityChange = () => {
-      if (document.hidden) pauseLoop();
-      else resumeLoop();
-    };
-    document.addEventListener("visibilitychange", onVisibilityChange);
 
     renderer.setClearColor(0x000000, 0);
     scene.add(plane.mesh);
@@ -364,20 +307,14 @@ export default function GLSLHills({
     });
     ro.observe(container);
     resizeFromContainer();
-    scheduleLoop();
+    renderLoop();
 
     return () => {
       disposed = true;
       cancelAnimationFrame(raf);
-      if (activeLenis) {
-        activeLenis.off("scroll", onScroll);
-      } else {
-        window.removeEventListener("scroll", onScrollNative);
-      }
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      io.disconnect();
       pr.removeEventListener("pointermove", onPointerMove);
       pr.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("scroll", onScroll);
       ro.disconnect();
       renderer.dispose();
       plane.mesh.geometry.dispose();
@@ -395,7 +332,6 @@ export default function GLSLHills({
     scrollTiltSmoothing,
     speed,
     interactionRootRef,
-    // lenisRef is stable (not included); the inner closure reads current value.
   ]);
 
   return (

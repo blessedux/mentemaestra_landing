@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useId, type ReactNode } from "react";
 import { motion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -285,23 +286,25 @@ export function Features() {
                         {teamAvatars[0]?.name}
                       </span>
                       <div className="size-7 ring-4 ring-background">
-                        <img
+                        <Image
                           className="size-full rounded-full object-cover"
-                          src={teamAvatars[0]?.src}
+                          src={teamAvatars[0]?.src ?? ""}
                           alt={teamAvatars[0]?.name ?? ""}
                           width={56}
                           height={56}
+                          sizes="28px"
                         />
                       </div>
                     </div>
                     <div className="relative ml-[calc(50%-1rem)] flex items-center gap-2">
                       <div className="size-8 ring-4 ring-background">
-                        <img
+                        <Image
                           className="size-full rounded-full object-cover"
-                          src={teamAvatars[1]?.src}
+                          src={teamAvatars[1]?.src ?? ""}
                           alt={teamAvatars[1]?.name ?? ""}
                           width={64}
                           height={64}
+                          sizes="32px"
                         />
                       </div>
                       <span className="block h-fit rounded border border-border bg-card px-2 py-1 text-xs text-muted-foreground shadow-sm">
@@ -313,12 +316,13 @@ export function Features() {
                         {teamAvatars[2]?.name}
                       </span>
                       <div className="size-7 ring-4 ring-background">
-                        <img
+                        <Image
                           className="size-full rounded-full object-cover"
-                          src={teamAvatars[2]?.src}
+                          src={teamAvatars[2]?.src ?? ""}
                           alt={teamAvatars[2]?.name ?? ""}
                           width={56}
                           height={56}
+                          sizes="28px"
                         />
                       </div>
                     </div>

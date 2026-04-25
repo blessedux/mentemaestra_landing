@@ -29,9 +29,28 @@ const dmSans = DM_Sans({
   adjustFontFallback: true,
 });
 
+const SITE_URL = "https://mentemaestra.com";
+const OG_IMAGE = "/imgs/opengraph_static.png";
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "MenteMaestra Studio",
   description: "Diseño, código y crecimiento para marcas que escalan.",
+  openGraph: {
+    title: "MenteMaestra Studio",
+    description: "Diseño, código y crecimiento para marcas que escalan.",
+    url: SITE_URL,
+    siteName: "MenteMaestra Studio",
+    images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "MenteMaestra Studio" }],
+    locale: "es_ES",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "MenteMaestra Studio",
+    description: "Diseño, código y crecimiento para marcas que escalan.",
+    images: [OG_IMAGE],
+  },
 };
 
 export default function RootLayout({
