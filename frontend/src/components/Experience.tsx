@@ -165,13 +165,13 @@ export default function Experience() {
             <div className="flex flex-col overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/60">
               <div
                 ref={brainStripRef}
-                className="relative h-[220px] shrink-0 border-b border-zinc-800/90 sm:h-[260px] md:h-[300px]"
+                className="relative h-[110px] shrink-0 border-b border-zinc-800/90 sm:h-[260px] md:h-[300px]"
               >
                 {brainShouldLoad ? (
                   brainUseVideoFallback ? (
                     <div className="relative h-full min-h-0 w-full overflow-hidden bg-[#030303]">
                       <video
-                        className="absolute inset-0 h-full w-full object-cover object-center"
+                        className="absolute inset-0 h-full w-full object-contain object-center"
                         src={BRAIN_MOBILE_VIDEO_SRC}
                         muted
                         playsInline

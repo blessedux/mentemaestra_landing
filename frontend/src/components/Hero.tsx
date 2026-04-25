@@ -171,6 +171,36 @@ export function Hero() {
         width="100%"
         height="100%"
       />
+
+      {/*
+        Mobile background video — mirrors the GLSLHills shader for viewports
+        where WebGL is disabled (≤767 px). Hidden on desktop via `md:hidden`.
+
+        Perf notes:
+        • `preload="metadata"` — loads only the first packet so the browser
+          knows the video dimensions and can start playback instantly on
+          autoPlay, without fetching the entire file up-front.
+        • `muted` + `playsInline` are both required for iOS Safari autoplay.
+        • `aria-hidden` + `tabIndex={-1}` — purely decorative; excluded from
+          the accessibility tree and keyboard focus order.
+        • `disablePictureInPicture` / `disableRemotePlayback` — suppress
+          browser chrome that makes no sense for a silent background loop.
+      */}
+      <video
+        className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover md:hidden"
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        tabIndex={-1}
+        disablePictureInPicture
+        disableRemotePlayback
+      >
+        <source src="/videos/output.webm" type="video/webm" />
+      </video>
+
       <div
         ref={containerRef}
         className={cn(

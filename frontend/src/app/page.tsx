@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 
 import Header from "@/components/Header";
+import HomeMobileSnap from "@/components/HomeMobileSnap";
 import HomeScrollToSection from "@/components/HomeScrollToSection";
 import About from "@/components/About";
 import { DanielRoomEmbed } from "@/components/DanielRoomEmbed";
@@ -44,7 +45,11 @@ const Footer = dynamic(() => import("@/components/Footer"), {
 
 export default function Home() {
   return (
-    <main className="min-h-screen overflow-x-clip bg-[#0a0a0a] text-white">
+    <main
+      data-home-snap="true"
+      className="min-h-screen overflow-x-clip bg-[#0a0a0a] text-white"
+    >
+      <HomeMobileSnap />
       <HomeScrollToSection />
       <Header />
       <Hero />

@@ -205,6 +205,21 @@ html {
   scroll-behavior: auto;
 }
 
+/* Mobile: one-swipe section snapping (Home only).
+   - Uses the root scroller (Lenis + ScrollTrigger proxy `document.documentElement`), so we avoid
+     making a nested scroll container.
+   - `scroll-padding-top` offsets the fixed header so About's top isn't hidden under it. */
+@media (max-width: 980px) {
+  html[data-home-snap="true"] {
+    scroll-padding-top: calc(env(safe-area-inset-top) + 80px);
+  }
+
+  html[data-home-snap="true"] #hero,
+  html[data-home-snap="true"] #about {
+    scroll-margin-top: calc(env(safe-area-inset-top) + 80px);
+  }
+}
+
 /* Service card hover: full-viewport-width wash (How we work / services list) */
 .service-card {
   transition: color 0.3s ease, border-color 0.3s ease;
