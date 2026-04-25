@@ -136,6 +136,7 @@ export default function SmoothScrollRoot({
         ? {
             lerp: 1,
             smoothWheel: false,
+            smoothTouch: false,
             wheelMultiplier: 1,
             touchMultiplier: 1,
             autoRaf: false,
@@ -144,9 +145,15 @@ export default function SmoothScrollRoot({
         : {
             /** Lower = heavier, more carry / momentum */
             lerp: 0.048,
-            /** Less distance per wheel notch */
+            /** Less distance per wheel notch on desktop */
             wheelMultiplier: 0.66,
-            touchMultiplier: 0.82,
+            /**
+             * smoothTouch: false → native touch scroll on mobile.
+             * touchMultiplier only activates when smoothTouch is true,
+             * so this value is a no-op — kept as documentation.
+             */
+            smoothTouch: false,
+            touchMultiplier: 1,
             smoothWheel: true,
             autoRaf: false,
             anchors: false,

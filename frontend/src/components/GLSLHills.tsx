@@ -241,25 +241,33 @@ export default function GLSLHills({
     const pointerRoot = () => interactionRootRef?.current ?? container;
 
     const onPointerMove = (ev: PointerEvent) => {
+      // Ignore touch-generated pointer events — hover tilt is mouse-only.
+      if (ev.pointerType === "touch") return;
       const root = pointerRoot();
       const rect = root.getBoundingClientRect();
       const w = Math.max(rect.width, 1);
       const nx = ((ev.clientX - rect.left) / w) * 2 - 1;
       pointerTargetX = Math.max(-1, Math.min(1, nx));
     };
-    const onPointerLeave = () => {
+    const onPointerLeave = (ev: PointerEvent) => {
+      if (ev.pointerType === "touch") return;
       pointerTargetX = 0;
     };
     const pr = pointerRoot();
-    pr.addEventListener("pointermove", onPointerMove);
-    pr.addEventListener("pointerleave", onPointerLeave);
+    // { passive: true } — we never call preventDefault, so mark as passive to
+    // unblock scroll on Chrome/Android immediately instead of waiting for the handler.
+    pr.addEventListener("pointermove", onPointerMove, { passive: true });
+    pr.addEventListener("pointerleave", onPointerLeave, { passive: true });
 
     let raf = 0;
     let disposed = false;
+    let visible = true;
 
     const applySize = (w: number, h: number) => {
       if (w <= 0 || h <= 0) return;
-      const pr = Math.min(window.devicePixelRatio || 1, 2);
+      // Cap DPR lower on narrow/mobile viewports to ease GPU pressure.
+      const dprCap = w < 768 ? 1.25 : 2;
+      const pr = Math.min(window.devicePixelRatio || 1, dprCap);
       renderer.setPixelRatio(pr);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
@@ -293,11 +301,40 @@ export default function GLSLHills({
       renderer.render(scene, camera);
     };
 
-    const renderLoop = () => {
-      if (disposed) return;
+    const scheduleLoop = () => {
+      if (disposed || !visible || document.hidden) return;
       renderFrame();
-      raf = requestAnimationFrame(renderLoop);
+      raf = requestAnimationFrame(scheduleLoop);
     };
+
+    const pauseLoop = () => {
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
+
+    const resumeLoop = () => {
+      if (disposed || raf !== 0) return;
+      resizeFromContainer();
+      scheduleLoop();
+    };
+
+    // Pause when hero scrolls off-screen; resume when it re-enters.
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible) resumeLoop();
+        else pauseLoop();
+      },
+      { root: null, rootMargin: "80px", threshold: 0 },
+    );
+    io.observe(container);
+
+    // Pause when the tab is backgrounded.
+    const onVisibilityChange = () => {
+      if (document.hidden) pauseLoop();
+      else resumeLoop();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
 
     renderer.setClearColor(0x000000, 0);
     scene.add(plane.mesh);
@@ -307,7 +344,7 @@ export default function GLSLHills({
     });
     ro.observe(container);
     resizeFromContainer();
-    renderLoop();
+    scheduleLoop();
 
     return () => {
       disposed = true;
@@ -315,6 +352,8 @@ export default function GLSLHills({
       pr.removeEventListener("pointermove", onPointerMove);
       pr.removeEventListener("pointerleave", onPointerLeave);
       window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+      io.disconnect();
       ro.disconnect();
       renderer.dispose();
       plane.mesh.geometry.dispose();
