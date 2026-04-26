@@ -49,6 +49,7 @@ type UpdateBody = {
   sanity_dataset?: string | null;
   dashboard_project_key?: string | null;
   client_website_url?: string | null;
+  vercel_project_id?: string | null;
 };
 
 function isCreate(body: unknown): body is CreateBody {
@@ -171,6 +172,10 @@ export async function POST(req: Request) {
         body.client_website_url === undefined
           ? undefined
           : body.client_website_url?.trim() || null,
+      vercel_project_id:
+        body.vercel_project_id === undefined
+          ? undefined
+          : body.vercel_project_id?.trim() || null,
     });
     if (!project) {
       return NextResponse.json(

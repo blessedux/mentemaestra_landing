@@ -29,6 +29,7 @@ export async function getProjectBySlug(
            sanity_dataset,
            dashboard_project_key,
            client_website_url,
+           vercel_project_id,
            created_at::text AS created_at
     FROM projects
     WHERE slug = ${slug}

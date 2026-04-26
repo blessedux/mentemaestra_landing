@@ -17,6 +17,8 @@ export type ProjectRow = {
   dashboard_project_key: string | null;
   /** Shown in the client portal footer when set (https://…). */
   client_website_url: string | null;
+  /** Vercel project ID for this client's deployment (used for Analytics API). */
+  vercel_project_id: string | null;
   created_at: string;
 };
 
@@ -59,6 +61,7 @@ export async function listProjectsWithClient(
            p.sanity_dataset,
            p.dashboard_project_key,
            p.client_website_url,
+           p.vercel_project_id,
            p.created_at::text AS created_at,
            c.name AS client_name,
            c.primary_email AS client_primary_email
@@ -82,6 +85,7 @@ export async function getProjectWithClientById(
            p.sanity_dataset,
            p.dashboard_project_key,
            p.client_website_url,
+           p.vercel_project_id,
            p.created_at::text AS created_at,
            c.name AS client_name,
            c.primary_email AS client_primary_email
@@ -139,7 +143,7 @@ export async function createProject(
     )
     RETURNING id::text AS id, client_id::text AS client_id, slug, name,
               notion_url, sanity_dataset, dashboard_project_key,
-              client_website_url,
+              client_website_url, vercel_project_id,
               created_at::text AS created_at
   `;
   return rows[0];
@@ -151,6 +155,7 @@ export type UpdateProjectInput = {
   sanity_dataset?: string | null;
   dashboard_project_key?: string | null;
   client_website_url?: string | null;
+  vercel_project_id?: string | null;
 };
 
 export async function updateProject(
@@ -165,11 +170,12 @@ export async function updateProject(
         notion_url            = COALESCE(${input.notion_url ?? null}, notion_url),
         sanity_dataset        = COALESCE(${input.sanity_dataset ?? null}, sanity_dataset),
         dashboard_project_key = COALESCE(${input.dashboard_project_key ?? null}, dashboard_project_key),
-        client_website_url      = COALESCE(${input.client_website_url ?? null}, client_website_url)
+        client_website_url    = COALESCE(${input.client_website_url ?? null}, client_website_url),
+        vercel_project_id     = COALESCE(${input.vercel_project_id ?? null}, vercel_project_id)
     WHERE id = ${id}::uuid
     RETURNING id::text AS id, client_id::text AS client_id, slug, name,
               notion_url, sanity_dataset, dashboard_project_key,
-              client_website_url,
+              client_website_url, vercel_project_id,
               created_at::text AS created_at
   `;
   return rows[0] ?? null;

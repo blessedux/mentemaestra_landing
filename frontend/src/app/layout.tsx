@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Geist, Geist_Mono, Syne } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import ClientBody from "./ClientBody";
 
@@ -81,6 +82,7 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="antialiased">
         <ClientBody>{children}</ClientBody>
+        <Analytics />
       </body>
     </html>
   );

@@ -116,6 +116,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           defaultSanityDataset={project.sanity_dataset ?? ""}
           defaultDashboardKey={project.dashboard_project_key ?? ""}
           defaultClientWebsiteUrl={project.client_website_url ?? ""}
+          defaultVercelProjectId={project.vercel_project_id ?? ""}
           clientEmail={project.client_primary_email}
           projectName={project.name}
           clientName={project.client_name}

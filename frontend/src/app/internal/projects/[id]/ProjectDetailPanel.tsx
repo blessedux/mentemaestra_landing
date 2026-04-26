@@ -22,6 +22,7 @@ type Props = {
   defaultSanityDataset: string;
   defaultDashboardKey: string;
   defaultClientWebsiteUrl: string;
+  defaultVercelProjectId: string;
   clientEmail: string;
   projectName: string;
   clientName: string;
@@ -48,6 +49,9 @@ export default function ProjectDetailPanel(props: Props) {
   const [dashboardKey, setDashboardKey] = useState(props.defaultDashboardKey);
   const [clientWebsiteUrl, setClientWebsiteUrl] = useState(
     props.defaultClientWebsiteUrl,
+  );
+  const [vercelProjectId, setVercelProjectId] = useState(
+    props.defaultVercelProjectId,
   );
   const [toEmail, setToEmail] = useState(props.clientEmail);
   const [saving, setSaving] = useState(false);
@@ -178,6 +182,7 @@ export default function ProjectDetailPanel(props: Props) {
           sanity_dataset: sanity.trim() || null,
           dashboard_project_key: dashboardKey.trim() || null,
           client_website_url: clientWebsiteUrl.trim() || null,
+          vercel_project_id: vercelProjectId.trim() || null,
         }),
       });
       const json = (await res.json()) as { ok?: boolean; error?: string };
@@ -457,6 +462,19 @@ export default function ProjectDetailPanel(props: Props) {
             onChange={(e) => setClientWebsiteUrl(e.target.value)}
             className={inputClass}
             placeholder="https://ejemplo.com"
+          />
+        </Field>
+
+        <Field
+          label="Vercel Project ID"
+          hint="ID del proyecto en Vercel (prj_…). Se usa para mostrar las analíticas de tráfico del sitio del cliente en su portal."
+        >
+          <input
+            type="text"
+            value={vercelProjectId}
+            onChange={(e) => setVercelProjectId(e.target.value)}
+            className={inputClass}
+            placeholder="prj_xxxxxxxxxxxxxxxxxxxx"
           />
         </Field>
 
