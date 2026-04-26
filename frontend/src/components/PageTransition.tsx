@@ -89,6 +89,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     useState<InitialBootPhase>("cover");
   const [slideCoverReady, setSlideCoverReady] = useState(false);
   const pendingPathRef = useRef<string | null>(null);
+  const startPathRef = useRef<string | null>(null);
   const inflightRef = useRef(false);
   const completingRef = useRef(false);
 
@@ -102,6 +103,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     await new Promise((r) => setTimeout(r, t.in));
     setPhase("idle");
     pendingPathRef.current = null;
+    startPathRef.current = null;
     inflightRef.current = false;
     completingRef.current = false;
   }, [reducedMotion, variant]);
@@ -163,7 +165,11 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (phase !== "loader" || !pendingPathRef.current) return;
-    if (currentKey !== pendingPathRef.current) return;
+    // Complete the transition once navigation has settled on ANY new route.
+    // This must handle server redirects (e.g. /client/* pages redirecting to /login),
+    // where `currentKey` will never equal the originally requested destination.
+    if (!startPathRef.current) return;
+    if (currentKey === startPathRef.current) return;
     let cancelled = false;
     const t = timing(reducedMotion, variant);
     const id = requestAnimationFrame(() => {
@@ -202,6 +208,7 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
       inflightRef.current = true;
       completingRef.current = false;
       pendingPathRef.current = destKey;
+      startPathRef.current = liveKey;
       const t = timing(reducedMotion, variant);
 
       setPhase("out");
