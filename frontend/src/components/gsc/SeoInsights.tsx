@@ -35,7 +35,8 @@ const typeConfig: Record<
 
 /**
  * Async Server Component — streams separately via Suspense.
- * Calls OpenAI gpt-4o-mini and caches results for 24 hours per project.
+ * Uses the same analytics LLM stack (OpenRouter or OpenAI) and caches
+ * results for 24 hours per project.
  */
 export default async function SeoInsights({ projectId, gscData }: Props) {
   let result;

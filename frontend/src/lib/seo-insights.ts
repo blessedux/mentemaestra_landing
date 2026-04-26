@@ -1,8 +1,10 @@
 import "server-only";
 
+import { generateObject } from "ai";
 import { unstable_cache } from "next/cache";
-import OpenAI from "openai";
+import { z } from "zod";
 
+import { getAnalyticsModel } from "./analytics-llm";
 import type { GscDashboardData } from "./gsc-client";
 
 export type SeoInsight = {
@@ -17,13 +19,25 @@ export type SeoInsightsResult = {
   model: string;
 };
 
-export function isOpenAiConfigured(): boolean {
-  return Boolean(process.env.OPENAI_API_KEY?.trim());
-}
+const SeoInsightSchema = z.object({
+  type: z.enum(["opportunity", "warning", "win"]),
+  title: z.string(),
+  detail: z.string(),
+});
 
-function getClient(): OpenAI {
-  return new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-}
+const SeoInsightsObjectSchema = z.object({
+  insights: z.array(SeoInsightSchema).min(1).max(5),
+});
+
+const SYSTEM_SEO_INSIGHTS = `Eres un experto en SEO analítico. Analiza los datos de Google Search Console que recibirás y entrega entre 3 y 5 insights accionables y concretos en español.
+
+Reglas de contenido de cada insight:
+- "win": algo que está funcionando bien
+- "opportunity": algo que puede mejorar con acción concreta
+- "warning": algo que está bajando o necesita atención urgente
+- "title": máximo 8 palabras
+- "detail": 1-2 oraciones, específico; cita números o consultas del análisis
+- No repitas obviedades genéricas`;
 
 /**
  * Today's date string (UTC) — used as part of the cache key so insights
@@ -74,55 +88,20 @@ ${pagesText}
 async function generateInsights(
   gscSummary: string,
 ): Promise<SeoInsightsResult> {
-  const client = getClient();
-
-  const completion = await client.chat.completions.create({
-    model: "gpt-4o-mini",
+  const { object, response } = await generateObject({
+    model: getAnalyticsModel(),
+    schema: SeoInsightsObjectSchema,
+    system: SYSTEM_SEO_INSIGHTS,
+    prompt: `Datos de Search Console:\n\n${gscSummary}`,
     temperature: 0.4,
-    max_tokens: 800,
-    response_format: { type: "json_object" },
-    messages: [
-      {
-        role: "system",
-        content: `Eres un experto en SEO analítico. Analiza los datos de Google Search Console que recibirás y entrega entre 3 y 5 insights accionables y concretos en español. 
-
-Responde ÚNICAMENTE con un JSON con esta estructura:
-{
-  "insights": [
-    {
-      "type": "opportunity" | "warning" | "win",
-      "title": "Título corto (máx 8 palabras)",
-      "detail": "Explicación concreta de qué hacer o qué está pasando (1-2 oraciones)"
-    }
-  ]
-}
-
-Reglas:
-- "win": algo que está funcionando bien
-- "opportunity": algo que puede mejorar con acción concreta
-- "warning": algo que está bajando o necesita atención urgente
-- Sé específico, cita números o consultas del análisis
-- No repitas obviedades genéricas`,
-      },
-      {
-        role: "user",
-        content: `Datos de Search Console:\n\n${gscSummary}`,
-      },
-    ],
+    maxOutputTokens: 800,
+    maxRetries: 0,
   });
 
-  const raw = completion.choices[0]?.message?.content ?? "{}";
-  let parsed: { insights?: SeoInsight[] };
-  try {
-    parsed = JSON.parse(raw) as { insights?: SeoInsight[] };
-  } catch {
-    parsed = { insights: [] };
-  }
-
   return {
-    insights: parsed.insights ?? [],
+    insights: object.insights,
     generatedAt: new Date().toISOString(),
-    model: completion.model,
+    model: response.modelId ?? "unknown",
   };
 }
 
