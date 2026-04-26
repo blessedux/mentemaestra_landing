@@ -217,6 +217,23 @@ export const messages = {
         bookSubtitle:
           "Elige horario y cuéntanos un poco más; usamos el mismo flujo de reserva que en la landing.",
         dialogAriaLabel: "Confirmar reunión exploratoria",
+        leadCard: {
+          title:
+            "¿Te da cosa agendar? No te preocupes — si quieres, te llamamos y lo coordinamos.",
+          body:
+            "Déjanos tu nombre y correo y te contactamos con los próximos pasos.",
+          nameLabel: "Nombre",
+          namePlaceholder: "Tu nombre",
+          emailLabel: "Correo",
+          emailPlaceholder: "tu@email.com",
+          submit: "Pedir llamada",
+          submitting: "Enviando…",
+          success: "Listo — recibido. Te contactamos pronto.",
+          errorMissingName: "Por favor agrega tu nombre.",
+          errorInvalidEmail: "Por favor ingresa un correo válido.",
+          errorSendFailed:
+            "No pudimos enviar esto ahora. Por favor intenta nuevamente en un momento.",
+        },
         backToHome: "Volver a MenteMaestra",
       },
     },
@@ -984,6 +1001,22 @@ export const messages = {
         bookSubtitle:
           "Pick a time and share a bit more—we use the same booking flow as on the homepage.",
         dialogAriaLabel: "Confirm exploratory meeting",
+        leadCard: {
+          title:
+            "Too shy to book? Don’t worry — if you want, we can give you a call and arrange things.",
+          body:
+            "Leave your name and email and we’ll reach out with next steps.",
+          nameLabel: "Name",
+          namePlaceholder: "Your name",
+          emailLabel: "Email",
+          emailPlaceholder: "you@example.com",
+          submit: "Request a call",
+          submitting: "Sending…",
+          success: "Thanks — received. We’ll reach out soon.",
+          errorMissingName: "Please add your name.",
+          errorInvalidEmail: "Please enter a valid email.",
+          errorSendFailed: "Couldn’t send right now. Please try again in a moment.",
+        },
         backToHome: "Back to MenteMaestra",
       },
     },

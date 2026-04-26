@@ -201,6 +201,12 @@ export default function PublicOnboardingFlow() {
   const [project, setProject] = useState<OnboardingProjectId | null>(null);
   const [timeline, setTimeline] = useState<OnboardingTimelineId | null>(null);
   const [budget, setBudget] = useState<OnboardingBudgetId | null>(null);
+  const [leadName, setLeadName] = useState("");
+  const [leadEmail, setLeadEmail] = useState("");
+  const [leadStatus, setLeadStatus] = useState<
+    "idle" | "submitting" | "sent" | "error"
+  >("idle");
+  const [leadError, setLeadError] = useState<string | null>(null);
 
   const recommendation = useMemo(() => {
     if (!project || !timeline || !budget) return null;
@@ -236,6 +242,46 @@ export default function PublicOnboardingFlow() {
 
   const goBack = () => {
     if (step > 0) setStep((s) => s - 1);
+  };
+
+  const emailOk = (email: string) =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+  const handleLeadSubmit = async () => {
+    if (!recommendation || !project || !timeline || !budget) return;
+    const name = leadName.trim();
+    const email = leadEmail.trim();
+    if (!name || !emailOk(email)) {
+      setLeadStatus("error");
+      setLeadError(
+        !name ? o.result.leadCard.errorMissingName : o.result.leadCard.errorInvalidEmail,
+      );
+      return;
+    }
+
+    setLeadStatus("submitting");
+    setLeadError(null);
+    try {
+      const res = await fetch("/api/public-onboarding-lead", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          email,
+          answers: { project, timeline, budget },
+          recommendation,
+        }),
+      });
+      if (!res.ok) {
+        const raw = await res.text();
+        throw new Error(raw || `HTTP ${res.status}`);
+      }
+      setLeadStatus("sent");
+    } catch (err) {
+      console.error("[public-onboarding] lead submit failed", err);
+      setLeadStatus("error");
+      setLeadError(o.result.leadCard.errorSendFailed);
+    }
   };
 
   return (
@@ -364,6 +410,73 @@ export default function PublicOnboardingFlow() {
               </div>
             }
           />
+
+          <div className="rounded-2xl border border-zinc-800/90 bg-zinc-950/45 p-6 md:p-8">
+            <h3 className="text-center text-base font-semibold tracking-tight text-white md:text-lg">
+              {o.result.leadCard.title}
+            </h3>
+            <p className="mx-auto mt-2 max-w-xl text-center text-sm text-zinc-400">
+              {o.result.leadCard.body}
+            </p>
+
+            {leadStatus === "sent" ? (
+              <div className="mx-auto mt-6 max-w-xl rounded-xl border border-emerald-900/40 bg-emerald-950/20 p-4 text-center text-sm text-emerald-200">
+                {o.result.leadCard.success}
+              </div>
+            ) : (
+              <div className="mx-auto mt-6 max-w-xl space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="grid gap-1.5">
+                    <span className="text-xs font-medium uppercase tracking-[0.18em] text-zinc-500">
+                      {o.result.leadCard.nameLabel}
+                    </span>
+                    <input
+                      value={leadName}
+                      onChange={(e) => setLeadName(e.target.value)}
+                      autoComplete="name"
+                      className="h-11 w-full rounded-xl border border-zinc-800 bg-black/30 px-3 text-sm text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                      placeholder={o.result.leadCard.namePlaceholder}
+                    />
+                  </label>
+                  <label className="grid gap-1.5">
+                    <span className="text-xs font-medium uppercase tracking-[0.18em] text-zinc-500">
+                      {o.result.leadCard.emailLabel}
+                    </span>
+                    <input
+                      value={leadEmail}
+                      onChange={(e) => setLeadEmail(e.target.value)}
+                      autoComplete="email"
+                      inputMode="email"
+                      className="h-11 w-full rounded-xl border border-zinc-800 bg-black/30 px-3 text-sm text-white placeholder:text-zinc-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/50"
+                      placeholder={o.result.leadCard.emailPlaceholder}
+                    />
+                  </label>
+                </div>
+
+                {leadStatus === "error" && leadError ? (
+                  <p className="text-center text-sm text-rose-300">{leadError}</p>
+                ) : null}
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-center">
+                  <button
+                    type="button"
+                    onClick={handleLeadSubmit}
+                    disabled={leadStatus === "submitting"}
+                    className={cn(
+                      "h-11 rounded-full px-6 text-sm font-medium transition-colors",
+                      leadStatus === "submitting"
+                        ? "cursor-not-allowed bg-zinc-800 text-zinc-500"
+                        : "bg-white text-black hover:bg-zinc-100",
+                    )}
+                  >
+                    {leadStatus === "submitting"
+                      ? o.result.leadCard.submitting
+                      : o.result.leadCard.submit}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
 
           <div className="flex justify-center pb-8">
             <Link
