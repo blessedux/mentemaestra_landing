@@ -25,7 +25,6 @@ function KanbanCard({ row, slug }: { row: ProjectRow; slug: string }) {
         {row.icon && (
           <span className="mt-px flex-none text-sm leading-snug" aria-hidden>
             {iconIsUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={row.icon} alt="" className="h-4 w-4 object-contain" />
             ) : (
               row.icon

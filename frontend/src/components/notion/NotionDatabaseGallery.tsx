@@ -34,7 +34,6 @@ function GalleryCard({ row, slug }: { row: ProjectRow; slug: string }) {
       {/* Cover */}
       <div className="relative aspect-video w-full overflow-hidden bg-zinc-900">
         {row.coverUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={row.coverUrl}
             alt=""
@@ -48,7 +47,6 @@ function GalleryCard({ row, slug }: { row: ProjectRow; slug: string }) {
         {row.icon && (
           <div className="absolute bottom-2 left-3 leading-none">
             {iconIsUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={row.icon} alt="" className="h-8 w-8 rounded object-contain" />
             ) : (
               <span className="text-2xl drop-shadow">{row.icon}</span>
@@ -119,7 +117,6 @@ function DatabaseList({ rows, slug }: { rows: ProjectRow[]; slug: string }) {
             {row.icon && (
               <span className="flex-none text-xl leading-none" aria-hidden="true">
                 {iconIsUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img src={row.icon} alt="" className="h-5 w-5 object-contain" />
                 ) : (
                   row.icon

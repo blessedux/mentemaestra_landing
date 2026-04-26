@@ -123,7 +123,6 @@ export default async function NotionSubPage({ params }: PageProps) {
         {/* Banner at viewport top — header overlaid inside */}
         {dbMeta.coverUrl ? (
           <div className="relative h-64 w-full overflow-hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={dbMeta.coverUrl}
               alt=""
@@ -162,7 +161,6 @@ export default async function NotionSubPage({ params }: PageProps) {
               </div>
             )}
             {dbIcon?.type === "url" && (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={dbIcon.value} alt="" className="mb-2 h-10 w-10 rounded object-contain" />
             )}
             <h1 className="text-2xl font-bold text-zinc-50">
@@ -213,7 +211,6 @@ export default async function NotionSubPage({ params }: PageProps) {
       {/* Banner at viewport top — header overlaid inside */}
       {pageMeta.coverUrl ? (
         <div className="relative h-64 w-full overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={pageMeta.coverUrl}
             alt=""

@@ -323,7 +323,6 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
                     : "h-full w-full"
                 }
               >
-                {/* eslint-disable-next-line @next/next/no-img-element -- data URLs from Lighthouse */}
                 <img
                   src={previewSrc}
                   alt={`Vista previa ${strategy === "mobile" ? "móvil" : "escritorio"}`}

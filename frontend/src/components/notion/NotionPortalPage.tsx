@@ -116,7 +116,6 @@ function PageHeader({
         {icon.value}
       </span>
     ) : icon?.type === "url" ? (
-      // eslint-disable-next-line @next/next/no-img-element
       <img src={icon.value} alt="" className="h-12 w-12 rounded object-contain" />
     ) : null;
 
@@ -136,7 +135,6 @@ function PageBanner({ coverUrl }: { coverUrl: string }) {
   return (
     <div className="relative left-1/2 mb-10 h-64 w-screen -translate-x-1/2 overflow-hidden">
       {/* Sharp base image — no blur */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={coverUrl}
         alt=""

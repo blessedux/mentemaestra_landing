@@ -330,7 +330,6 @@ async function Block({ block, slug }: BlockProps) {
           {block.icon ? (
             <span className="flex-none text-lg leading-7" aria-hidden>
               {block.icon.startsWith("http") ? (
-                // eslint-disable-next-line @next/next/no-img-element
                 <img src={block.icon} alt="" className="h-6 w-6 object-contain" />
               ) : (
                 block.icon
@@ -406,7 +405,6 @@ async function Block({ block, slug }: BlockProps) {
       if (!block.url) return null;
       return (
         <figure className="my-4">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={block.url}
             alt={block.caption.map((s) => s.text).join("") || "Imagen"}
@@ -551,7 +549,6 @@ async function Block({ block, slug }: BlockProps) {
       const icon = block.icon;
       const iconEl = icon ? (
         icon.startsWith("http") ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={icon} alt="" className="h-6 w-6 object-contain" />
         ) : (
           <span className="text-xl leading-none">{icon}</span>
@@ -634,7 +631,6 @@ async function Block({ block, slug }: BlockProps) {
       const icon = block.icon;
       const iconEl = icon ? (
         icon.startsWith("http") ? (
-          // eslint-disable-next-line @next/next/no-img-element
           <img src={icon} alt="" className="h-5 w-5 object-contain" />
         ) : (
           <span>{icon}</span>
@@ -672,7 +668,6 @@ async function Block({ block, slug }: BlockProps) {
         const dbIconRaw = dbMeta.icon;
         const dbIconEl = dbIconRaw ? (
           dbIconRaw.type === "url" ? (
-            // eslint-disable-next-line @next/next/no-img-element
             <img src={dbIconRaw.value} alt="" className="h-6 w-6 object-contain" />
           ) : (
             <span className="text-xl leading-none">{dbIconRaw.value}</span>

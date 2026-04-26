@@ -281,7 +281,7 @@ export async function fetchPageSpeedStrategyWithHint(
       ...init,
       signal: AbortSignal.timeout(perAttemptMs),
     };
-    let { result, apiSnippet } = await fetchPageSpeedOnce(url, key, strategy, merged);
+    const { result, apiSnippet } = await fetchPageSpeedOnce(url, key, strategy, merged);
     lastSnippet = apiSnippet;
     if (!result && apiSnippet && isGenericLighthouseFailure(apiSnippet)) {
       const degraded = await fetchPageSpeedOnce(url, key, strategy, merged, [
