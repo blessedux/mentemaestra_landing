@@ -1,7 +1,7 @@
+import type React from "react";
 import Link from "next/link";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 
 import { getDb, hasDatabase } from "@/lib/db";
 import { getAllowlistForProject, getProjectBySlug } from "@/lib/client-allowlist";
@@ -9,11 +9,17 @@ import { readPortalSession } from "@/lib/portal-access";
 import { getOnboardingSupportEmail } from "@/lib/onboarding-env";
 import { getGscCredential } from "@/lib/gsc-store";
 import { fetchGscDashboardData } from "@/lib/gsc-client";
+import PageSpeedInsightsCard from "@/components/analytics/PageSpeedInsightsCard";
+import {
+  fetchPageSpeedInsightsBundle,
+  isPageSpeedInsightsConfigured,
+} from "@/lib/pagespeed-insights";
 import { fetchVercelAnalyticsDashboard, isVercelAnalyticsConfigured } from "@/lib/vercel-analytics-client";
-import { isOpenAiConfigured } from "@/lib/seo-insights";
+import { isAnalyticsLlmConfigured } from "@/lib/analytics-llm";
 import GscDashboard from "@/components/gsc/GscDashboard";
-import SeoInsights, { SeoInsightsSkeleton } from "@/components/gsc/SeoInsights";
 import VercelAnalyticsDashboard from "@/components/analytics/VercelAnalyticsDashboard";
+import AnalyticsStrategy from "@/components/analytics/AnalyticsStrategy";
+import { StrategyBriefSkeleton } from "@/components/analytics/StrategyBriefCard";
 import PortalFooter from "@/components/notion/PortalFooter";
 import SignOutButton from "../SignOutButton";
 
@@ -26,8 +32,6 @@ export default async function ClientGscPage({ params }: PageProps) {
   const slug = rawSlug.toLowerCase();
   const supportEmail = getOnboardingSupportEmail();
   const clarityProjectId = process.env.CLARITY_PROJECT_ID?.trim();
-  const acceptLang = (await headers()).get("accept-language") ?? "";
-  const isSpanish = !acceptLang || /^es/i.test(acceptLang.split(",")[0].trim());
 
   if (!hasDatabase()) {
     return (
@@ -120,6 +124,12 @@ export default async function ClientGscPage({ params }: PageProps) {
     ? await fetchVercelAnalyticsDashboard(project.vercel_project_id, 28).catch(() => null)
     : null;
 
+  const siteUrl = project.client_website_url?.trim() ?? "";
+  const canPageSpeed = Boolean(siteUrl && isPageSpeedInsightsConfigured());
+  const pageSpeedData = canPageSpeed
+    ? await fetchPageSpeedInsightsBundle(siteUrl).catch(() => null)
+    : null;
+
   return (
     <main className="flex min-h-screen flex-col bg-[#0a0a0a] px-6 py-12 text-zinc-100">
       <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col">
@@ -147,103 +157,91 @@ export default async function ClientGscPage({ params }: PageProps) {
           ← Portal
         </Link>
 
-        {/* ── Section 1: Google Search Console ───────────────────────────── */}
+        {/* ── PageSpeed Insights (above GSC) ─────────────────────────────── */}
+        {canPageSpeed ? (
+          <section className="mb-10">
+            <SectionHeading
+              className="mb-5"
+              icon={<GaugeIcon className="h-4 w-4 text-zinc-500" />}
+              title="Rendimiento y accesibilidad"
+              tooltip="Google PageSpeed Insights (Lighthouse) en móvil y escritorio: miniaturas del render, rendimiento, accesibilidad, buenas prácticas y SEO técnico para la URL de tu sitio en el proyecto."
+            />
+            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5">
+              {pageSpeedData ? (
+                <PageSpeedInsightsCard data={pageSpeedData} slug={slug} />
+              ) : (
+                <p className="text-sm text-zinc-500">
+                  No pudimos obtener PageSpeed en este momento. Revisa que la
+                  API key tenga habilitada PageSpeed Insights y que la URL del
+                  sitio sea pública.
+                </p>
+              )}
+            </div>
+          </section>
+        ) : null}
+
+        {/* ── Google Search Console ───────────────────────────────────────── */}
         <section className="mb-10">
-          <div className="mb-5 flex items-center gap-3">
-            <SearchIcon className="h-4 w-4 text-zinc-500" />
-            <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400">
-              Google Search Console
-            </h2>
-          </div>
+          <SectionHeading
+            className="mb-5"
+            icon={<SearchIcon className="h-4 w-4 text-zinc-500" />}
+            title="Google Search Console"
+            tooltip="Rendimiento de tu sitio en búsquedas de Google: clics, impresiones, posición promedio y consultas principales del período seleccionado."
+          />
           <GscDashboard data={dashboardData} />
         </section>
 
-        {/* ── Section 2: AI SEO Insights (streamed) ──────────────────────── */}
-        {isOpenAiConfigured() && (
-          <section className="mb-10">
-            <div className="mb-5 flex items-center gap-3">
-              <SparklesIcon className="h-4 w-4 text-zinc-500" />
-              <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                Búsquedas en IA
-              </h2>
-              <span className="rounded-full border border-zinc-800 bg-zinc-900 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-zinc-500">
-                IA
-              </span>
-              <div className="group relative ml-0.5">
-                <button
-                  type="button"
-                  aria-label="Más información sobre Búsquedas en IA"
-                  className="flex h-4 w-4 items-center justify-center rounded-full border border-zinc-700 text-[10px] font-bold text-zinc-500 transition hover:border-zinc-500 hover:text-zinc-300"
-                >
-                  ?
-                </button>
-                <div className="pointer-events-none invisible absolute left-0 top-6 z-20 w-72 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100">
-                  <div className="rounded-xl border border-zinc-800 bg-zinc-950 p-4 text-xs leading-relaxed shadow-xl shadow-black/60">
-                    <p className="mb-2 font-semibold text-zinc-200">
-                      {isSpanish ? "¿Qué es esto?" : "What is this?"}
-                    </p>
-                    <p className="text-zinc-400">
-                      {isSpanish
-                        ? "GPT‑4o mini analiza tus datos reales de Google Search Console — clics, impresiones, CTR y posición promedio — y genera recomendaciones concretas para mejorar tu visibilidad en buscadores. Se actualiza una vez al día."
-                        : "GPT‑4o mini analyzes your real Google Search Console data — clicks, impressions, CTR, and average position — and produces actionable recommendations to improve your search engine visibility. Updated once per day."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <Suspense fallback={<SeoInsightsSkeleton />}>
-              <SeoInsights projectId={project.id} gscData={dashboardData} />
-            </Suspense>
-          </section>
-        )}
-
-        {/* ── Section 3: Portal traffic (Vercel Analytics) ───────────────── */}
+        {/* ── Portal traffic (Vercel Analytics) ───────────────────────────── */}
         {vercelData && (
           <section className="mb-10">
-            <div className="mb-5 flex items-center gap-3">
-              <BarChartIcon className="h-4 w-4 text-zinc-500" />
-              <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                Tráfico del sitio web
-              </h2>
-            </div>
+            <SectionHeading
+              className="mb-5"
+              icon={<BarChartIcon className="h-4 w-4 text-zinc-500" />}
+              title="Tráfico del sitio web"
+              tooltip="Visitantes únicos, páginas vistas, fuentes de tráfico, países y (si Vercel lo entrega) ciudades o regiones de los últimos 28 días."
+            />
             <VercelAnalyticsDashboard data={vercelData} />
           </section>
         )}
 
-        {/* ── Section 4: Heatmaps (Microsoft Clarity) ────────────────────── */}
+        {/* ── Section 4: Heatmaps ─────────────────────────────────────────── */}
         {clarityProjectId && (
           <section className="mb-10">
-            <div className="mb-5 flex items-center gap-3">
-              <HeatmapIcon className="h-4 w-4 text-zinc-500" />
-              <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400">
-                Heatmaps (Microsoft Clarity)
-              </h2>
-            </div>
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 text-sm text-zinc-300">
-              <p className="mb-3 text-zinc-300">
-                {isSpanish
-                  ? "Los heatmaps y grabaciones se ven en el panel de Microsoft Clarity (no dentro del portal)."
-                  : "Heatmaps and recordings are viewed in Microsoft Clarity (not inside this portal)."}
-              </p>
-              <div className="flex flex-wrap items-center gap-3">
-                <a
-                  href="https://clarity.microsoft.com/"
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center justify-center rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-zinc-200 transition hover:border-zinc-500"
-                >
-                  {isSpanish ? "Abrir Clarity" : "Open Clarity"}
-                </a>
-                <span className="rounded-full border border-zinc-800 bg-zinc-950 px-2 py-1 text-[11px] text-zinc-400">
-                  CLARITY_PROJECT_ID: <span className="font-mono text-zinc-200">{clarityProjectId}</span>
+            <SectionHeading
+              className="mb-5"
+              icon={<HeatmapIcon className="h-4 w-4 text-zinc-500" />}
+              title="Heatmaps"
+              tooltip="Grabaciones de sesiones y mapas de calor para entender cómo los usuarios interactúan con cada página."
+              badge={
+                <span className="rounded-full border border-zinc-800 bg-zinc-900 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-zinc-500">
+                  Próximamente
                 </span>
-              </div>
-              <p className="mt-3 text-xs text-zinc-500">
-                {isSpanish
-                  ? "Nota: puede tardar unos minutos y requiere tráfico real en el dominio desplegado para que aparezcan datos."
-                  : "Note: it can take a few minutes and requires real traffic on the deployed domain for data to appear."}
-              </p>
+              }
+            />
+            <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 text-sm text-zinc-500">
+              Grabaciones de sesiones y mapas de calor del sitio web.
+              Estarán disponibles directamente en este panel muy pronto.
             </div>
+          </section>
+        )}
+
+        {/* ── Section 5: Strategy ─────────────────────────────────────────── */}
+        {isAnalyticsLlmConfigured() && (
+          <section className="mb-10">
+            <SectionHeading
+              className="mb-5"
+              icon={<CompassIcon className="h-4 w-4 text-zinc-500" />}
+              title="Estrategia"
+              tooltip="El estratega de MenteMaestra analiza tus datos y genera sugerencias de SEO y marketing accionables. Haz clic en cualquier sugerencia para iniciar una conversación, afinar el plan y crear una tarea para que el equipo la implemente."
+            />
+            <Suspense fallback={<StrategyBriefSkeleton />}>
+              <AnalyticsStrategy
+                projectId={project.id}
+                slug={slug}
+                gscData={dashboardData}
+                vercelData={vercelData}
+              />
+            </Suspense>
           </section>
         )}
 
@@ -257,6 +255,46 @@ export default async function ClientGscPage({ params }: PageProps) {
   );
 }
 
+// ---------------------------------------------------------------------------
+// Section heading with CSS tooltip
+// ---------------------------------------------------------------------------
+
+function SectionHeading({
+  icon,
+  title,
+  tooltip,
+  badge,
+  className,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  tooltip: string;
+  badge?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={`flex items-center gap-3 ${className ?? ""}`}>
+      {/* Icon with tooltip on hover */}
+      <div className="group relative flex items-center">
+        <div className="cursor-help">{icon}</div>
+        {/* Tooltip */}
+        <div
+          role="tooltip"
+          className="pointer-events-none absolute bottom-full left-0 z-20 mb-2.5 w-72 rounded-xl border border-zinc-800 bg-zinc-950 px-3.5 py-3 text-[11px] leading-relaxed text-zinc-400 opacity-0 shadow-xl shadow-black/50 transition-opacity duration-150 group-hover:opacity-100"
+        >
+          {tooltip}
+          {/* Arrow */}
+          <span className="absolute -bottom-[5px] left-3 h-2.5 w-2.5 rotate-45 border-b border-r border-zinc-800 bg-zinc-950" />
+        </div>
+      </div>
+      <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-zinc-400">
+        {title}
+      </h2>
+      {badge}
+    </div>
+  );
+}
+
 function SearchIcon({ className }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
@@ -267,14 +305,6 @@ function SearchIcon({ className }: { className?: string }) {
   );
 }
 
-function SparklesIcon({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"
-      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
-      <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
-    </svg>
-  );
-}
 
 function BarChartIcon({ className }: { className?: string }) {
   return (
@@ -284,6 +314,43 @@ function BarChartIcon({ className }: { className?: string }) {
       <path d="M18 17V9" />
       <path d="M13 17V5" />
       <path d="M8 17v-3" />
+    </svg>
+  );
+}
+
+function GaugeIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <path d="M12 14v-3" />
+      <path d="M4.5 15.5A8 8 0 0 1 12 4a8 8 0 0 1 7.5 11.5" />
+      <path d="M12 14l3-2" />
+    </svg>
+  );
+}
+
+function CompassIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <circle cx="12" cy="12" r="10" />
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
     </svg>
   );
 }

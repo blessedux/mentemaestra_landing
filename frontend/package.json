@@ -17,6 +17,7 @@
     "test:run": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^3.0.53",
     "@fortawesome/fontawesome-svg-core": "^7.2.0",
     "@fortawesome/free-brands-svg-icons": "^7.2.0",
     "@fortawesome/react-fontawesome": "^3.3.0",
@@ -31,6 +32,7 @@
     "@supabase/supabase-js": "^2.104.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
+    "ai": "^6.0.168",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "gl-matrix": "^3.4.3",
@@ -42,7 +44,6 @@
     "luxon": "^3.7.2",
     "motion": "^12.38.0",
     "next": "15.3.7",
-    "openai": "^6.34.0",
     "postgres": "^3.4.9",
     "postprocessing": "4.5.0",
     "react": "^19.0.0",
@@ -55,6 +56,7 @@
     "three-r91": "npm:three@0.91.0",
     "three-stdlib": "^2.35.14",
     "tsdav": "^2.1.8",
+    "zod": "^4.3.6",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

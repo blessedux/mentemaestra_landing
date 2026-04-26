@@ -60,6 +60,16 @@ export type VercelCountryStat = {
   total: number;
 };
 
+export type VercelCityStat = {
+  city: string;
+  total: number;
+};
+
+export type VercelRegionStat = {
+  region: string;
+  total: number;
+};
+
 export type VercelDeviceStat = {
   device: string;
   total: number;
@@ -70,6 +80,10 @@ export type VercelAnalyticsDashboardData = {
   topPages: VercelPageStat[];
   topReferrers: VercelReferrerStat[];
   topCountries: VercelCountryStat[];
+  /** City names when Vercel returns them (often coarse; not barrio-level). */
+  topCities: VercelCityStat[];
+  /** Region/state codes when available. */
+  topRegions: VercelRegionStat[];
   devices: VercelDeviceStat[];
   dateRange: { start: string; end: string };
 };
@@ -134,41 +148,58 @@ export async function fetchVercelAnalyticsDashboard(
   const params = { from, to };
 
   // Vercel exposes insights at /web/insights — request overview + breakdowns in parallel.
-  const [stats, pagesBreakdown, referrersBreakdown, countriesBreakdown, devicesBreakdown] =
-    await Promise.all([
-      vercelGet<{
-        data?: {
-          pageViews?: { value?: number };
-          visitors?: { value?: number };
-          bounceRate?: { value?: number };
-          avgDuration?: { value?: number };
-        };
-        pageViews?: number;
-        visitors?: number;
-        bounceRate?: number;
-        avgDuration?: number;
-      }>(projectId, "/web/insights", params),
-      vercelGet<{ data?: { key: string; total: number }[] }>(
-        projectId,
-        "/web/insights/breakdown",
-        { ...params, key: "path" },
-      ),
-      vercelGet<{ data?: { key: string; total: number }[] }>(
-        projectId,
-        "/web/insights/breakdown",
-        { ...params, key: "referrer" },
-      ),
-      vercelGet<{ data?: { key: string; total: number }[] }>(
-        projectId,
-        "/web/insights/breakdown",
-        { ...params, key: "country" },
-      ),
-      vercelGet<{ data?: { key: string; total: number }[] }>(
-        projectId,
-        "/web/insights/breakdown",
-        { ...params, key: "device" },
-      ),
-    ]);
+  const [
+    stats,
+    pagesBreakdown,
+    referrersBreakdown,
+    countriesBreakdown,
+    citiesBreakdown,
+    regionsBreakdown,
+    devicesBreakdown,
+  ] = await Promise.all([
+    vercelGet<{
+      data?: {
+        pageViews?: { value?: number };
+        visitors?: { value?: number };
+        bounceRate?: { value?: number };
+        avgDuration?: { value?: number };
+      };
+      pageViews?: number;
+      visitors?: number;
+      bounceRate?: number;
+      avgDuration?: number;
+    }>(projectId, "/web/insights", params),
+    vercelGet<{ data?: { key: string; total: number }[] }>(
+      projectId,
+      "/web/insights/breakdown",
+      { ...params, key: "path" },
+    ),
+    vercelGet<{ data?: { key: string; total: number }[] }>(
+      projectId,
+      "/web/insights/breakdown",
+      { ...params, key: "referrer" },
+    ),
+    vercelGet<{ data?: { key: string; total: number }[] }>(
+      projectId,
+      "/web/insights/breakdown",
+      { ...params, key: "country" },
+    ),
+    vercelGet<{ data?: { key: string; total: number }[] }>(
+      projectId,
+      "/web/insights/breakdown",
+      { ...params, key: "city" },
+    ).catch(() => null),
+    vercelGet<{ data?: { key: string; total: number }[] }>(
+      projectId,
+      "/web/insights/breakdown",
+      { ...params, key: "region" },
+    ).catch(() => null),
+    vercelGet<{ data?: { key: string; total: number }[] }>(
+      projectId,
+      "/web/insights/breakdown",
+      { ...params, key: "device" },
+    ),
+  ]);
 
   if (!stats) return null;
 
@@ -204,6 +235,14 @@ export async function fetchVercelAnalyticsDashboard(
     topCountries: toList(countriesBreakdown)
       .slice(0, 8)
       .map((r) => ({ country: r.key, total: r.total })),
+    topCities: toList(citiesBreakdown)
+      .filter((r) => r.key?.trim())
+      .slice(0, 10)
+      .map((r) => ({ city: r.key, total: r.total })),
+    topRegions: toList(regionsBreakdown)
+      .filter((r) => r.key?.trim())
+      .slice(0, 10)
+      .map((r) => ({ region: r.key, total: r.total })),
     devices: toList(devicesBreakdown).map((r) => ({
       device: r.key || "Unknown",
       total: r.total,

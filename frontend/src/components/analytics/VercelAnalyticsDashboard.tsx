@@ -100,7 +100,16 @@ function MiniList({
 }
 
 export default function VercelAnalyticsDashboard({ data }: Props) {
-  const { overview, topPages, topReferrers, topCountries, devices, dateRange } = data;
+  const {
+    overview,
+    topPages,
+    topReferrers,
+    topCountries,
+    topCities,
+    topRegions,
+    devices,
+    dateRange,
+  } = data;
 
   return (
     <div className="space-y-6">
@@ -123,6 +132,15 @@ export default function VercelAnalyticsDashboard({ data }: Props) {
         <MetricCard label="Duración media" value={fmtDuration(overview.avgDurationSec)} />
       </div>
 
+      <p className="text-[11px] leading-relaxed text-zinc-600">
+        Origen geográfico según Vercel Web Analytics (país y, si el producto lo
+        expone, ciudad o región).{" "}
+        <span className="text-zinc-500">
+          No incluye barrio ni dirección: para eso haría falta otra herramienta
+          (p. ej. GA4 con exploración geográfica o datos propios server-side).
+        </span>
+      </p>
+
       {/* Breakdowns */}
       <div className="grid gap-4 sm:grid-cols-2">
         <MiniList
@@ -143,6 +161,22 @@ export default function VercelAnalyticsDashboard({ data }: Props) {
           labelKey="label"
           valueKey="value"
         />
+        {topCities.length > 0 ? (
+          <MiniList
+            title="Ciudades (cuando Vercel las reporta)"
+            rows={topCities.map((c) => ({ label: c.city, value: c.total }))}
+            labelKey="label"
+            valueKey="value"
+          />
+        ) : null}
+        {topRegions.length > 0 ? (
+          <MiniList
+            title="Regiones / estados"
+            rows={topRegions.map((c) => ({ label: c.region, value: c.total }))}
+            labelKey="label"
+            valueKey="value"
+          />
+        ) : null}
         <MiniList
           title="Dispositivos"
           rows={devices.map((d) => ({ label: d.device, value: d.total }))}
