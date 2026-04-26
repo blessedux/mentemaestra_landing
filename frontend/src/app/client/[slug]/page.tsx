@@ -10,8 +10,10 @@ import { resolveNotionContentMode } from "@/lib/notion-client";
 import NotionRowList from "@/components/notion/NotionRowList";
 import NotionPortalPage from "@/components/notion/NotionPortalPage";
 import PortalFooter from "@/components/notion/PortalFooter";
+import PortalNavBlocks from "@/components/portal/PortalNavBlocks";
 import { getOnboardingSupportEmail } from "@/lib/onboarding-env";
 import { readPortalSession } from "@/lib/portal-access";
+import { getGscStatus } from "@/lib/gsc-store";
 
 import SignOutButton from "./SignOutButton";
 
@@ -100,8 +102,11 @@ export default async function ClientDashboardPage({ params }: PageProps) {
     );
   }
 
-  // Detect whether notion_url is a database or a single page.
-  const notionMode = await resolveNotionContentMode(project.notion_url);
+  // Detect whether notion_url is a database or a single page, and fetch GSC status.
+  const [notionMode, gscStatus] = await Promise.all([
+    resolveNotionContentMode(project.notion_url),
+    getGscStatus(sql, project.id).catch(() => ({ connected: false as const })),
+  ]);
 
   return (
     <main className="flex min-h-screen flex-col bg-[#0a0a0a] px-6 py-12 text-zinc-100">
@@ -165,6 +170,8 @@ export default async function ClientDashboardPage({ params }: PageProps) {
             />
           </section>
         )}
+
+        <PortalNavBlocks slug={slug} gscConnected={gscStatus.connected} />
 
         <PortalFooter
           slug={slug}

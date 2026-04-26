@@ -8,6 +8,7 @@ import {
   listInvitesForProject,
 } from "@/lib/onboarding-invite-store";
 import { getOnboardingPublicBaseUrl } from "@/lib/onboarding-env";
+import { getGscStatus } from "@/lib/gsc-store";
 
 import ProjectDetailPanel from "./ProjectDetailPanel";
 import TeamMembersPanel from "./TeamMembersPanel";
@@ -49,8 +50,11 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const project = await getProjectWithClientById(sql, id);
   if (!project) notFound();
 
-  const invites = await listInvitesForProject(sql, project.id);
-  const submission = await getLatestSubmissionForProject(sql, project.id);
+  const [invites, submission, gscStatus] = await Promise.all([
+    listInvitesForProject(sql, project.id),
+    getLatestSubmissionForProject(sql, project.id),
+    getGscStatus(sql, project.id).catch(() => ({ connected: false as const })),
+  ]);
   const initialStakeholders = submission
     ? submission.stakeholders
         .map((s) => ({
@@ -117,6 +121,7 @@ export default async function ProjectDetailPage({ params }: PageProps) {
           clientName={project.client_name}
           portalLoginUrl={portalAbsoluteUrl}
           portalHref={portalHref}
+          gscStatus={gscStatus}
         />
 
         <div className="mt-10">

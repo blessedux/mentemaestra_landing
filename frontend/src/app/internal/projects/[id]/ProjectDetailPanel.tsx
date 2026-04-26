@@ -1,7 +1,19 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+
+type GscStatus =
+  | {
+      connected: true;
+      id: string;
+      property_url: string;
+      connected_email: string | null;
+      connected_at: string;
+    }
+  | { connected: false };
+
+type GscSite = { siteUrl: string; permissionLevel: string };
 
 type Props = {
   projectId: string;
@@ -21,12 +33,15 @@ type Props = {
   portalLoginUrl: string;
   /** Relative href for same-tab previews (`/client/slug`). */
   portalHref: string;
+  /** GSC connection status for this project, fetched server-side. */
+  gscStatus: GscStatus;
 };
 
-type ModalKind = "edit" | "delete" | null;
+type ModalKind = "edit" | "delete" | "gsc_select_property" | null;
 
 export default function ProjectDetailPanel(props: Props) {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const [notionUrl, setNotionUrl] = useState(props.defaultNotionUrl);
   const [sanity, setSanity] = useState(props.defaultSanityDataset);
@@ -55,6 +70,44 @@ export default function ProjectDetailPanel(props: Props) {
   const canDelete = deleteInput === props.projectName;
 
   const firstModalInputRef = useRef<HTMLInputElement | null>(null);
+
+  // ── GSC state ────────────────────────────────────────────────────────────
+  const [gscStatus, setGscStatus] = useState<GscStatus>(props.gscStatus);
+  const [gscConnecting, setGscConnecting] = useState(false);
+  const [gscDisconnecting, setGscDisconnecting] = useState(false);
+  const [gscError, setGscError] = useState<string | null>(null);
+  const [gscPendingCredId, setGscPendingCredId] = useState<string | null>(null);
+  const [gscSites, setGscSites] = useState<GscSite[]>([]);
+  const [gscSelectedProperty, setGscSelectedProperty] = useState<string>("");
+  const [gscSaving, setGscSaving] = useState(false);
+
+  // After OAuth callback, read gsc_pending_property + gsc_sites from URL.
+  useEffect(() => {
+    const pendingId = searchParams.get("gsc_pending_property");
+    const sitesRaw = searchParams.get("gsc_sites");
+    const oauthError = searchParams.get("gsc_error");
+
+    if (oauthError) {
+      setGscError(friendlyGscError(oauthError));
+      return;
+    }
+
+    if (pendingId) {
+      let sites: GscSite[] = [];
+      try {
+        sites = sitesRaw ? (JSON.parse(decodeURIComponent(sitesRaw)) as GscSite[]) : [];
+      } catch {}
+      setGscPendingCredId(pendingId);
+      setGscSites(sites);
+      setGscSelectedProperty(sites[0]?.siteUrl ?? "");
+      setModal("gsc_select_property");
+      // Clean up URL without re-fetching the page.
+      const clean = window.location.pathname;
+      window.history.replaceState({}, "", clean);
+    }
+  // Run once on mount.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Close the popover menu when clicking outside of it or pressing Escape.
   useEffect(() => {
@@ -253,6 +306,91 @@ export default function ProjectDetailPanel(props: Props) {
     }
   }
 
+  async function connectGsc() {
+    setGscError(null);
+    setGscConnecting(true);
+    try {
+      const res = await fetch(
+        `/api/internal/projects/${encodeURIComponent(props.projectId)}/gsc/start-oauth`,
+        { method: "POST" },
+      );
+      const json = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        error?: string;
+        authUrl?: string;
+      };
+      if (!res.ok || !json.ok || !json.authUrl) {
+        setGscError(friendlyGscError(json.error ?? "connect_failed"));
+        return;
+      }
+      // Full-page redirect to Google.
+      window.location.href = json.authUrl;
+    } catch {
+      setGscError(friendlyGscError("connect_failed"));
+    } finally {
+      setGscConnecting(false);
+    }
+  }
+
+  async function disconnectGsc() {
+    setGscError(null);
+    setGscDisconnecting(true);
+    try {
+      const res = await fetch(
+        `/api/internal/projects/${encodeURIComponent(props.projectId)}/gsc`,
+        { method: "DELETE" },
+      );
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !json.ok) {
+        setGscError(friendlyGscError(json.error ?? "disconnect_failed"));
+        return;
+      }
+      setGscStatus({ connected: false });
+    } catch {
+      setGscError(friendlyGscError("disconnect_failed"));
+    } finally {
+      setGscDisconnecting(false);
+    }
+  }
+
+  async function saveGscProperty() {
+    if (!gscPendingCredId || !gscSelectedProperty) return;
+    setGscError(null);
+    setGscSaving(true);
+    try {
+      const res = await fetch(
+        `/api/internal/projects/${encodeURIComponent(props.projectId)}/gsc/select-property`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            credential_id: gscPendingCredId,
+            property_url: gscSelectedProperty,
+          }),
+        },
+      );
+      const json = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
+      if (!res.ok || !json.ok) {
+        setGscError(friendlyGscError(json.error ?? "save_property_failed"));
+        setGscSaving(false);
+        return;
+      }
+      setGscStatus({
+        connected: true,
+        id: gscPendingCredId,
+        property_url: gscSelectedProperty,
+        connected_email: null,
+        connected_at: new Date().toISOString(),
+      });
+      setGscPendingCredId(null);
+      setModal(null);
+    } catch {
+      setGscError(friendlyGscError("save_property_failed"));
+    } finally {
+      setGscSaving(false);
+    }
+  }
+
   return (
     <div className="grid gap-6">
       <PortalLinkCard
@@ -411,6 +549,65 @@ export default function ProjectDetailPanel(props: Props) {
         </button>
       </section>
 
+      {/* ── Google Search Console section ──────────────────────────────────── */}
+      <section className="grid gap-4 rounded-xl border border-zinc-800 bg-zinc-950/60 p-5">
+        <div>
+          <h2 className="text-xs uppercase tracking-[0.14em] text-zinc-500">
+            Google Search Console
+          </h2>
+          <p className="mt-1 text-xs text-zinc-500">
+            Conecta una propiedad de GSC para mostrar analytics de búsqueda en
+            el portal del cliente.
+          </p>
+        </div>
+        {gscStatus.connected ? (
+          <div className="space-y-3">
+            <div className="flex items-start gap-3 rounded-lg border border-emerald-900/40 bg-emerald-950/20 px-4 py-3">
+              <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-emerald-400" />
+              <div className="min-w-0 text-xs leading-relaxed text-zinc-300">
+                <p className="font-medium text-emerald-200">Conectado</p>
+                <p className="truncate text-zinc-400">{gscStatus.property_url}</p>
+                {gscStatus.connected_email ? (
+                  <p className="text-zinc-500">Cuenta: {gscStatus.connected_email}</p>
+                ) : null}
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={connectGsc}
+                disabled={gscConnecting}
+                className="rounded-lg border border-zinc-700 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:bg-zinc-800 disabled:opacity-60"
+              >
+                {gscConnecting ? "Redirigiendo…" : "Reconectar"}
+              </button>
+              <button
+                type="button"
+                onClick={disconnectGsc}
+                disabled={gscDisconnecting}
+                className="rounded-lg border border-red-900/50 bg-transparent px-3 py-1.5 text-xs font-medium text-red-300 transition hover:bg-red-950/30 disabled:opacity-60"
+              >
+                {gscDisconnecting ? "Desconectando…" : "Desconectar"}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={connectGsc}
+            disabled={gscConnecting}
+            className="justify-self-start rounded-xl border border-[#c9a07a]/40 bg-gradient-to-b from-[#8f624c] to-[#6d4536] px-5 py-2 text-sm font-semibold text-[#faf7f5] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {gscConnecting ? "Redirigiendo a Google…" : "Conectar GSC"}
+          </button>
+        )}
+        {gscError ? (
+          <p className="text-xs text-red-300" role="alert">
+            {gscError}
+          </p>
+        ) : null}
+      </section>
+
       {message ? (
         <p className="text-sm text-emerald-300">{message}</p>
       ) : null}
@@ -418,6 +615,67 @@ export default function ProjectDetailPanel(props: Props) {
         <p className="text-sm text-red-300" role="alert">
           {friendlyError(error)}
         </p>
+      ) : null}
+
+      {modal === "gsc_select_property" ? (
+        <ModalShell
+          titleId="gsc-property-title"
+          onBackdrop={() => { if (!gscSaving) setModal(null); }}
+          accent="zinc"
+          icon={<SearchIcon className="h-4 w-4" />}
+          title="Seleccionar propiedad de GSC"
+          description="Elige cuál de las propiedades accesibles quieres vincular a este proyecto."
+        >
+          {gscSites.length === 0 ? (
+            <p className="text-sm text-zinc-400">
+              No se encontraron propiedades en la cuenta conectada. Asegúrate
+              de que la cuenta tiene acceso en Google Search Console.
+            </p>
+          ) : (
+            <div className="grid gap-2">
+              {gscSites.map((site) => (
+                <label
+                  key={site.siteUrl}
+                  className="flex cursor-pointer items-center gap-3 rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2 text-sm transition hover:bg-zinc-800 has-[:checked]:border-[#c9a07a]/60 has-[:checked]:bg-zinc-900"
+                >
+                  <input
+                    type="radio"
+                    name="gsc_property"
+                    value={site.siteUrl}
+                    checked={gscSelectedProperty === site.siteUrl}
+                    onChange={() => setGscSelectedProperty(site.siteUrl)}
+                    className="accent-[#c9a07a]"
+                  />
+                  <div className="min-w-0">
+                    <p className="truncate text-zinc-100">{site.siteUrl}</p>
+                    <p className="text-xs text-zinc-500">{site.permissionLevel}</p>
+                  </div>
+                </label>
+              ))}
+            </div>
+          )}
+          {gscError ? (
+            <p className="mt-3 text-xs text-red-300" role="alert">{gscError}</p>
+          ) : null}
+          <div className="mt-5 flex items-center justify-end gap-3">
+            <button
+              type="button"
+              onClick={() => setModal(null)}
+              disabled={gscSaving}
+              className="rounded-xl border border-zinc-700 bg-zinc-900 px-4 py-2 text-sm font-medium text-zinc-200 transition hover:bg-zinc-800 disabled:opacity-60"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              onClick={saveGscProperty}
+              disabled={gscSaving || !gscSelectedProperty}
+              className="rounded-xl border border-[#c9a07a]/40 bg-gradient-to-b from-[#8f624c] to-[#6d4536] px-4 py-2 text-sm font-semibold text-[#faf7f5] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {gscSaving ? "Guardando…" : "Vincular propiedad"}
+            </button>
+          </div>
+        </ModalShell>
       ) : null}
 
       {modal === "edit" ? (
@@ -771,6 +1029,49 @@ function TrashIcon({ className }: { className?: string }) {
       <path d="M14 11v6" />
     </svg>
   );
+}
+
+function SearchIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+    >
+      <circle cx="11" cy="11" r="8" />
+      <path d="M21 21l-4.35-4.35" />
+    </svg>
+  );
+}
+
+function friendlyGscError(code: string): string {
+  switch (code) {
+    case "gsc_not_configured":
+      return "GSC no está configurado. Define GSC_CLIENT_ID, GSC_CLIENT_SECRET y GSC_REDIRECT_URI.";
+    case "encryption_key_missing":
+      return "Falta GSC_TOKEN_ENCRYPTION_KEY. Genera uno con: openssl rand -hex 32.";
+    case "access_denied":
+    case "invalid_state":
+      return "La autorización fue cancelada o el enlace expiró. Intenta de nuevo.";
+    case "token_exchange_failed":
+      return "Error al canjear el código OAuth. Intenta reconectar.";
+    case "no_refresh_token":
+      return "Google no devolvió un refresh token. Revoca el acceso en tu cuenta Google y vuelve a conectar.";
+    case "save_failed":
+      return "No pudimos guardar las credenciales. Revisa la base de datos.";
+    case "not_connected":
+      return "Esta propiedad no está conectada.";
+    case "save_property_failed":
+      return "No pudimos guardar la propiedad seleccionada.";
+    case "connect_failed":
+    default:
+      return "No pudimos completar la acción. Intenta de nuevo.";
+  }
 }
 
 function friendlyError(code: string): string {

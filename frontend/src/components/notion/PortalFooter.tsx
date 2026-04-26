@@ -18,6 +18,14 @@ function profileHref(slug: string) {
   return `/client/${encodeURIComponent(slug)}/profile`;
 }
 
+function gscHref(slug: string) {
+  return `/client/${encodeURIComponent(slug)}/gsc`;
+}
+
+function ticketsHref(slug: string) {
+  return `/client/${encodeURIComponent(slug)}/tickets`;
+}
+
 function externalClientSiteHref(raw: string): string {
   const t = raw.trim();
   if (/^https?:\/\//i.test(t)) return t;
@@ -62,6 +70,12 @@ export default function PortalFooter({
         >
           <Link href={profileHref(slug)} className={linkClass}>
             Mi perfil
+          </Link>
+          <Link href={gscHref(slug)} className={linkClass}>
+            Analytics
+          </Link>
+          <Link href={ticketsHref(slug)} className={linkClass}>
+            Soporte
           </Link>
           <Link href={portalHref(slug)} className={linkClass}>
             Volver al portal

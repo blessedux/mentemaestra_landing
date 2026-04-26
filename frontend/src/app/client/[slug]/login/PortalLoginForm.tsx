@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type Props = {
   slug: string;
@@ -16,32 +16,38 @@ function submitOwningFormOnEnter(e: React.KeyboardEvent<HTMLInputElement>) {
 
 export default function PortalLoginForm({ slug }: Props) {
   const [email, setEmail] = useState("");
+  const [submittedEmail, setSubmittedEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const emailInputRef = useRef<HTMLInputElement | null>(null);
+
+  async function requestMagicLink(nextEmail: string) {
+    const res = await fetch(
+      `/api/client/${encodeURIComponent(slug)}/request-magic-link`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: nextEmail }),
+      },
+    );
+    const json = (await res.json().catch(() => ({}))) as { ok?: boolean };
+    if (!res.ok || !json.ok) {
+      throw new Error("request_failed");
+    }
+  }
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) return;
+
     setError(null);
     setLoading(true);
     try {
-      const res = await fetch(
-        `/api/client/${encodeURIComponent(slug)}/request-magic-link`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email: email.trim() }),
-        },
-      );
-      const json = (await res.json().catch(() => ({}))) as {
-        ok?: boolean;
-        message?: string;
-      };
-      if (!res.ok || !json.ok) {
-        setError("No pudimos completar la solicitud. Inténtalo más tarde.");
-        return;
-      }
+      await requestMagicLink(trimmedEmail);
+      setSubmittedEmail(trimmedEmail);
       setDone(true);
     } catch {
       setError("No pudimos completar la solicitud. Inténtalo más tarde.");
@@ -52,9 +58,40 @@ export default function PortalLoginForm({ slug }: Props) {
 
   if (done) {
     return (
-      <div className="rounded-xl border border-emerald-900/40 bg-emerald-950/25 px-4 py-3 text-sm text-emerald-100/95">
-        Si tu correo está autorizado para este proyecto, te enviamos un enlace
-        en unos minutos. Revisa la bandeja y el spam.
+      <div className="space-y-3 rounded-xl border border-emerald-900/40 bg-emerald-950/25 px-4 py-3 text-sm text-emerald-100/95">
+        <p>
+          Si tu correo está autorizado para este proyecto, te enviamos un enlace
+          a{" "}
+          <strong className="font-semibold text-emerald-50">
+            {submittedEmail ?? email.trim()}
+          </strong>{" "}
+          en unos minutos. Revisa la bandeja y el spam.
+        </p>
+        {error ? (
+          <p className="text-sm text-red-300" role="alert">
+            {error}
+          </p>
+        ) : null}
+        <button
+          type="button"
+          disabled={loading}
+          onClick={async () => {
+            const nextEmail = (submittedEmail ?? email.trim()).trim();
+            if (!nextEmail || loading) return;
+            setError(null);
+            setLoading(true);
+            try {
+              await requestMagicLink(nextEmail);
+            } catch {
+              setError("No pudimos completar la solicitud. Inténtalo más tarde.");
+            } finally {
+              setLoading(false);
+            }
+          }}
+          className="inline-flex items-center justify-center text-sm font-semibold text-[#c9a07a] underline underline-offset-4 transition hover:text-[#e2b48d] disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {loading ? "Enviando…" : "Enviar otro"}
+        </button>
       </div>
     );
   }
@@ -75,6 +112,7 @@ export default function PortalLoginForm({ slug }: Props) {
           autoComplete="email"
           enterKeyHint="send"
           required
+          ref={emailInputRef}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onKeyDown={submitOwningFormOnEnter}
