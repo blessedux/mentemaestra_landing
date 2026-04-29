@@ -32,14 +32,26 @@ const dmSans = DM_Sans({
 
 const SITE_URL = "https://mentemaestra.com";
 const OG_IMAGE = "/imgs/opengraph_static.png";
+const SITE_DESCRIPTION =
+  "Branding y diseño estratégico + desarrollo web para negocios en expansión. Convertimos tu marca en una experiencia premium que atrae, convence y vende.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "MenteMaestra Studio",
-  description: "Diseño, código y crecimiento para marcas que escalan.",
+  description: SITE_DESCRIPTION,
+  icons: {
+    icon: [
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/android-chrome-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/android-chrome-512x512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/favicon.ico"],
+  },
   openGraph: {
     title: "MenteMaestra Studio",
-    description: "Diseño, código y crecimiento para marcas que escalan.",
+    description: SITE_DESCRIPTION,
     url: SITE_URL,
     siteName: "MenteMaestra Studio",
     images: [{ url: OG_IMAGE, width: 1200, height: 630, alt: "MenteMaestra Studio" }],
@@ -49,7 +61,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "MenteMaestra Studio",
-    description: "Diseño, código y crecimiento para marcas que escalan.",
+    description: SITE_DESCRIPTION,
     images: [OG_IMAGE],
   },
 };
