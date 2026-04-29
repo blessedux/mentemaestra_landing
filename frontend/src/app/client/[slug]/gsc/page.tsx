@@ -121,14 +121,31 @@ export default async function ClientGscPage({ params }: PageProps) {
     );
   }
 
+  async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
+    let t: ReturnType<typeof setTimeout> | null = null;
+    try {
+      return await Promise.race([
+        p,
+        new Promise<null>((resolve) => {
+          t = setTimeout(() => resolve(null), ms);
+        }),
+      ]);
+    } finally {
+      if (t) clearTimeout(t);
+    }
+  }
+
   const vercelData = isVercelAnalyticsConfigured(project.vercel_project_id)
-    ? await fetchVercelAnalyticsDashboard(project.vercel_project_id, 28).catch(() => null)
+    ? await withTimeout(
+        fetchVercelAnalyticsDashboard(project.vercel_project_id, 28).catch(() => null),
+        8_000,
+      )
     : null;
 
   const siteUrl = project.client_website_url?.trim() ?? "";
   const canPageSpeed = Boolean(siteUrl && isPageSpeedInsightsConfigured());
   const pageSpeedData = canPageSpeed
-    ? await fetchPageSpeedInsightsBundle(siteUrl).catch(() => null)
+    ? await withTimeout(fetchPageSpeedInsightsBundle(siteUrl).catch(() => null), 15_000)
     : null;
 
   return (

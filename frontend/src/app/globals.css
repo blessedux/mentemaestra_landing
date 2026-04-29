@@ -327,18 +327,20 @@ html {
 /* Hero wordmark — add licensed .woff2 files under /public/fonts/ */
 @font-face {
   font-family: "Bootzy TM";
-  src: url("/fonts/bootzy.woff2") format("woff2");
+  src:
+    url("/fonts/BootzyTM.woff") format("woff"),
+    url("/fonts/BootzyTM.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 @font-face {
   font-family: "New Icon Script";
-  src: url("/fonts/new-icon-script.woff2") format("woff2");
+  src: url("/fonts/new-icon-script.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
-  font-display: block;
+  font-display: swap;
 }
 
 .parallax {

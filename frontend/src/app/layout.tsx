@@ -80,16 +80,16 @@ export default function RootLayout({
       <head>
         <link
           rel="preload"
-          href="/fonts/bootzy.woff2"
+          href="/fonts/BootzyTM.woff"
           as="font"
-          type="font/woff2"
+          type="font/woff"
           crossOrigin="anonymous"
         />
         <link
           rel="preload"
-          href="/fonts/new-icon-script.woff2"
+          href="/fonts/new-icon-script.otf"
           as="font"
-          type="font/woff2"
+          type="font/otf"
           crossOrigin="anonymous"
         />
       </head>
