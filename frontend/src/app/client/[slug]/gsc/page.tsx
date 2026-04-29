@@ -22,10 +22,193 @@ import AnalyticsStrategy from "@/components/analytics/AnalyticsStrategy";
 import { StrategyBriefSkeleton } from "@/components/analytics/StrategyBriefCard";
 import PortalFooter from "@/components/notion/PortalFooter";
 import SignOutButton from "../SignOutButton";
+import AdminReportsCard from "./AdminReportsCard";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = { params: Promise<{ slug: string }> };
+
+function GscSectionsSkeleton() {
+  return (
+    <div className="space-y-10">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <section key={i} className="mb-10">
+          <div className="mb-5 flex items-center gap-3">
+            <div className="h-4 w-4 animate-pulse rounded bg-zinc-800/70" />
+            <div className="h-4 w-60 animate-pulse rounded bg-zinc-900/70" />
+          </div>
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5">
+            <div className="space-y-3">
+              <div className="h-4 w-full animate-pulse rounded bg-zinc-900/70" />
+              <div className="h-4 w-5/6 animate-pulse rounded bg-zinc-900/70" />
+              <div className="h-4 w-4/6 animate-pulse rounded bg-zinc-900/70" />
+            </div>
+            <div className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+              {Array.from({ length: 4 }).map((__, j) => (
+                <div
+                  key={j}
+                  className="h-20 animate-pulse rounded-xl border border-zinc-800 bg-zinc-900/30"
+                />
+              ))}
+            </div>
+          </div>
+        </section>
+      ))}
+    </div>
+  );
+}
+
+async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
+  let t: ReturnType<typeof setTimeout> | null = null;
+  try {
+    return await Promise.race([
+      p,
+      new Promise<null>((resolve) => {
+        t = setTimeout(() => resolve(null), ms);
+      }),
+    ]);
+  } finally {
+    if (t) clearTimeout(t);
+  }
+}
+
+async function GscAnalyticsSections({
+  slug,
+  supportEmail,
+  clarityProjectId,
+  project,
+  cred,
+}: {
+  slug: string;
+  supportEmail: string;
+  clarityProjectId: string | undefined;
+  project: Awaited<ReturnType<typeof getProjectBySlug>>;
+  cred: NonNullable<Awaited<ReturnType<typeof getGscCredential>>>;
+}) {
+  let dashboardData;
+  try {
+    dashboardData = await fetchGscDashboardData(cred.refresh_token, cred.property_url);
+  } catch (err) {
+    console.warn("[client/gsc] fetchGscDashboardData failed", err);
+    return (
+      <section className="mb-10">
+        <div className="rounded-xl border border-amber-900/40 bg-amber-950/20 p-4 text-sm text-amber-200">
+          No pudimos cargar los datos de Google Search Console en este momento. Intenta recargar en unos minutos.
+          Si el problema persiste, escríbenos a <SupportLink email={supportEmail} />.
+        </div>
+        <Link
+          href={`/client/${encodeURIComponent(slug)}`}
+          className="mt-4 inline-flex items-center gap-1.5 text-sm text-zinc-400 transition hover:text-zinc-200"
+        >
+          ← Volver al portal
+        </Link>
+      </section>
+    );
+  }
+
+  const vercelData = isVercelAnalyticsConfigured(project?.vercel_project_id)
+    ? await withTimeout(
+        fetchVercelAnalyticsDashboard(project!.vercel_project_id!, 28).catch(() => null),
+        8_000,
+      )
+    : null;
+
+  const siteUrl = project?.client_website_url?.trim() ?? "";
+  const canPageSpeed = Boolean(siteUrl && isPageSpeedInsightsConfigured());
+  const pageSpeedData = canPageSpeed
+    ? await withTimeout(fetchPageSpeedInsightsBundle(siteUrl).catch(() => null), 15_000)
+    : null;
+
+  return (
+    <>
+      {/* ── PageSpeed Insights (above GSC) ─────────────────────────────── */}
+      {canPageSpeed ? (
+        <section className="mb-10">
+          <SectionHeading
+            className="mb-5"
+            icon={<GaugeIcon className="h-4 w-4 text-zinc-500" />}
+            title="Rendimiento y accesibilidad"
+            tooltip="Google PageSpeed Insights (Lighthouse) en móvil y escritorio: miniaturas del render, rendimiento, accesibilidad, buenas prácticas y SEO técnico para la URL de tu sitio en el proyecto."
+          />
+          <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5">
+            {pageSpeedData ? (
+              <PageSpeedInsightsCard data={pageSpeedData} slug={slug} />
+            ) : (
+              <p className="text-sm text-zinc-500">
+                No pudimos obtener PageSpeed en este momento. Revisa que la API key tenga habilitada PageSpeed Insights y que la URL del
+                sitio sea pública.
+              </p>
+            )}
+          </div>
+        </section>
+      ) : null}
+
+      {/* ── Google Search Console ───────────────────────────────────────── */}
+      <section className="mb-10">
+        <SectionHeading
+          className="mb-5"
+          icon={<SearchIcon className="h-4 w-4 text-zinc-500" />}
+          title="Google Search Console"
+          tooltip="Rendimiento de tu sitio en búsquedas de Google: clics, impresiones, posición promedio y consultas principales del período seleccionado."
+        />
+        <GscDashboard data={dashboardData} />
+      </section>
+
+      {/* ── Portal traffic (Vercel Analytics) ───────────────────────────── */}
+      {vercelData && (
+        <section className="mb-10">
+          <SectionHeading
+            className="mb-5"
+            icon={<BarChartIcon className="h-4 w-4 text-zinc-500" />}
+            title="Tráfico del sitio web"
+            tooltip="Visitantes únicos, páginas vistas, fuentes de tráfico, países y (si Vercel lo entrega) ciudades o regiones de los últimos 28 días."
+          />
+          <VercelAnalyticsDashboard data={vercelData} />
+        </section>
+      )}
+
+      {/* ── Section 4: Heatmaps ─────────────────────────────────────────── */}
+      {clarityProjectId && (
+        <section className="mb-10">
+          <SectionHeading
+            className="mb-5"
+            icon={<HeatmapIcon className="h-4 w-4 text-zinc-500" />}
+            title="Heatmaps"
+            tooltip="Grabaciones de sesiones y mapas de calor para entender cómo los usuarios interactúan con cada página."
+            badge={
+              <span className="rounded-full border border-zinc-800 bg-zinc-900 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-zinc-500">
+                Próximamente
+              </span>
+            }
+          />
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 text-sm text-zinc-500">
+            Grabaciones de sesiones y mapas de calor del sitio web. Estarán disponibles directamente en este panel muy pronto.
+          </div>
+        </section>
+      )}
+
+      {/* ── Section 5: Strategy ─────────────────────────────────────────── */}
+      {isAnalyticsLlmConfigured() && project ? (
+        <section className="mb-10">
+          <SectionHeading
+            className="mb-5"
+            icon={<CompassIcon className="h-4 w-4 text-zinc-500" />}
+            title="Estrategia"
+            tooltip="El estratega de MenteMaestra analiza tus datos y genera sugerencias de SEO y marketing accionables. Haz clic en cualquier sugerencia para iniciar una conversación, afinar el plan y crear una tarea para que el equipo la implemente."
+          />
+          <Suspense fallback={<StrategyBriefSkeleton />}>
+            <AnalyticsStrategy
+              projectId={project.id}
+              slug={slug}
+              gscData={dashboardData}
+              vercelData={vercelData}
+            />
+          </Suspense>
+        </section>
+      ) : null}
+    </>
+  );
+}
 
 export default async function ClientGscPage({ params }: PageProps) {
   const { slug: rawSlug } = await params;
@@ -98,56 +281,6 @@ export default async function ClientGscPage({ params }: PageProps) {
     );
   }
 
-  // Fetch GSC analytics + Vercel analytics in parallel.
-  let dashboardData;
-  try {
-    dashboardData = await fetchGscDashboardData(cred.refresh_token, cred.property_url);
-  } catch (err) {
-    console.error("[client/gsc] fetchGscDashboardData failed", err);
-    return (
-      <Shell slug={slug} title="Analytics de búsqueda">
-        <div className="rounded-xl border border-amber-900/40 bg-amber-950/20 p-4 text-sm text-amber-200">
-          No pudimos cargar los datos de Google Search Console en este momento.
-          Intenta recargar en unos minutos. Si el problema persiste, escríbenos
-          a <SupportLink email={supportEmail} />.
-        </div>
-        <Link
-          href={`/client/${encodeURIComponent(slug)}`}
-          className="inline-flex items-center gap-1.5 text-sm text-zinc-400 transition hover:text-zinc-200"
-        >
-          ← Volver al portal
-        </Link>
-      </Shell>
-    );
-  }
-
-  async function withTimeout<T>(p: Promise<T>, ms: number): Promise<T | null> {
-    let t: ReturnType<typeof setTimeout> | null = null;
-    try {
-      return await Promise.race([
-        p,
-        new Promise<null>((resolve) => {
-          t = setTimeout(() => resolve(null), ms);
-        }),
-      ]);
-    } finally {
-      if (t) clearTimeout(t);
-    }
-  }
-
-  const vercelData = isVercelAnalyticsConfigured(project.vercel_project_id)
-    ? await withTimeout(
-        fetchVercelAnalyticsDashboard(project.vercel_project_id, 28).catch(() => null),
-        8_000,
-      )
-    : null;
-
-  const siteUrl = project.client_website_url?.trim() ?? "";
-  const canPageSpeed = Boolean(siteUrl && isPageSpeedInsightsConfigured());
-  const pageSpeedData = canPageSpeed
-    ? await withTimeout(fetchPageSpeedInsightsBundle(siteUrl).catch(() => null), 15_000)
-    : null;
-
   return (
     <main className="flex min-h-screen flex-col bg-[#0a0a0a] px-6 py-12 text-zinc-100">
       <div className="mx-auto flex w-full max-w-4xl flex-1 flex-col">
@@ -176,92 +309,17 @@ export default async function ClientGscPage({ params }: PageProps) {
         </Link>
 
         {/* ── PageSpeed Insights (above GSC) ─────────────────────────────── */}
-        {canPageSpeed ? (
-          <section className="mb-10">
-            <SectionHeading
-              className="mb-5"
-              icon={<GaugeIcon className="h-4 w-4 text-zinc-500" />}
-              title="Rendimiento y accesibilidad"
-              tooltip="Google PageSpeed Insights (Lighthouse) en móvil y escritorio: miniaturas del render, rendimiento, accesibilidad, buenas prácticas y SEO técnico para la URL de tu sitio en el proyecto."
-            />
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-950/70 p-5">
-              {pageSpeedData ? (
-                <PageSpeedInsightsCard data={pageSpeedData} slug={slug} />
-              ) : (
-                <p className="text-sm text-zinc-500">
-                  No pudimos obtener PageSpeed en este momento. Revisa que la
-                  API key tenga habilitada PageSpeed Insights y que la URL del
-                  sitio sea pública.
-                </p>
-              )}
-            </div>
-          </section>
-        ) : null}
-
-        {/* ── Google Search Console ───────────────────────────────────────── */}
-        <section className="mb-10">
-          <SectionHeading
-            className="mb-5"
-            icon={<SearchIcon className="h-4 w-4 text-zinc-500" />}
-            title="Google Search Console"
-            tooltip="Rendimiento de tu sitio en búsquedas de Google: clics, impresiones, posición promedio y consultas principales del período seleccionado."
+        <Suspense fallback={<GscSectionsSkeleton />}>
+          <GscAnalyticsSections
+            slug={slug}
+            supportEmail={supportEmail}
+            clarityProjectId={clarityProjectId}
+            project={project}
+            cred={cred}
           />
-          <GscDashboard data={dashboardData} />
-        </section>
+        </Suspense>
 
-        {/* ── Portal traffic (Vercel Analytics) ───────────────────────────── */}
-        {vercelData && (
-          <section className="mb-10">
-            <SectionHeading
-              className="mb-5"
-              icon={<BarChartIcon className="h-4 w-4 text-zinc-500" />}
-              title="Tráfico del sitio web"
-              tooltip="Visitantes únicos, páginas vistas, fuentes de tráfico, países y (si Vercel lo entrega) ciudades o regiones de los últimos 28 días."
-            />
-            <VercelAnalyticsDashboard data={vercelData} />
-          </section>
-        )}
-
-        {/* ── Section 4: Heatmaps ─────────────────────────────────────────── */}
-        {clarityProjectId && (
-          <section className="mb-10">
-            <SectionHeading
-              className="mb-5"
-              icon={<HeatmapIcon className="h-4 w-4 text-zinc-500" />}
-              title="Heatmaps"
-              tooltip="Grabaciones de sesiones y mapas de calor para entender cómo los usuarios interactúan con cada página."
-              badge={
-                <span className="rounded-full border border-zinc-800 bg-zinc-900 px-2 py-0.5 text-[10px] uppercase tracking-[0.1em] text-zinc-500">
-                  Próximamente
-                </span>
-              }
-            />
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-5 text-sm text-zinc-500">
-              Grabaciones de sesiones y mapas de calor del sitio web.
-              Estarán disponibles directamente en este panel muy pronto.
-            </div>
-          </section>
-        )}
-
-        {/* ── Section 5: Strategy ─────────────────────────────────────────── */}
-        {isAnalyticsLlmConfigured() && (
-          <section className="mb-10">
-            <SectionHeading
-              className="mb-5"
-              icon={<CompassIcon className="h-4 w-4 text-zinc-500" />}
-              title="Estrategia"
-              tooltip="El estratega de MenteMaestra analiza tus datos y genera sugerencias de SEO y marketing accionables. Haz clic en cualquier sugerencia para iniciar una conversación, afinar el plan y crear una tarea para que el equipo la implemente."
-            />
-            <Suspense fallback={<StrategyBriefSkeleton />}>
-              <AnalyticsStrategy
-                projectId={project.id}
-                slug={slug}
-                gscData={dashboardData}
-                vercelData={vercelData}
-              />
-            </Suspense>
-          </section>
-        )}
+        {isAdmin ? <AdminReportsCard slug={slug} /> : null}
 
         <PortalFooter
           slug={slug}

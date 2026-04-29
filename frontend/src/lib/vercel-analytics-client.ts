@@ -114,13 +114,19 @@ async function vercelGet<T>(
 
     if (!res.ok) {
       const text = await res.text().catch(() => "");
-      console.error("[vercel-analytics] request failed", res.status, path, text);
+      // IMPORTANT: this module runs in Server Components. `console.error` here
+      // is surfaced as a hard error overlay in dev (intercept-console-error),
+      // which can "break" navigation to /gsc even though analytics is optional.
+      // Treat 404s (endpoint/project not available) as a normal "no data" case.
+      if (res.status === 404) return null;
+      // Soft-log other failures without throwing.
+      console.warn("[vercel-analytics] request failed", res.status, path, text);
       return null;
     }
 
     return (await res.json()) as T;
   } catch (err) {
-    console.error("[vercel-analytics] fetch threw", path, err);
+    console.warn("[vercel-analytics] fetch threw", path, err);
     return null;
   }
 }

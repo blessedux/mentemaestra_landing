@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <title>Reporte de SEO — MenteMaestra</title>
+    <style>
+      :root { color-scheme: dark; supported-color-schemes: dark; }
+      body { margin:0; padding:0; background:#0a0a0a; color:#e4e4e7; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; }
+      a { color:#c9a07a; text-decoration:none; }
+      .wrap { width:100%; background:#0a0a0a; padding:32px 12px; }
+      .card { max-width:680px; margin:0 auto; border:1px solid rgba(255,255,255,0.08); border-radius:18px; background:rgba(9,9,11,0.7); overflow:hidden; }
+      .pad { padding:26px 22px; }
+      .kicker { font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color:#a1a1aa; margin:0 0 10px; }
+      .h1 { font-size:24px; line-height:1.2; margin:0 0 6px; color:#fafafa; }
+      .sub { margin:0; color:#a1a1aa; font-size:13px; line-height:1.55; }
+      .grid { margin-top:18px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+      .stat { border:1px solid rgba(255,255,255,0.08); border-radius:14px; background:rgba(24,24,27,0.35); padding:12px 12px; }
+      .statLabel { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; color:#a1a1aa; margin:0 0 6px; }
+      .statValue { font-size:18px; font-weight:700; color:#fafafa; margin:0; }
+      .sectionTitle { margin:22px 0 10px; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:#a1a1aa; }
+      .box { border:1px solid rgba(255,255,255,0.08); border-radius:16px; background:rgba(24,24,27,0.25); padding:14px; }
+      .pill { display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid rgba(201,160,122,0.35); background:linear-gradient(180deg,#8f624c 0%,#6d4536 100%); color:#faf7f5; font-size:12px; font-weight:700; }
+      .row { display:flex; justify-content:space-between; gap:12px; margin-top:10px; }
+      .small { font-size:12px; color:#a1a1aa; line-height:1.55; margin:0; }
+      .table { width:100%; border-collapse:collapse; }
+      .th { text-align:left; font-size:10px; text-transform:uppercase; letter-spacing:0.14em; color:#a1a1aa; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.08); }
+      .td { font-size:12px; color:#e4e4e7; padding:10px 0; border-bottom:1px solid rgba(255,255,255,0.06); vertical-align:top; }
+      .muted { color:#a1a1aa; }
+      .btn { display:inline-block; padding:14px 18px; border-radius:14px; border:1px solid rgba(201,160,122,0.35); background:linear-gradient(180deg,#8f624c 0%,#6d4536 100%); color:#faf7f5 !important; font-weight:700; }
+      .footer { margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,0.08); font-size:11px; color:#71717a; line-height:1.55; }
+      @media (max-width: 640px) {
+        .grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="card">
+        <div class="pad">
+          <p class="kicker">MenteMaestra · Reporte SEO</p>
+          <h1 class="h1">{{{PROJECT_NAME}}}</h1>
+          <p class="sub">Período: <strong style="color:#e4e4e7">{{{DATE_RANGE}}}</strong> · Propiedad: <span class="muted">{{{GSC_PROPERTY}}}</span></p>
+
+          <div class="grid">
+            <div class="stat">
+              <p class="statLabel">Clics</p>
+              <p class="statValue">{{{TOTAL_CLICKS}}}</p>
+            </div>
+            <div class="stat">
+              <p class="statLabel">Impresiones</p>
+              <p class="statValue">{{{TOTAL_IMPRESSIONS}}}</p>
+            </div>
+            <div class="stat">
+              <p class="statLabel">CTR</p>
+              <p class="statValue">{{{AVG_CTR}}}</p>
+            </div>
+            <div class="stat">
+              <p class="statLabel">Posición</p>
+              <p class="statValue">{{{AVG_POSITION}}}</p>
+            </div>
+          </div>
+
+          <p class="sectionTitle">Tendencia (28 días)</p>
+          <div class="box">
+            {{{TREND_SVG}}}
+            <p class="small" style="margin-top:10px">Clics (línea clara) e impresiones (línea tenue). Útil para detectar caídas o picos.</p>
+          </div>
+
+          <p class="sectionTitle">Recomendación #1 (SEO)</p>
+          <div class="box">
+            <span class="pill">{{{SEO_IMPACT}}} impacto · {{{SEO_EFFORT}}} esfuerzo</span>
+            <p style="margin:10px 0 0; font-size:14px; line-height:1.55; color:#e4e4e7">
+              <strong>{{{SEO_ACTION}}}</strong>
+              <span class="muted">— objetivo:</span> {{{SEO_TARGET}}}
+            </p>
+            <div class="row" style="align-items:center">
+              <p class="small">Más detalles y contexto en el panel de Analytics.</p>
+              <a class="btn" href="{{{ANALYTICS_URL}}}" target="_blank" rel="noopener noreferrer">Ver Analytics</a>
+            </div>
+          </div>
+
+          <p class="sectionTitle">Top consultas</p>
+          <div class="box">
+            <table class="table" role="presentation">
+              <tr>
+                <th class="th">Consulta</th>
+                <th class="th" style="text-align:right">Clics</th>
+                <th class="th" style="text-align:right">CTR</th>
+                <th class="th" style="text-align:right">Pos.</th>
+              </tr>
+              {{{TOP_QUERIES_ROWS}}}
+            </table>
+          </div>
+
+          <p class="sectionTitle">Top páginas</p>
+          <div class="box">
+            <table class="table" role="presentation">
+              <tr>
+                <th class="th">Página</th>
+                <th class="th" style="text-align:right">Clics</th>
+                <th class="th" style="text-align:right">CTR</th>
+                <th class="th" style="text-align:right">Pos.</th>
+              </tr>
+              {{{TOP_PAGES_ROWS}}}
+            </table>
+          </div>
+
+          <div class="footer">
+            <p style="margin:0">Si tienes dudas, responde este correo o escríbenos a <a href="mailto:{{{SUPPORT_EMAIL}}}">{{{SUPPORT_EMAIL}}}</a>.</p>
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top:14px;">
+              <tr>
+                <td valign="middle" style="padding:0;">
+                  <a href="{{{CLIENT_WEBSITE_URL}}}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:8px;color:#c9a07a;text-decoration:none;font-weight:700;">
+                    <span aria-hidden="true" style="display:inline-block;width:18px;height:18px;line-height:0;">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10Z" stroke="rgba(201,160,122,0.95)" stroke-width="1.6"/>
+                        <path d="M2 12h20" stroke="rgba(201,160,122,0.95)" stroke-width="1.6"/>
+                        <path d="M12 2c2.8 3.1 4.3 6.5 4.3 10S14.8 18.9 12 22c-2.8-3.1-4.3-6.5-4.3-10S9.2 5.1 12 2Z" stroke="rgba(201,160,122,0.95)" stroke-width="1.6"/>
+                      </svg>
+                    </span>
+                    Sitio web
+                  </a>
+                </td>
+                <td align="right" valign="middle" style="padding:0;">
+                  <a class="btn" href="{{{PORTAL_URL}}}" target="_blank" rel="noopener noreferrer" style="padding:12px 16px;border-radius:12px;font-size:13px;">
+                    Mi portal
+                  </a>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+

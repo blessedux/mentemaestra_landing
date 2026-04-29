@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 import type {
   PageSpeedCategoryBundle,
@@ -16,7 +16,15 @@ type Props = {
 
 type StrategyKey = "mobile" | "desktop";
 
-const THUMB_HEIGHT_CLASS = "max-h-[68px]";
+/** Caps preview height on large screens so Lighthouse shots stay readable without dominating the card. */
+const THUMB_MAX_HEIGHT =
+  "max-h-[68px] sm:max-h-[84px] md:max-h-[108px] lg:max-h-[132px] xl:max-h-[156px] 2xl:max-h-[176px]";
+
+const THUMB_FRAME_MOBILE =
+  "aspect-[9/16] w-[38px] sm:w-[46px] md:w-[58px] lg:w-[72px] xl:w-[86px] 2xl:w-[96px]";
+
+const THUMB_FRAME_DESKTOP =
+  "aspect-[16/10] w-[76px] sm:w-[92px] md:w-[118px] lg:w-[146px] xl:w-[174px] 2xl:w-[196px]";
 
 const CATEGORY_ORDER: PageSpeedCategoryId[] = [
   "performance",
@@ -120,7 +128,7 @@ function PanelChevron({ expanded }: { expanded: boolean }) {
 }
 
 function SnapshotThumb({
-  label,
+  ariaLabel,
   strategy,
   active,
   src,
@@ -128,7 +136,7 @@ function SnapshotThumb({
   loading,
   disabled,
 }: {
-  label: string;
+  ariaLabel: string;
   strategy: StrategyKey;
   active: boolean;
   src: string | null;
@@ -142,8 +150,9 @@ function SnapshotThumb({
       type="button"
       onClick={onSelect}
       disabled={disabled}
+      aria-label={ariaLabel}
       aria-pressed={active}
-      className={`group flex flex-col items-center gap-1 rounded-lg border bg-zinc-950/70 p-1.5 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-45 ${
+      className={`group flex flex-col items-center gap-1 rounded-lg border bg-zinc-950/70 p-1.5 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-45 lg:p-2 ${
         active
           ? "border-zinc-500 ring-1 ring-zinc-500/40"
           : "border-zinc-800 hover:border-zinc-700"
@@ -151,10 +160,8 @@ function SnapshotThumb({
     >
       <div
         className={`relative overflow-hidden rounded-md bg-zinc-900 ${
-          isMobile
-            ? "aspect-[9/16] w-[38px] sm:w-[44px]"
-            : "aspect-[16/10] w-[76px] sm:w-[92px]"
-        } ${THUMB_HEIGHT_CLASS}`}
+          isMobile ? THUMB_FRAME_MOBILE : THUMB_FRAME_DESKTOP
+        } ${THUMB_MAX_HEIGHT}`}
       >
         {loading ? (
           <div className="flex h-full w-full items-center justify-center">
@@ -169,9 +176,6 @@ function SnapshotThumb({
           </div>
         )}
       </div>
-      <span className="text-[9px] uppercase tracking-[0.12em] text-zinc-500 group-hover:text-zinc-400">
-        {label}
-      </span>
     </button>
   );
 }
@@ -288,6 +292,10 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
     void loadDesktop();
   }, [loadDesktop]);
 
+  const selectMobile = useCallback(() => {
+    setStrategy("mobile");
+  }, []);
+
   const toggleCategory = useCallback((id: PageSpeedCategoryId) => {
     setExpandedCategory((prev) => (prev === id ? null : id));
   }, []);
@@ -325,85 +333,63 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
         </div>
       </div>
       <p className="text-[11px] leading-relaxed text-zinc-500">
-        Usa las pestañas para alternar entre móvil y escritorio. Toca cada
+        Toca la vista previa para alternar entre móvil y escritorio. Toca cada
         puntuación para ver el informe y los pasos sugeridos. Escritorio se
         ejecuta al elegirlo (puede tardar ~2 min).
       </p>
 
-      <div className="flex flex-wrap items-end gap-3">
-        <SnapshotThumb
-          label="Móvil"
-          strategy="mobile"
-          active={strategy === "mobile"}
-          src={mobile?.screenshotDataUrl ?? null}
-          onSelect={() => setStrategy("mobile")}
-          disabled={!mobile}
-        />
-        <SnapshotThumb
-          label="Escritorio"
-          strategy="desktop"
-          active={strategy === "desktop"}
-          src={desktop?.screenshotDataUrl ?? null}
-          onSelect={selectDesktop}
-          loading={strategy === "desktop" ? previewBusy : desktopLoading && !desktop}
-        />
+      <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-between sm:gap-5">
+        <div className="flex min-w-0 flex-1 flex-wrap content-end items-end gap-3 sm:flex-nowrap lg:gap-5">
+          <SnapshotThumb
+            ariaLabel="Vista previa móvil"
+            strategy="mobile"
+            active={strategy === "mobile"}
+            src={mobile?.screenshotDataUrl ?? null}
+            onSelect={selectMobile}
+            disabled={!mobile}
+          />
+          <SnapshotThumb
+            ariaLabel="Vista previa escritorio"
+            strategy="desktop"
+            active={strategy === "desktop"}
+            src={desktop?.screenshotDataUrl ?? null}
+            onSelect={selectDesktop}
+            loading={strategy === "desktop" ? previewBusy : desktopLoading && !desktop}
+          />
+        </div>
+
+        <aside className="flex min-h-0 w-full max-w-full min-w-0 shrink-0 flex-col gap-3 sm:max-w-[22rem] md:max-w-[24rem] sm:self-stretch">
+          {active ? (
+            <div className="rounded-lg border border-zinc-800/90 bg-zinc-900/30">
+              {CATEGORY_ORDER.map((id) => (
+                <ScoreRowExpandable
+                  key={id}
+                  label={CATEGORY_LABEL[id]}
+                  value={categoryScore(active, id)}
+                  expanded={expandedCategory === id}
+                  onToggle={() => toggleCategory(id)}
+                />
+              ))}
+            </div>
+          ) : strategy === "desktop" && desktopLoading ? null : (
+            <p className="text-xs text-zinc-500">No hay puntuaciones para este dispositivo.</p>
+          )}
+
+          {strategy === "desktop" && desktopError && !desktop ? (
+            <div className="rounded-lg border border-amber-900/35 bg-amber-950/15 px-3 py-2.5 text-[11px] text-amber-100/90">
+              <p>{desktopError}</p>
+              <button
+                type="button"
+                onClick={() => void loadDesktop()}
+                disabled={desktopLoading}
+                className="mt-2 text-[10px] font-medium uppercase tracking-[0.1em] text-amber-300 underline-offset-2 hover:underline disabled:pointer-events-none disabled:opacity-40"
+              >
+                Reintentar escritorio
+              </button>
+            </div>
+          ) : null}
+        </aside>
       </div>
-
-      <div
-        className="flex w-full rounded-lg border border-zinc-800 bg-zinc-900/40 p-0.5"
-        role="tablist"
-        aria-label="Dispositivo"
-      >
-        <TabButton
-          id="psi-mobile"
-          selected={strategy === "mobile"}
-          onClick={() => setStrategy("mobile")}
-          disabled={!mobile}
-          stretch
-        >
-          Móvil
-        </TabButton>
-        <TabButton
-          id="psi-desktop"
-          selected={strategy === "desktop"}
-          onClick={selectDesktop}
-          stretch
-        >
-          Escritorio
-        </TabButton>
-      </div>
-
-      <aside className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 self-start">
-        {active ? (
-          <div className="rounded-lg border border-zinc-800/90 bg-zinc-900/30">
-            {CATEGORY_ORDER.map((id) => (
-              <ScoreRowExpandable
-                key={id}
-                label={CATEGORY_LABEL[id]}
-                value={categoryScore(active, id)}
-                expanded={expandedCategory === id}
-                onToggle={() => toggleCategory(id)}
-              />
-            ))}
-          </div>
-        ) : strategy === "desktop" && desktopLoading ? null : (
-          <p className="text-xs text-zinc-500">No hay puntuaciones para este dispositivo.</p>
-        )}
-
-        {strategy === "desktop" && desktopError && !desktop ? (
-          <div className="rounded-lg border border-amber-900/35 bg-amber-950/15 px-3 py-2.5 text-[11px] text-amber-100/90">
-            <p>{desktopError}</p>
-            <button
-              type="button"
-              onClick={() => void loadDesktop()}
-              disabled={desktopLoading}
-              className="mt-2 text-[10px] font-medium uppercase tracking-[0.1em] text-amber-300 underline-offset-2 hover:underline disabled:pointer-events-none disabled:opacity-40"
-            >
-              Reintentar escritorio
-            </button>
-          </div>
-        ) : null}
-      </aside>
 
       {active && expandedCategory ? (
         <div
@@ -468,10 +454,10 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
             type="button"
             onClick={() => setBottomPanelOpen((o) => !o)}
             aria-expanded={bottomPanelOpen}
-            className="flex w-full items-center justify-center gap-2 border-t border-zinc-800/90 bg-zinc-950/50 py-2 text-[10px] font-medium uppercase tracking-[0.12em] text-zinc-400 transition hover:bg-zinc-900/60 hover:text-zinc-200"
+            aria-label={bottomPanelOpen ? "Contraer informe y pasos" : "Expandir informe y pasos"}
+            className="flex w-full items-center justify-center border-t border-zinc-800/90 bg-zinc-950/50 py-2 text-zinc-400 transition hover:bg-zinc-900/60 hover:text-zinc-200"
           >
             <PanelChevron expanded={bottomPanelOpen} />
-            {bottomPanelOpen ? "Contraer informe y pasos" : "Ver informe y pasos completos"}
           </button>
         </div>
       ) : active ? (
@@ -484,44 +470,5 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
         </div>
       ) : null}
     </div>
-  );
-}
-
-function TabButton({
-  id,
-  selected,
-  onClick,
-  disabled,
-  stretch,
-  children,
-}: {
-  id: string;
-  selected: boolean;
-  onClick: () => void;
-  disabled?: boolean;
-  /** Full-width segment next to a narrower preview (Móvil / Escritorio). */
-  stretch?: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <button
-      id={id}
-      type="button"
-      role="tab"
-      aria-selected={selected}
-      disabled={disabled}
-      onClick={onClick}
-      className={`rounded-md text-[11px] font-medium uppercase tracking-[0.08em] transition focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-40 ${
-        stretch
-          ? "flex min-h-[2.75rem] flex-1 basis-0 items-center justify-center px-2 py-2.5 sm:px-4"
-          : "px-3 py-1.5"
-      } ${
-        selected
-          ? "bg-zinc-800 text-zinc-100 shadow-sm"
-          : "text-zinc-500 hover:text-zinc-300"
-      }`}
-    >
-      {children}
-    </button>
   );
 }

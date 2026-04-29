@@ -102,6 +102,19 @@ export function Hero() {
       return undefined;
     }
 
+    // Mobile: keep the hero copy static. The one-swipe snap behavior on Home
+    // (see `HomeMobileSnap`) can fight a scrubbed fade/translate and make
+    // scrolling feel “sticky”/unnatural.
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const homeSnapEnabled =
+      document.documentElement.dataset.homeSnap === "true" ||
+      document.body.dataset.homeSnap === "true";
+    if (isCoarsePointer || homeSnapEnabled) {
+      gsap.set([heroCopy, heroCtaLayer], { y: 0, clearProps: "transform" });
+      gsap.set(heroScrollGroup, { opacity: 1, clearProps: "opacity" });
+      return undefined;
+    }
+
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       return undefined;
     }
