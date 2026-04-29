@@ -35,7 +35,6 @@ export const RESEND_ANALYTICS_REPORT_VARIABLE_KEYS = [
   "TOP_PAGES_ROWS",
   "ANALYTICS_URL",
   "PORTAL_URL",
-  "CLIENT_WEBSITE_URL",
   "SUPPORT_EMAIL",
 ] as const;
 
@@ -47,7 +46,6 @@ export type AnalyticsReportEmailVars = {
   supportEmail: string;
   analyticsUrl: string;
   portalUrl: string;
-  clientWebsiteUrl: string;
   gscProperty: string;
   gscData: GscDashboardData;
   strategy: AnalyticsStrategyResult;
@@ -157,7 +155,6 @@ export function buildResendAnalyticsReportVariables(
     TOP_PAGES_ROWS: buildTopRows("page", gscData),
     ANALYTICS_URL: vars.analyticsUrl,
     PORTAL_URL: vars.portalUrl,
-    CLIENT_WEBSITE_URL: vars.clientWebsiteUrl || vars.analyticsUrl,
     SUPPORT_EMAIL: vars.supportEmail,
   };
 }

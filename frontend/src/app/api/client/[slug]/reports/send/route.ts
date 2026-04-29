@@ -99,7 +99,6 @@ export async function POST(req: Request, { params }: Ctx) {
     supportEmail,
     analyticsUrl,
     portalUrl,
-    clientWebsiteUrl: project.client_website_url?.trim() ?? "",
     gscProperty: cred.property_url,
     gscData,
     strategy,

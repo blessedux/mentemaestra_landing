@@ -21,7 +21,6 @@ type ProjectSendTarget = {
   project_name: string;
   slug: string;
   admin_email: string | null;
-  client_website_url: string | null;
   gsc_property: string;
   gsc_refresh_token: string;
   vercel_project_id: string | null;
@@ -133,7 +132,6 @@ export async function GET(req: Request) {
            p.name AS project_name,
            p.slug AS slug,
            latest.admin_email AS admin_email,
-           p.client_website_url AS client_website_url,
            g.property_url AS gsc_property,
            g.refresh_token AS gsc_refresh_token,
            p.vercel_project_id::text AS vercel_project_id
@@ -185,7 +183,6 @@ export async function GET(req: Request) {
       supportEmail,
       analyticsUrl,
       portalUrl,
-      clientWebsiteUrl: (t.client_website_url ?? "").trim(),
       gscProperty: t.gsc_property,
       gscData,
       strategy,

@@ -44,7 +44,7 @@ export default function ReportsClient({ slug }: { slug: string }) {
   const [viewerError, setViewerError] = useState<string | null>(null);
   const [viewerDetail, setViewerDetail] = useState<ReportDetail | null>(null);
 
-  const canRetry = useMemo(() => !loading && !sending, [loading, sending]);
+  const canRetry = useMemo(() => !sending, [sending]);
 
   async function load() {
     setError(null);
@@ -52,6 +52,7 @@ export default function ReportsClient({ slug }: { slug: string }) {
     try {
       const res = await fetch(`/api/client/${encodeURIComponent(slug)}/reports/history`, {
         cache: "no-store",
+        credentials: "include",
       });
       const json = await res.json().catch(() => null);
       if (!res.ok || !json?.ok) throw new Error(json?.error ?? "load_failed");
@@ -70,6 +71,7 @@ export default function ReportsClient({ slug }: { slug: string }) {
     try {
       const res = await fetch(`/api/client/${encodeURIComponent(slug)}/reports/send`, {
         method: "POST",
+        credentials: "include",
       });
       const json = await res.json().catch(() => null);
       if (!res.ok || !json?.ok) {
@@ -104,7 +106,7 @@ export default function ReportsClient({ slug }: { slug: string }) {
     try {
       const res = await fetch(
         `/api/client/${encodeURIComponent(slug)}/reports/${encodeURIComponent(id)}`,
-        { cache: "no-store" },
+        { cache: "no-store", credentials: "include" },
       );
       const json = await res.json().catch(() => null);
       if (!res.ok || !json?.ok) throw new Error(json?.error ?? "load_failed");
@@ -140,15 +142,14 @@ export default function ReportsClient({ slug }: { slug: string }) {
         </p>
         <h1 className="text-2xl font-semibold text-zinc-50">Historial de reportes enviados</h1>
         <p className="mt-2 text-sm text-zinc-400">
-          Genera y envía reportes SEO desde aquí (operaciones). Programación objetivo: día 1 y 15 de
-          cada mes. Haz clic en un envío para ver el mismo HTML del correo y comparar fechas.
+          Genera y envía reportes SEO desde aquí (operaciones).
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={() => void sendNow()}
-            disabled={sending || loading}
+            disabled={sending}
             className="inline-flex items-center gap-2 rounded-xl border border-[#c9a07a]/40 bg-gradient-to-b from-[#8f624c] to-[#6d4536] px-4 py-2 text-xs font-semibold text-[#faf7f5] shadow-sm transition hover:brightness-110 disabled:opacity-60"
           >
             {sending ? "Enviando…" : "Enviar reporte ahora"}
