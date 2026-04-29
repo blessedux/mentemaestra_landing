@@ -117,6 +117,63 @@ function LenisGsapAndHashBridge() {
 
   React.useEffect(() => {
     if (!lenis) return;
+    const isCoarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    if (isCoarsePointer) return;
+
+    /**
+     * Trackpad momentum can keep firing wheel events after we've already hit the
+     * document edge. Lenis will happily keep accumulating a target scroll past
+     * the limit, which creates a "banked" distance you must scroll back before
+     * upward motion takes effect.
+     *
+     * Fix: when we're already at an edge and the wheel continues in the same
+     * direction, immediately clamp Lenis's internal target to the true limit
+     * and reset momentum so reversing direction is instant.
+     */
+    const onWheelCapture = (e: WheelEvent) => {
+      // Respect nested scroll areas / modal scroll panes.
+      const target = e.target;
+      if (target instanceof Element && target.closest("[data-lenis-prevent]")) {
+        return;
+      }
+
+      const maxScroll = Math.max(
+        0,
+        document.documentElement.scrollHeight - window.innerHeight,
+      );
+      const y = window.scrollY;
+      const atTop = y <= 0;
+      const atBottom = y >= maxScroll - 1;
+      const dy = e.deltaY;
+
+      const overscrollingTop = atTop && dy < 0;
+      const overscrollingBottom = atBottom && dy > 0;
+      if (!overscrollingTop && !overscrollingBottom) return;
+
+      // Clamp target + kill any carried momentum.
+      const clamped = overscrollingTop ? 0 : maxScroll;
+      lenis.stop();
+      lenis.scrollTo(clamped, { immediate: true });
+      lenis.start();
+
+      // Prevent Lenis (and the browser) from banking more delta at the edge.
+      e.preventDefault();
+      e.stopPropagation();
+      // Some listeners (including Lenis) are on the same target; stop them too.
+      (e as unknown as { stopImmediatePropagation?: () => void })
+        .stopImmediatePropagation?.();
+    };
+
+    window.addEventListener("wheel", onWheelCapture, {
+      passive: false,
+      capture: true,
+    });
+    return () =>
+      window.removeEventListener("wheel", onWheelCapture, { capture: true });
+  }, [lenis]);
+
+  React.useEffect(() => {
+    if (!lenis) return;
     const onClickCapture = (e: MouseEvent) => {
       if (e.button !== 0) return;
       if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;

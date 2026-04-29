@@ -89,7 +89,7 @@ export default function Footer() {
     >
       <ParallaxComponent>
         <div
-          className="relative mt-auto flex w-full justify-center px-5 pb-12 pt-20 sm:px-8 sm:pb-16 sm:pt-28 md:px-10"
+          className="relative flex w-full justify-center px-5 pb-12 pt-20 sm:px-8 sm:pb-16 sm:pt-28 md:px-10"
         >
           <div className="pointer-events-none absolute inset-0 z-0">
             {/* ── Mobile gradient (CSS-only, no WebGL) ───────────────────────

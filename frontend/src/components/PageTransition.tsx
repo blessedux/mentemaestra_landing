@@ -183,6 +183,15 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
     };
   }, [currentKey, phase, completeTransition, reducedMotion, variant]);
 
+  /** If RSC never completes (hung fetch), pathname may not update — avoid infinite loader. */
+  useEffect(() => {
+    if (phase !== "loader" || !pendingPathRef.current) return;
+    const id = window.setTimeout(() => {
+      void completeTransition();
+    }, 30_000);
+    return () => clearTimeout(id);
+  }, [phase, completeTransition]);
+
   const isHashOnlyOnSamePage = useCallback((url: URL) => {
     const cur = new URL(window.location.href);
     return url.pathname === cur.pathname && url.search === cur.search;
@@ -243,6 +252,14 @@ export function PageTransitionProvider({ children }: { children: ReactNode }) {
       }
       if (url.origin !== window.location.origin) return;
       if (isHashOnlyOnSamePage(url)) return;
+      // Portal: same-origin /client/… → /client/… should use default Next navigation.
+      // Custom transition + slow RSC (e.g. GSC) can leave the URL unchanged and trap the loader.
+      if (
+        window.location.pathname.startsWith("/client/") &&
+        url.pathname.startsWith("/client/")
+      ) {
+        return;
+      }
       const destKey = `${url.pathname}${url.search}`;
       const liveKey = `${window.location.pathname}${window.location.search}`;
       if (destKey === liveKey && !url.hash) return;

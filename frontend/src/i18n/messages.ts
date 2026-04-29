@@ -10,7 +10,7 @@ export const messages = {
       book: "Agenda",
       pricing: "Precios",
       faq: "FAQ",
-      cta: "Iniciar proyecto",
+      cta: "iniciar proyecto",
       speakToHuman: "Habla con un humano ahora",
       portalLogin: "Acceso al portal",
     },
@@ -482,7 +482,7 @@ export const messages = {
       ],
       subTagline:
         "El equilibrio entre alcance, velocidad y libertad para pausar cuando quieras.",
-      projectCta: "Iniciar proyecto",
+      projectCta: "iniciar proyecto",
       subCta: "Suscribirse",
       unlimitedTitle: "MenteMaestra Ilimitado",
       subscriptionTiers: [

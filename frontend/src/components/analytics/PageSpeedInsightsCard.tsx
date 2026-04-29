@@ -16,8 +16,7 @@ type Props = {
 
 type StrategyKey = "mobile" | "desktop";
 
-const PREVIEW_HEIGHT =
-  "h-[min(40dvh,450px)] min-h-[130px] max-h-[min(43dvh,460px)]";
+const THUMB_HEIGHT_CLASS = "max-h-[68px]";
 
 const CATEGORY_ORDER: PageSpeedCategoryId[] = [
   "performance",
@@ -120,6 +119,63 @@ function PanelChevron({ expanded }: { expanded: boolean }) {
   );
 }
 
+function SnapshotThumb({
+  label,
+  strategy,
+  active,
+  src,
+  onSelect,
+  loading,
+  disabled,
+}: {
+  label: string;
+  strategy: StrategyKey;
+  active: boolean;
+  src: string | null;
+  onSelect: () => void;
+  loading?: boolean;
+  disabled?: boolean;
+}) {
+  const isMobile = strategy === "mobile";
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      disabled={disabled}
+      aria-pressed={active}
+      className={`group flex flex-col items-center gap-1 rounded-lg border bg-zinc-950/70 p-1.5 text-left transition focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500 disabled:cursor-not-allowed disabled:opacity-45 ${
+        active
+          ? "border-zinc-500 ring-1 ring-zinc-500/40"
+          : "border-zinc-800 hover:border-zinc-700"
+      }`}
+    >
+      <div
+        className={`relative overflow-hidden rounded-md bg-zinc-900 ${
+          isMobile
+            ? "aspect-[9/16] w-[38px] sm:w-[44px]"
+            : "aspect-[16/10] w-[76px] sm:w-[92px]"
+        } ${THUMB_HEIGHT_CLASS}`}
+      >
+        {loading ? (
+          <div className="flex h-full w-full items-center justify-center">
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-600 border-t-zinc-300" />
+          </div>
+        ) : src ? (
+          // eslint-disable-next-line @next/next/no-img-element -- data URLs from Lighthouse
+          <img src={src} alt="" className="h-full w-full object-cover object-top" />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-[9px] text-zinc-600">
+            —
+          </div>
+        )}
+      </div>
+      <span className="text-[9px] uppercase tracking-[0.12em] text-zinc-500 group-hover:text-zinc-400">
+        {label}
+      </span>
+    </button>
+  );
+}
+
 function ScoreRowExpandable({
   label,
   value,
@@ -173,7 +229,6 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
   const mobile = data.mobile;
   const desktop = desktopLocal ?? data.desktop;
   const active = strategy === "mobile" ? mobile : desktop;
-  const previewSrc = active?.screenshotDataUrl ?? null;
   const previewBusy = strategy === "desktop" && desktopLoading && !desktop;
 
   const detailMap = useMemo(() => detailsFor(active), [active]);
@@ -270,10 +325,29 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
         </div>
       </div>
       <p className="text-[11px] leading-relaxed text-zinc-500">
-        Toca cada puntuación para abrir el panel inferior; usa el botón con
-        flecha para ver el informe completo y los pasos accionables. Escritorio
-        se carga al elegirlo (hasta ~2 min).
+        Usa las pestañas para alternar entre móvil y escritorio. Toca cada
+        puntuación para ver el informe y los pasos sugeridos. Escritorio se
+        ejecuta al elegirlo (puede tardar ~2 min).
       </p>
+
+      <div className="flex flex-wrap items-end gap-3">
+        <SnapshotThumb
+          label="Móvil"
+          strategy="mobile"
+          active={strategy === "mobile"}
+          src={mobile?.screenshotDataUrl ?? null}
+          onSelect={() => setStrategy("mobile")}
+          disabled={!mobile}
+        />
+        <SnapshotThumb
+          label="Escritorio"
+          strategy="desktop"
+          active={strategy === "desktop"}
+          src={desktop?.screenshotDataUrl ?? null}
+          onSelect={selectDesktop}
+          loading={strategy === "desktop" ? previewBusy : desktopLoading && !desktop}
+        />
+      </div>
 
       <div
         className="flex w-full rounded-lg border border-zinc-800 bg-zinc-900/40 p-0.5"
@@ -299,82 +373,37 @@ export default function PageSpeedInsightsCard({ data, slug }: Props) {
         </TabButton>
       </div>
 
-      <div className="flex min-h-0 flex-col gap-4 lg:flex-row lg:items-stretch lg:gap-5">
-        <div
-          className={`relative min-h-0 w-full shrink-0 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 lg:max-w-[min(22rem,48%)] xl:max-w-[min(24rem,44%)] ${PREVIEW_HEIGHT}`}
-        >
-          {previewBusy ? (
-            <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-zinc-900/80 p-6 text-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-zinc-600 border-t-zinc-300" />
-              <p className="text-xs text-zinc-500">
-                Ejecutando Lighthouse en escritorio…
-              </p>
-            </div>
-          ) : previewSrc ? (
-            <div
-              className={`flex h-full w-full items-start justify-center overflow-hidden ${
-                strategy === "mobile" ? "bg-zinc-950 px-4 py-2 sm:px-8" : "bg-zinc-950"
-              }`}
+      <aside className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 self-start">
+        {active ? (
+          <div className="rounded-lg border border-zinc-800/90 bg-zinc-900/30">
+            {CATEGORY_ORDER.map((id) => (
+              <ScoreRowExpandable
+                key={id}
+                label={CATEGORY_LABEL[id]}
+                value={categoryScore(active, id)}
+                expanded={expandedCategory === id}
+                onToggle={() => toggleCategory(id)}
+              />
+            ))}
+          </div>
+        ) : strategy === "desktop" && desktopLoading ? null : (
+          <p className="text-xs text-zinc-500">No hay puntuaciones para este dispositivo.</p>
+        )}
+
+        {strategy === "desktop" && desktopError && !desktop ? (
+          <div className="rounded-lg border border-amber-900/35 bg-amber-950/15 px-3 py-2.5 text-[11px] text-amber-100/90">
+            <p>{desktopError}</p>
+            <button
+              type="button"
+              onClick={() => void loadDesktop()}
+              disabled={desktopLoading}
+              className="mt-2 text-[10px] font-medium uppercase tracking-[0.1em] text-amber-300 underline-offset-2 hover:underline disabled:pointer-events-none disabled:opacity-40"
             >
-              <div
-                className={
-                  strategy === "mobile"
-                    ? "h-full max-h-full w-[min(176px,26vw)] shrink-0 overflow-hidden rounded-lg border border-zinc-700/70 bg-zinc-900/90 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.35)]"
-                    : "h-full w-full"
-                }
-              >
-                <img
-                  src={previewSrc}
-                  alt={`Vista previa ${strategy === "mobile" ? "móvil" : "escritorio"}`}
-                  className={
-                    strategy === "mobile"
-                      ? "h-full w-full object-cover object-top"
-                      : "h-full w-full object-contain object-top"
-                  }
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-zinc-500">
-              Sin vista previa para este dispositivo.
-            </div>
-          )}
-        </div>
-
-        <aside className="flex min-h-0 min-w-0 flex-1 flex-col gap-3 self-start lg:min-w-[12rem]">
-          {active ? (
-            <div className="rounded-lg border border-zinc-800/90 bg-zinc-900/30">
-              {CATEGORY_ORDER.map((id) => (
-                <ScoreRowExpandable
-                  key={id}
-                  label={CATEGORY_LABEL[id]}
-                  value={categoryScore(active, id)}
-                  expanded={expandedCategory === id}
-                  onToggle={() => toggleCategory(id)}
-                />
-              ))}
-            </div>
-          ) : strategy === "desktop" && desktopLoading ? null : (
-            <p className="text-xs text-zinc-500">
-              No hay puntuaciones para este dispositivo.
-            </p>
-          )}
-
-          {strategy === "desktop" && desktopError && !desktop ? (
-            <div className="rounded-lg border border-amber-900/35 bg-amber-950/15 px-3 py-2.5 text-[11px] text-amber-100/90">
-              <p>{desktopError}</p>
-              <button
-                type="button"
-                onClick={() => void loadDesktop()}
-                disabled={desktopLoading}
-                className="mt-2 text-[10px] font-medium uppercase tracking-[0.1em] text-amber-300 underline-offset-2 hover:underline disabled:pointer-events-none disabled:opacity-40"
-              >
-                Reintentar escritorio
-              </button>
-            </div>
-          ) : null}
-        </aside>
-      </div>
+              Reintentar escritorio
+            </button>
+          </div>
+        ) : null}
+      </aside>
 
       {active && expandedCategory ? (
         <div

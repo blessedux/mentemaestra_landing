@@ -24,6 +24,18 @@ const COOKIE_NAME = "mm_portal_session";
 const ACCESS_MAX_AGE_SECONDS = 60 * 60 * 24 * 90; // welcome-link validity: 90d
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30; // cookie validity: 30d
 
+/**
+ * Optional cookie domain (e.g. ".mentemaestra.studio") so the session survives
+ * apex ↔ www ↔ other subdomain hops in production.
+ *
+ * Leave unset for localhost / preview deployments.
+ */
+export function portalSessionCookieDomain(): string | undefined {
+  const raw = process.env.PORTAL_SESSION_COOKIE_DOMAIN?.trim();
+  if (!raw) return undefined;
+  return raw;
+}
+
 function base64urlEncode(buf: Buffer): string {
   return buf
     .toString("base64")
@@ -187,14 +199,17 @@ function buildPortalSessionCookieValue(slug: string, email: string): {
     httpOnly: boolean;
     sameSite: "lax";
     secure: boolean;
+    domain?: string;
     path: string;
     maxAge: number;
+    expires: Date;
   };
 } {
+  const now = Math.floor(Date.now() / 1000);
   const sess: PortalSession = {
     slug: slug.toLowerCase(),
     email: email.toLowerCase(),
-    exp: Math.floor(Date.now() / 1000) + SESSION_MAX_AGE_SECONDS,
+    exp: now + SESSION_MAX_AGE_SECONDS,
   };
   return {
     name: COOKIE_NAME,
@@ -203,8 +218,12 @@ function buildPortalSessionCookieValue(slug: string, email: string): {
       httpOnly: true,
       sameSite: "lax",
       secure: portalSessionCookieSecure(),
+      domain: portalSessionCookieDomain(),
       path: "/",
       maxAge: SESSION_MAX_AGE_SECONDS,
+      // Some browsers are pickier about persistence when only `maxAge` is set.
+      // We set both to maximize long-lived session behavior.
+      expires: new Date((now + SESSION_MAX_AGE_SECONDS) * 1000),
     },
   };
 }
@@ -230,8 +249,10 @@ export function applyClearPortalSessionCookie(res: NextResponse): void {
     httpOnly: true,
     sameSite: "lax",
     secure,
+    domain: portalSessionCookieDomain(),
     path: "/",
     maxAge: 0,
+    expires: new Date(0),
   });
 }
 

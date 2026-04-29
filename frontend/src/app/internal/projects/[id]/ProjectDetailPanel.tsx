@@ -1070,7 +1070,7 @@ function SearchIcon({ className }: { className?: string }) {
 function friendlyGscError(code: string): string {
   switch (code) {
     case "gsc_not_configured":
-      return "GSC no está configurado. Define GSC_CLIENT_ID, GSC_CLIENT_SECRET y GSC_REDIRECT_URI.";
+      return "GSC no está configurado. Define GSC_CLIENT_ID y GSC_CLIENT_SECRET (y opcionalmente GSC_REDIRECT_URI u ONBOARDING_PUBLIC_BASE_URL).";
     case "encryption_key_missing":
       return "Falta GSC_TOKEN_ENCRYPTION_KEY. Genera uno con: openssl rand -hex 32.";
     case "access_denied":

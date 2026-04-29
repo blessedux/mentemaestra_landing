@@ -7,12 +7,34 @@ import "server-only";
  *   1. Google Cloud Console → APIs & Services → Credentials → Create OAuth 2.0 Client ID (Web application)
  *   2. Add authorized redirect URI: <ONBOARDING_PUBLIC_BASE_URL>/api/internal/gsc/oauth/callback
  *   3. Enable "Google Search Console API" in the project's APIs library.
- *   4. Set env vars: GSC_CLIENT_ID, GSC_CLIENT_SECRET, GSC_REDIRECT_URI (full URL to the callback route).
+ *   4. Set env vars: GSC_CLIENT_ID, GSC_CLIENT_SECRET.
+ *      Optional: GSC_REDIRECT_URI (full URL to the callback route). If unset, we derive it from
+ *      ONBOARDING_PUBLIC_BASE_URL (or its fallback) + `/api/internal/gsc/oauth/callback`.
  */
+
+import { getOnboardingPublicBaseUrl } from "@/lib/onboarding-env";
 
 const GSC_API_BASE = "https://www.googleapis.com";
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const REVOKE_URL = "https://oauth2.googleapis.com/revoke";
+
+const GSC_FETCH_TIMEOUT_MS = 25_000;
+
+/**
+ * Unbounded `fetch` to Google can hang the portal `/gsc` RSC; always time out.
+ */
+function fetchWithTimeout(
+  input: string | URL | Request,
+  init: RequestInit = {},
+  timeoutMs = GSC_FETCH_TIMEOUT_MS,
+): Promise<Response> {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  return fetch(input, { ...init, signal: ctrl.signal })
+    .finally(() => {
+      clearTimeout(t);
+    });
+}
 
 // ---------------------------------------------------------------------------
 // Env helpers
@@ -27,7 +49,9 @@ export function getGscClientSecret(): string | null {
 }
 
 export function getGscRedirectUri(): string | null {
-  return process.env.GSC_REDIRECT_URI?.trim() || null;
+  const explicit = process.env.GSC_REDIRECT_URI?.trim();
+  if (explicit) return explicit;
+  return `${getOnboardingPublicBaseUrl()}/api/internal/gsc/oauth/callback`;
 }
 
 export function isGscConfigured(): boolean {
@@ -69,7 +93,7 @@ export type TokenResponse = {
 export async function exchangeCodeForTokens(
   code: string,
 ): Promise<TokenResponse> {
-  const res = await fetch(TOKEN_URL, {
+  const res = await fetchWithTimeout(TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -93,7 +117,7 @@ export async function exchangeCodeForTokens(
 export async function refreshAccessToken(
   refreshToken: string,
 ): Promise<{ access_token: string; expires_in: number }> {
-  const res = await fetch(TOKEN_URL, {
+  const res = await fetchWithTimeout(TOKEN_URL, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: new URLSearchParams({
@@ -137,7 +161,7 @@ export type GscSite = {
  * Lists all GSC properties accessible to the authorized Google account.
  */
 export async function listGscSites(accessToken: string): Promise<GscSite[]> {
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `${GSC_API_BASE}/webmasters/v3/sites`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -173,7 +197,7 @@ async function searchAnalyticsQuery(
   propertyUrl: string,
   body: Record<string, unknown>,
 ): Promise<SearchAnalyticsResult> {
-  const res = await fetch(
+  const res = await fetchWithTimeout(
     `${GSC_API_BASE}/webmasters/v3/sites/${encodeURIComponent(propertyUrl)}/searchAnalytics/query`,
     {
       method: "POST",
