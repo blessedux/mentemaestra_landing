@@ -168,7 +168,6 @@ function SnapshotThumb({
             <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-600 border-t-zinc-300" />
           </div>
         ) : src ? (
-          // eslint-disable-next-line @next/next/no-img-element -- data URLs from Lighthouse
           <img src={src} alt="" className="h-full w-full object-cover object-top" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-[9px] text-zinc-600">

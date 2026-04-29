@@ -110,21 +110,27 @@ function buildTrendSvg(data: GscDashboardData): string {
 </svg>`.trim();
 }
 
-function buildTopRows(
-  kind: "query" | "page",
-  data: GscDashboardData,
-): string {
-  const rows = kind === "query" ? data.topQueries : data.topPages;
-  return rows.slice(0, 8).map((r) => {
-    const label = kind === "query" ? (r as any).query : (r as any).page;
-    return `
+function rowHtml(label: string, clicks: number, ctr: number, position: number): string {
+  return `
 <tr>
-  <td class="td">${escHtml(String(label))}</td>
-  <td class="td" style="text-align:right">${Number(r.clicks).toLocaleString("es-CL")}</td>
-  <td class="td" style="text-align:right">${fmtPct(Number(r.ctr))}</td>
-  <td class="td" style="text-align:right">${fmtPos(Number(r.position))}</td>
+  <td class="td">${escHtml(label)}</td>
+  <td class="td" style="text-align:right">${Number(clicks).toLocaleString("es-CL")}</td>
+  <td class="td" style="text-align:right">${fmtPct(Number(ctr))}</td>
+  <td class="td" style="text-align:right">${fmtPos(Number(position))}</td>
 </tr>`.trim();
-  }).join("");
+}
+
+function buildTopRows(kind: "query" | "page", data: GscDashboardData): string {
+  if (kind === "query") {
+    return data.topQueries
+      .slice(0, 8)
+      .map((r) => rowHtml(r.query, r.clicks, r.ctr, r.position))
+      .join("");
+  }
+  return data.topPages
+    .slice(0, 8)
+    .map((r) => rowHtml(r.page, r.clicks, r.ctr, r.position))
+    .join("");
 }
 
 export function buildResendAnalyticsReportVariables(
