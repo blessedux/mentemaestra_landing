@@ -29,6 +29,7 @@ export default async function ClientProfilePage({ params }: PageProps) {
   if (!session || session.slug !== slug) {
     redirect(`/client/${encodeURIComponent(slug)}/login?reason=no_session`);
   }
+  const isAdmin = session.admin === true;
 
   const sql = getDb();
   if (!sql) {
@@ -41,7 +42,7 @@ export default async function ClientProfilePage({ params }: PageProps) {
   }
 
   const allow = await getAllowlistForProject(sql, project.id);
-  if (!allow.ready || !allow.emails.includes(session.email)) {
+  if (!isAdmin && (!allow.ready || !allow.emails.includes(session.email))) {
     redirect(`/client/${encodeURIComponent(slug)}/login?reason=no_session`);
   }
 

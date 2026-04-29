@@ -43,6 +43,7 @@ export default async function ClientDashboardPage({ params }: PageProps) {
   if (!session || session.slug !== slug) {
     redirect(`/client/${encodeURIComponent(slug)}/login?reason=no_session`);
   }
+  const isAdmin = session.admin === true;
 
   const sql = getDb();
   if (!sql) {
@@ -77,7 +78,7 @@ export default async function ClientDashboardPage({ params }: PageProps) {
   // from the operator panel locks them out immediately, even if their
   // cookie hasn't expired.
   const allow = await getAllowlistForProject(sql, project.id);
-  if (!allow.ready) {
+  if (!allow.ready && !isAdmin) {
     return (
       <Shell title="Portal aún no disponible">
         <p className="text-sm text-zinc-300">
@@ -89,7 +90,7 @@ export default async function ClientDashboardPage({ params }: PageProps) {
     );
   }
 
-  if (!allow.emails.includes(session.email)) {
+  if (!isAdmin && !allow.emails.includes(session.email)) {
     return (
       <Shell title="Acceso revocado">
         <p className="text-sm text-zinc-300">

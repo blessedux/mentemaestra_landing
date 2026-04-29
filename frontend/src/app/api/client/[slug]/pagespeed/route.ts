@@ -25,6 +25,7 @@ export async function GET(req: Request, { params }: RouteParams) {
   if (!session || session.slug !== slug) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
+  const isAdmin = session.admin === true;
 
   if (!hasDatabase()) {
     return Response.json({ error: "no_database" }, { status: 503 });
@@ -52,7 +53,7 @@ export async function GET(req: Request, { params }: RouteParams) {
   }
 
   const allow = await getAllowlistForProject(sql, project.id);
-  if (!allow.ready || !allow.emails.includes(session.email)) {
+  if (!isAdmin && (!allow.ready || !allow.emails.includes(session.email))) {
     return Response.json({ error: "forbidden" }, { status: 403 });
   }
 

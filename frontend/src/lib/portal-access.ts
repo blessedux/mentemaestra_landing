@@ -146,6 +146,8 @@ export type PortalSession = {
   slug: string;
   email: string;
   exp: number;
+  /** Internal operator session (minted via /api/internal/*). Bypasses allowlist checks. */
+  admin?: boolean;
 };
 
 function signSessionValue(sess: PortalSession): string {
@@ -169,11 +171,15 @@ function parseSessionValue(raw: string): PortalSession | null {
     ) {
       return null;
     }
+    if (typeof decoded.admin !== "undefined" && typeof decoded.admin !== "boolean") {
+      return null;
+    }
     if (decoded.exp < Math.floor(Date.now() / 1000)) return null;
     return {
       slug: decoded.slug.toLowerCase(),
       email: decoded.email.toLowerCase(),
       exp: decoded.exp,
+      admin: decoded.admin === true ? true : undefined,
     };
   } catch {
     return null;
@@ -192,7 +198,11 @@ export function portalSessionCookieSecure(): boolean {
   return process.env.NODE_ENV === "production";
 }
 
-function buildPortalSessionCookieValue(slug: string, email: string): {
+function buildPortalSessionCookieValue(
+  slug: string,
+  email: string,
+  opts: { admin?: boolean } = {},
+): {
   name: string;
   value: string;
   options: {
@@ -210,6 +220,7 @@ function buildPortalSessionCookieValue(slug: string, email: string): {
     slug: slug.toLowerCase(),
     email: email.toLowerCase(),
     exp: now + SESSION_MAX_AGE_SECONDS,
+    admin: opts.admin === true ? true : undefined,
   };
   return {
     name: COOKIE_NAME,
@@ -239,6 +250,23 @@ export function applyPortalSessionCookie(
   email: string,
 ): void {
   const { name, value, options } = buildPortalSessionCookieValue(slug, email);
+  res.cookies.set(name, value, options);
+}
+
+export function getPortalAdminEmail(): string {
+  return (process.env.PORTAL_ADMIN_EMAIL?.trim() || "admin@mentemaestra.studio").toLowerCase();
+}
+
+/** Internal-only: mint a session that bypasses allowlist checks. */
+export function applyAdminPortalSessionCookie(
+  res: NextResponse,
+  slug: string,
+): void {
+  const { name, value, options } = buildPortalSessionCookieValue(
+    slug,
+    getPortalAdminEmail(),
+    { admin: true },
+  );
   res.cookies.set(name, value, options);
 }
 

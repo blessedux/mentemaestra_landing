@@ -31,6 +31,7 @@ export default async function ClientTicketsPage({ params }: PageProps) {
   if (!session || session.slug !== slug) {
     redirect(`/client/${encodeURIComponent(slug)}/login?reason=no_session`);
   }
+  const isAdmin = session.admin === true;
 
   const sql = getDb();
   if (!sql) {
@@ -49,7 +50,7 @@ export default async function ClientTicketsPage({ params }: PageProps) {
   }
 
   const allow = await getAllowlistForProject(sql, project.id);
-  if (!allow.ready || !allow.emails.includes(session.email)) {
+  if (!isAdmin && (!allow.ready || !allow.emails.includes(session.email))) {
     return (
       <Shell slug={slug} title="Acceso revocado">
         <p className="text-sm text-zinc-300">

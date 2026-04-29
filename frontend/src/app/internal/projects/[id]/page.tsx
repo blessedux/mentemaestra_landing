@@ -72,6 +72,8 @@ export default async function ProjectDetailPage({ params }: PageProps) {
   const portalBaseUrl = getOnboardingPublicBaseUrl().replace(/\/$/, "");
   const portalHref = `/client/${encodeURIComponent(project.slug)}`;
   const portalAbsoluteUrl = `${portalBaseUrl}${portalHref}`;
+  const portalImpersonateHref =
+    `/api/internal/portal/impersonate?slug=${encodeURIComponent(project.slug)}`;
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] px-6 py-12 text-zinc-100">
@@ -98,10 +100,10 @@ export default async function ProjectDetailPage({ params }: PageProps) {
             </p>
           </div>
           <Link
-            href={portalHref}
+            href={portalImpersonateHref}
             target="_blank"
             rel="noopener noreferrer"
-            title="Abre el portal del cliente (misma vista que el cliente) en una pestaña nueva"
+            title="Abre el portal del cliente como operador (sin magic link) en una pestaña nueva"
             className="inline-flex items-center gap-2 rounded-xl border border-[#c9a07a]/40 bg-gradient-to-b from-[#8f624c] to-[#6d4536] px-4 py-2 text-xs font-semibold text-[#faf7f5] shadow-sm transition hover:brightness-110"
           >
             <ExternalIcon className="h-3.5 w-3.5" />
